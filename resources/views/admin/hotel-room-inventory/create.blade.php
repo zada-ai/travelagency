@@ -38,9 +38,22 @@
 
             <div class="grid gap-4 md:grid-cols-3">
                 <label class="block">
-                    <span class="text-sm font-medium text-slate-700">Inventory Date</span>
+                    <span class="text-sm font-medium text-slate-700">Inventory From</span>
+                    <input type="date" name="inventory_date_from" value="{{ old('inventory_date_from') }}" class="mt-2 w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900" />
+                    @error('inventory_date_from')<p class="mt-1 text-sm text-rose-600">{{ $message }}</p>@enderror
+                </label>
+
+                <label class="block">
+                    <span class="text-sm font-medium text-slate-700">Inventory To</span>
+                    <input type="date" name="inventory_date_to" value="{{ old('inventory_date_to') }}" class="mt-2 w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900" />
+                    @error('inventory_date_to')<p class="mt-1 text-sm text-rose-600">{{ $message }}</p>@enderror
+                </label>
+
+                <label class="block">
+                    <span class="text-sm font-medium text-slate-700">Or single date (optional)</span>
                     <input type="date" name="inventory_date" value="{{ old('inventory_date') }}" class="mt-2 w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900" />
                     @error('inventory_date')<p class="mt-1 text-sm text-rose-600">{{ $message }}</p>@enderror
+                    <p class="mt-2 text-xs text-slate-500">Provide either a date range or a single date. Range will create/update records for each day inclusively.</p>
                 </label>
 
                 <label class="block">

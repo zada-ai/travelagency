@@ -4,11 +4,13 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 
 class HotelRoomDateStatus extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory;
+
+    public const UNAVAILABLE_STATUSES = ['Reserved', 'Occupied', 'Cleaning', 'Maintenance'];
+    public const BOOKED_STATUSES = ['Reserved', 'Occupied'];
 
     protected $fillable = [
         'hotel_room_id',
@@ -29,5 +31,13 @@ class HotelRoomDateStatus extends Model
     public function booking()
     {
         return $this->belongsTo(Booking::class);
+    }
+
+    public function scopeConflictsForDateRange($query, $checkIn, $checkOut)
+    {
+        return $query
+            ->whereDate('inventory_date', '>=', $checkIn)
+            ->whereDate('inventory_date', '<', $checkOut)
+            ->whereIn('status', self::UNAVAILABLE_STATUSES);
     }
 }

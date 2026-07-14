@@ -43,7 +43,8 @@
             <table class="min-w-full divide-y divide-slate-200 text-sm">
                 <thead class="bg-slate-50 text-slate-700">
                     <tr>
-                        <th class="px-4 py-3 text-left font-medium">Date</th>
+                        <th class="px-4 py-3 text-left font-medium">Inventory From</th>
+                        <th class="px-4 py-3 text-left font-medium">Inventory To</th>
                         <th class="px-4 py-3 text-left font-medium">Hotel</th>
                         <th class="px-4 py-3 text-left font-medium">Room Type</th>
                         <th class="px-4 py-3 text-right font-medium">Total</th>
@@ -56,7 +57,8 @@
                 <tbody class="divide-y divide-slate-200 bg-white">
                     @forelse($inventories as $inventory)
                         <tr>
-                            <td class="px-4 py-3 text-slate-700">{{ $inventory->inventory_date->format('Y-m-d') }}</td>
+                            <td class="px-4 py-3 text-slate-700">{{ $inventory->inventory_date?->format('Y-m-d') }}</td>
+                            <td class="px-4 py-3 text-slate-700">{{ $inventory->inventory_date_to?->format('Y-m-d') ?? '-' }}</td>
                             <td class="px-4 py-3 text-slate-700">{{ $inventory->hotel?->hotel_name }}</td>
                             <td class="px-4 py-3 text-slate-700">{{ $inventory->roomType?->room_name }}</td>
                             <td class="px-4 py-3 text-right text-slate-700">{{ $inventory->total_rooms }}</td>

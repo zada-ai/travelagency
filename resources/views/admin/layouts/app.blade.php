@@ -22,6 +22,15 @@
                 <a href="{{ route('admin.hotel-meal-plans.index') }}" class="block rounded-2xl px-4 py-3 transition {{ request()->routeIs('admin.hotel-meal-plans.*') ? 'bg-slate-800 text-white' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}">Meal Plans</a>
                 <a href="{{ route('admin.hotel-facilities.index') }}" class="block rounded-2xl px-4 py-3 transition {{ request()->routeIs('admin.hotel-facilities.*') ? 'bg-slate-800 text-white' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}">Facilities</a>
                 <a href="{{ route('admin.hotel-room-inventory.index') }}" class="block rounded-2xl px-4 py-3 transition {{ request()->routeIs('admin.hotel-room-inventory.*') ? 'bg-slate-800 text-white' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}">Room Inventory</a>
+                <a href="{{ route('admin.bookings.index') }}" class="flex justify-between items-center rounded-2xl px-4 py-3 transition {{ request()->routeIs('admin.bookings.*') ? 'bg-slate-800 text-white' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}">
+                    <span>Bookings</span>
+                    @php
+                        $recentBookings = \App\Models\Booking::where('created_at', '>=', now()->subHours(2))->count();
+                    @endphp
+                    @if($recentBookings > 0)
+                        <span class="inline-flex items-center rounded-full bg-rose-600 px-3 py-0.5 text-xs font-semibold text-white">{{ $recentBookings }}</span>
+                    @endif
+                </a>
                 <!-- <a href="{{ route('admin.user-management') }}" class="block rounded-2xl px-4 py-3 transition {{ request()->routeIs('admin.user-management') ? 'bg-slate-800 text-white' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}">User Management</a> -->
                 <!-- <a href="{{ route('admin.customer-management') }}" class="block rounded-2xl px-4 py-3 transition {{ request()->routeIs('admin.customer-management') ? 'bg-slate-800 text-white' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}">Customer Management</a>
                 <a href="{{ route('admin.agent-management') }}" class="block rounded-2xl px-4 py-3 transition {{ request()->routeIs('admin.agent-management') ? 'bg-slate-800 text-white' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}">Agent Management</a>

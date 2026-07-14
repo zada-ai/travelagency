@@ -22,8 +22,12 @@
                     @error('hotel_code')<p class="mt-1 text-xs text-rose-500">{{ $message }}</p>@enderror
                 </div>
                 <div>
-                    <label class="mb-2 block text-sm font-semibold text-slate-700">City</label>
-                    <input name="city" value="{{ old('city', $hotel->city) }}" class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700 shadow-sm focus:border-slate-400 focus:outline-none" />
+                    <label class="mb-2 block text-sm font-semibold text-slate-700">City / Holy City</label>
+                    <select name="city" class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700 shadow-sm focus:border-slate-400 focus:outline-none">
+                        <option value="">Select city</option>
+                        <option value="Makkah" @selected(old('city', $hotel->city) === 'Makkah')>Makkah</option>
+                        <option value="Madina" @selected(old('city', $hotel->city) === 'Madina')>Madina</option>
+                    </select>
                     @error('city')<p class="mt-1 text-xs text-rose-500">{{ $message }}</p>@enderror
                 </div>
                 <div class="grid gap-4 sm:grid-cols-2">
@@ -116,16 +120,22 @@
                                 <div class="rounded-3xl border border-slate-200 bg-white p-3 shadow-sm" data-image-id="{{ $image->id }}">
                                     <img src="{{ Storage::disk('public')->url($image->path) }}" alt="Hotel image {{ $loop->iteration }}" class="h-36 w-full rounded-2xl object-cover" />
                                     <div class="mt-3 space-y-3 text-sm text-slate-600">
-                                        <div class="flex items-center justify-between gap-3">
+                                        <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                                             <label class="inline-flex items-center gap-2 text-slate-700">
                                                 <input type="radio" name="cover_image_id" value="{{ $image->id }}" @checked(old('cover_image_id', $hotel->coverImage?->id) == $image->id) class="text-blue-600">
                                                 Cover
                                             </label>
-                                            <button type="button" class="remove-image-button text-rose-600 hover:text-rose-700 text-xs font-semibold">Remove</button>
+                                            <label class="inline-flex items-center gap-2 text-slate-700">
+                                                <input type="checkbox" name="is_active[]" value="{{ $image->id }}" @checked(old('is_active') ? in_array($image->id, old('is_active', [])) : $image->is_active) class="h-4 w-4 text-blue-600" />
+                                                Active
+                                            </label>
                                         </div>
-                                        <div>
-                                            <label class="block text-xs text-slate-500">Order</label>
-                                            <input type="number" name="existing_image_order[{{ $image->id }}]" value="{{ old('existing_image_order.' . $image->id, $image->sort_order) }}" min="0" class="mt-1 w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-700" />
+                                        <div class="flex items-center justify-between gap-3">
+                                            <div class="w-full">
+                                                <label class="block text-xs text-slate-500">Order</label>
+                                                <input type="number" name="existing_image_order[{{ $image->id }}]" value="{{ old('existing_image_order.' . $image->id, $image->sort_order) }}" min="0" class="mt-1 w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-700" />
+                                            </div>
+                                            <button type="button" class="remove-image-button text-rose-600 hover:text-rose-700 text-xs font-semibold">Remove</button>
                                         </div>
                                     </div>
                                 </div>

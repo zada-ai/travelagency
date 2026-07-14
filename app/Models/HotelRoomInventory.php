@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\HotelRoomType;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -14,6 +15,7 @@ class HotelRoomInventory extends Model
         'hotel_id',
         'hotel_room_type_id',
         'inventory_date',
+        'inventory_date_to',
         'total_rooms',
         'available_rooms',
         'booked_rooms',
@@ -22,6 +24,7 @@ class HotelRoomInventory extends Model
 
     protected $casts = [
         'inventory_date' => 'date',
+        'inventory_date_to' => 'date',
         'total_rooms' => 'integer',
         'available_rooms' => 'integer',
         'booked_rooms' => 'integer',
@@ -39,17 +42,16 @@ class HotelRoomInventory extends Model
 
     public function scopeForDateRange($query, $checkIn, $checkOut)
     {
-        return $query->whereBetween('inventory_date', [$checkIn, $checkOut->copy()->subDay()]);
+        return $query
+            ->whereDate('inventory_date', '>=', $checkIn)
+            ->whereDate('inventory_date', '<', $checkOut);
     }
 
     public static function summarizeAvailability(int $hotelId, int $roomTypeId, $checkIn, $checkOut): array
     {
-        $inventoryRows = self::where('hotel_id', $hotelId)
-            ->where('hotel_room_type_id', $roomTypeId)
-            ->whereBetween('inventory_date', [$checkIn, $checkOut->copy()->subDay()])
-            ->get();
+        $nights = (int) $checkIn->diffInDays($checkOut);
 
-        if ($inventoryRows->isEmpty()) {
+        if ($nights < 1) {
             return [
                 'total_rooms' => 0,
                 'available_rooms' => 0,
@@ -60,24 +62,73 @@ class HotelRoomInventory extends Model
             ];
         }
 
-        $totalRooms = $inventoryRows->min('total_rooms');
-        $availableRooms = $inventoryRows->min('available_rooms');
-        $bookedRooms = $inventoryRows->max('booked_rooms');
+        $inventoryRows = self::where('hotel_id', $hotelId)
+            ->where('hotel_room_type_id', $roomTypeId)
+            ->whereDate('inventory_date', '>=', $checkIn)
+            ->whereDate('inventory_date', '<', $checkOut)
+            ->where('status', 'Active')
+            ->get()
+            ->keyBy(fn ($row) => $row->inventory_date->format('Y-m-d'));
+
+        $current = $checkIn->copy();
+        $dateDetails = collect();
+        $availableDays = 0;
+        $minAvailableRooms = null;
+        $bookedRooms = 0;
+        $totalRooms = null;
+
+        while ($current->lt($checkOut)) {
+            $dateKey = $current->format('Y-m-d');
+
+            if ($inventoryRows->has($dateKey)) {
+                $row = $inventoryRows->get($dateKey);
+                $available = $row->available_rooms > 0;
+
+                $dateDetails->push([
+                    'date' => $dateKey,
+                    'available_rooms' => $row->available_rooms,
+                    'booked_rooms' => $row->booked_rooms,
+                    'total_rooms' => $row->total_rooms,
+                    'available' => $available,
+                ]);
+
+                if ($available) {
+                    $availableDays++;
+                }
+
+                $minAvailableRooms = is_null($minAvailableRooms)
+                    ? $row->available_rooms
+                    : min($minAvailableRooms, $row->available_rooms);
+                $bookedRooms = max($bookedRooms, $row->booked_rooms);
+                $totalRooms = is_null($totalRooms)
+                    ? $row->total_rooms
+                    : min($totalRooms, $row->total_rooms);
+            } else {
+                $dateDetails->push([
+                    'date' => $dateKey,
+                    'available_rooms' => 0,
+                    'booked_rooms' => 0,
+                    'total_rooms' => 0,
+                    'available' => false,
+                ]);
+            }
+
+            $current->addDay();
+        }
+
+        $availableRooms = $minAvailableRooms ?? 0;
+        $occupiedDates = $dateDetails->filter(fn ($row) => ! $row['available'])->pluck('date')->values()->toArray();
+        $status = ($availableDays === $nights && $availableRooms > 0) ? 'Available' : 'Sold Out';
         $occupancyPercent = $totalRooms > 0 ? (int) round(($bookedRooms / $totalRooms) * 100) : 0;
-        $status = $availableRooms > 0 ? 'Available' : 'Sold Out';
 
         return [
-            'total_rooms' => $totalRooms,
+            'total_rooms' => $totalRooms ?? 0,
             'available_rooms' => $availableRooms,
             'booked_rooms' => $bookedRooms,
             'occupancy_percent' => $occupancyPercent,
             'status' => $status,
-            'dates' => $inventoryRows->map(fn ($row) => [
-                'date' => $row->inventory_date->format('Y-m-d'),
-                'available_rooms' => $row->available_rooms,
-                'booked_rooms' => $row->booked_rooms,
-                'total_rooms' => $row->total_rooms,
-            ])->values()->toArray(),
+            'dates' => $dateDetails->toArray(),
+            'unavailable_dates' => $occupiedDates,
         ];
     }
 }

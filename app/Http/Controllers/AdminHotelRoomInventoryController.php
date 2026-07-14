@@ -10,6 +10,7 @@ use App\Models\HotelRoomInventory;
 use App\Services\HotelRoomInventoryService;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\StreamedResponse;
+use Illuminate\Support\Carbon;
 
 class AdminHotelRoomInventoryController extends Controller
 {
@@ -37,7 +38,23 @@ class AdminHotelRoomInventoryController extends Controller
 
     public function store(StoreHotelRoomInventoryRequest $request)
     {
-        $this->service->create($request->validated());
+        $data = $request->validated();
+
+        if (! empty($data['inventory_date_from']) && ! empty($data['inventory_date_to'])) {
+            $start = Carbon::parse($data['inventory_date_from'])->startOfDay();
+            $end = Carbon::parse($data['inventory_date_to'])->startOfDay();
+
+            $payload = array_merge($data, [
+                'inventory_date' => $start->format('Y-m-d'),
+                'inventory_date_to' => $end->format('Y-m-d'),
+            ]);
+
+            $this->service->create($payload);
+
+            return redirect()->route('admin.hotel-room-inventory.index')->with('success', 'Room inventory added for selected date range.');
+        }
+
+        $this->service->create($data);
 
         return redirect()->route('admin.hotel-room-inventory.index')->with('success', 'Room inventory added successfully.');
     }
@@ -77,12 +94,13 @@ class AdminHotelRoomInventoryController extends Controller
 
         return response()->stream(function () use ($inventories) {
             $handle = fopen('php://output', 'w');
-            fputcsv($handle, ['Hotel', 'Room Type', 'Date', 'Total Rooms', 'Available Rooms', 'Booked Rooms', 'Status']);
+            fputcsv($handle, ['Hotel', 'Room Type', 'Date From', 'Date To', 'Total Rooms', 'Available Rooms', 'Booked Rooms', 'Status']);
             foreach ($inventories as $inventory) {
                 fputcsv($handle, [
                     $inventory->hotel?->hotel_name,
                     $inventory->roomType?->room_name,
-                    $inventory->inventory_date->format('Y-m-d'),
+                    $inventory->inventory_date?->format('Y-m-d') ?? '',
+                    $inventory->inventory_date_to?->format('Y-m-d') ?? '',
                     $inventory->total_rooms,
                     $inventory->available_rooms,
                     $inventory->booked_rooms,

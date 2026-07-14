@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Hotel;
-use App\Models\HotelRoomInventory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 
@@ -14,27 +13,54 @@ class PublicHotelController extends Controller
         $checkIn = $request->input('check_in') ? Carbon::parse($request->input('check_in'))->startOfDay() : null;
         $checkOut = $request->input('check_out') ? Carbon::parse($request->input('check_out'))->startOfDay() : null;
 
-        if ($checkIn && $checkOut && $checkOut->lte($checkIn)) {
+        if ($checkIn && $checkOut && $checkOut->lt($checkIn)) {
             $checkOut = null;
         }
 
-        $hotel->load(['roomTypes', 'seasonalRates', 'mealPlans', 'facilities', 'inventories', 'images', 'coverImage']);
+        $hotel->load(['roomTypes.hotelRooms', 'seasonalRates', 'mealPlans', 'facilities', 'images', 'coverImage']);
+
+        $availableRoomsNow = $hotel->rooms()->where('status', 'Available')->count();
+
+        $initialRoomTypes = $hotel->roomTypes->where('status', 'Active')->map(function ($roomType) {
+            return [
+                'id' => $roomType->id,
+                'room_name' => $roomType->room_name,
+                'rate' => (float) $roomType->daily_rate,
+                'capacity' => $roomType->max_occupancy,
+                'extra_bed_price' => (float) $roomType->extra_bed_price,
+                'available_rooms' => $roomType->hotelRooms->where('status', 'Available')->count(),
+                'status' => 'Select your dates to check availability',
+                'unavailable_dates' => [],
+            ];
+        })->values()->toArray();
 
         $roomTypeAvailabilities = [];
+        $totalAvailable = 0;
 
         if ($checkIn && $checkOut) {
             foreach ($hotel->roomTypes->where('status', 'Active') as $roomType) {
-                $roomTypeAvailabilities[$roomType->id] = HotelRoomInventory::summarizeAvailability(
-                    $hotel->id,
-                    $roomType->id,
-                    $checkIn,
-                    $checkOut
-                );
+                $availability = $roomType->summarizeAvailabilityForDates($checkIn, $checkOut);
+
+                $roomTypeAvailabilities[$roomType->id] = array_merge($availability, [
+                    'id' => $roomType->id,
+                    'room_name' => $roomType->room_name,
+                    'rate' => $roomType->rateForDates($checkIn, $checkOut),
+                    'capacity' => $roomType->max_occupancy,
+                    'extra_bed_price' => (float) $roomType->extra_bed_price,
+                ]);
+                $totalAvailable += $availability['available_rooms'];
             }
         }
 
+        if ($request->boolean('ajax')) {
+            return response()->json([
+                'roomTypeAvailabilities' => array_values($roomTypeAvailabilities),
+                'totalAvailable' => $totalAvailable,
+            ]);
+        }
+
         $recommendations = Hotel::active()
-            ->where('city', $hotel->city)
+            ->whereRaw('LOWER(city) = ?', [mb_strtolower($hotel->city)])
             ->where('id', '!=', $hotel->id)
             ->orderByDesc('featured')
             ->orderBy('hotel_name')
@@ -78,6 +104,6 @@ class PublicHotelController extends Controller
             ],
         ];
 
-        return view('hotels.details', compact('hotel', 'recommendations', 'policyHighlights', 'reviews', 'checkIn', 'checkOut', 'roomTypeAvailabilities'));
+        return view('hotels.details', compact('hotel', 'recommendations', 'policyHighlights', 'reviews', 'checkIn', 'checkOut', 'roomTypeAvailabilities', 'initialRoomTypes', 'availableRoomsNow'));
     }
 }

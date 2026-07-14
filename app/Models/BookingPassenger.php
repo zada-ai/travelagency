@@ -15,6 +15,15 @@ class BookingPassenger extends Model
         'first_name',
         'last_name',
         'age',
+        'date_of_birth',
+        'passport_number',
+        'passport_expiry',
+        'nationality',
+    ];
+
+    protected $casts = [
+        'date_of_birth' => 'date',
+        'passport_expiry' => 'date',
     ];
 
     public function booking()

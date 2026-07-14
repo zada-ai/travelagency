@@ -2,13 +2,15 @@
 
 namespace App\Models;
 
+use App\Models\Booking;
+use App\Models\HotelRoomDateStatus;
+use App\Models\RoomBlock;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 
 class HotelRoom extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory;
 
     protected $fillable = [
         'hotel_id',
@@ -30,5 +32,15 @@ class HotelRoom extends Model
     public function dateStatuses()
     {
         return $this->hasMany(HotelRoomDateStatus::class);
+    }
+
+    public function bookings()
+    {
+        return $this->hasMany(Booking::class, 'hotel_room_id');
+    }
+
+    public function blocks()
+    {
+        return $this->hasMany(RoomBlock::class, 'hotel_room_id');
     }
 }

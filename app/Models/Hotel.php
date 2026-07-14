@@ -83,12 +83,24 @@ class Hotel extends Model
 
     public function images()
     {
-        return $this->hasMany(HotelImage::class)->orderBy('sort_order');
+        return $this->hasMany(HotelImage::class)
+            ->where('is_active', true)
+            ->orderByDesc('is_cover')
+            ->orderBy('sort_order');
+    }
+
+    public function allImages()
+    {
+        return $this->hasMany(HotelImage::class)
+            ->orderByDesc('is_cover')
+            ->orderBy('sort_order');
     }
 
     public function coverImage()
     {
-        return $this->hasOne(HotelImage::class)->where('is_cover', true);
+        return $this->hasOne(HotelImage::class)
+            ->where('is_cover', true)
+            ->where('is_active', true);
     }
 
     public function getCoverImageUrlAttribute(): ?string

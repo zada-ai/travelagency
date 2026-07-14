@@ -21,8 +21,12 @@
                     @error('hotel_code')<p class="mt-1 text-xs text-rose-500">{{ $message }}</p>@enderror
                 </div>
                 <div>
-                    <label class="mb-2 block text-sm font-semibold text-slate-700">City</label>
-                    <input name="city" value="{{ old('city') }}" class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700 shadow-sm focus:border-slate-400 focus:outline-none" />
+                    <label class="mb-2 block text-sm font-semibold text-slate-700">City / Holy City</label>
+                    <select name="city" class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700 shadow-sm focus:border-slate-400 focus:outline-none">
+                        <option value="">Select city</option>
+                        <option value="Makkah" @selected(old('city') === 'Makkah')>Makkah</option>
+                        <option value="Madina" @selected(old('city') === 'Madina')>Madina</option>
+                    </select>
                     @error('city')<p class="mt-1 text-xs text-rose-500">{{ $message }}</p>@enderror
                 </div>
                 <div class="grid gap-4 sm:grid-cols-2">

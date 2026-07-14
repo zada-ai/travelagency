@@ -7,10 +7,8 @@ use App\Http\Requests\StoreBookingRequest;
 use App\Models\Booking;
 use App\Models\Hotel;
 use App\Models\HotelMealPlan;
-use App\Models\HotelRoomInventory;
 use App\Models\HotelRoomType;
 use App\Models\HotelRoomDateStatus;
-use App\Models\HotelRoom;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
@@ -29,43 +27,42 @@ class PublicHotelBookingController extends Controller
 
         $hotels = Hotel::active()
             ->with([
-                'roomTypes' => fn ($query) => $query->where('status', 'Active'),
+                'roomTypes.hotelRooms' => fn ($query) => $query->where('status', 'Available'),
                 'seasonalRates',
                 'mealPlans',
                 'facilities',
-                'inventories',
                 'coverImage',
                 'images',
             ])
-            ->when($city->isNotEmpty(), fn ($query) => $query->where('city', $city))
+            ->when($city->isNotEmpty(), function ($query) use ($city) {
+                $query->whereRaw('LOWER(city) = ?', [mb_strtolower($city->toString())]);
+            })
             ->orderBy('hotel_name')
             ->get();
 
-        $selectedCheckIn = $checkIn ?: Carbon::today();
-        $selectedCheckOut = $checkOut ?: Carbon::today()->addDay();
-
-        $hotels = $hotels->map(function ($hotel) use ($selectedCheckIn, $selectedCheckOut) {
+        $hotels = $hotels->map(function ($hotel) use ($checkIn, $checkOut) {
             $bestRoomType = null;
             $bestAvailability = [
                 'total_rooms' => 0,
                 'available_rooms' => 0,
                 'booked_rooms' => 0,
                 'occupancy_percent' => 0,
-                'status' => 'Sold Out',
+                'status' => $checkIn && $checkOut ? 'Sold Out' : 'Select dates',
             ];
 
-            foreach ($hotel->roomTypes as $roomType) {
-                $availability = HotelRoomInventory::summarizeAvailability(
-                    $hotel->id,
-                    $roomType->id,
-                    $selectedCheckIn,
-                    $selectedCheckOut
-                );
+            if ($checkIn && $checkOut) {
+                foreach ($hotel->roomTypes as $roomType) {
+                    $availability = $roomType->summarizeAvailabilityForDates($checkIn, $checkOut);
 
-                if (! $bestRoomType || $availability['available_rooms'] > $bestAvailability['available_rooms']) {
-                    $bestRoomType = $roomType;
-                    $bestAvailability = $availability;
+                    if (! $bestRoomType || $availability['available_rooms'] > $bestAvailability['available_rooms']) {
+                        $bestRoomType = $roomType;
+                        $bestAvailability = $availability;
+                    }
                 }
+            }
+
+            if (! $bestRoomType) {
+                $bestRoomType = $hotel->roomTypes->sortBy('daily_rate')->first();
             }
 
             $hotel->bestRoomType = $bestRoomType;
@@ -98,28 +95,18 @@ class PublicHotelBookingController extends Controller
 
         $roomTypes = HotelRoomType::where('hotel_id', $hotel->id)
             ->where('status', 'Active')
-            ->withCount(['hotelRooms as available_room_count' => fn ($query) => $query->where('status', 'Available')])
+            ->with('hotelRooms')
             ->get();
 
         $availableRoomTypes = $roomTypes->map(function ($roomType) use ($checkIn, $checkOut) {
-            $roomCount = HotelRoomDateStatus::whereHas('hotelRoom', fn ($q) => $q->where('hotel_room_type_id', $roomType->id))
-                ->whereBetween('inventory_date', [$checkIn, $checkOut->copy()->subDay()])
-                ->where('status', 'Available')
-                ->groupBy('hotel_room_id')
-                ->havingRaw('COUNT(*) = ?', [$checkIn->diffInDays($checkOut)])
-                ->get()
-                ->pluck('hotel_room_id')
-                ->unique()
-                ->count();
-
             return [
                 'id' => $roomType->id,
                 'room_name' => $roomType->room_name,
                 'capacity' => $roomType->max_occupancy,
                 'daily_rate' => $roomType->daily_rate,
-                'available_rooms' => $roomCount,
+                'available_rooms' => $roomType->availableRoomsForDates($checkIn, $checkOut),
                 'extra_bed_price' => $roomType->extra_bed_price,
-                'status' => $roomType->status,
+                'status' => $roomType->availableRoomsForDates($checkIn, $checkOut) > 0 ? 'Available' : 'Sold Out',
             ];
         })->filter(fn ($roomType) => $roomType['available_rooms'] > 0)->values();
 
@@ -131,7 +118,7 @@ class PublicHotelBookingController extends Controller
         $hotel->load(['roomTypes', 'seasonalRates', 'mealPlans', 'facilities', 'inventories']);
 
         $recommendations = Hotel::active()
-            ->where('city', $hotel->city)
+            ->whereRaw('LOWER(city) = ?', [mb_strtolower($hotel->city)])
             ->where('id', '!=', $hotel->id)
             ->orderByDesc('featured')
             ->orderBy('hotel_name')
@@ -183,53 +170,46 @@ class PublicHotelBookingController extends Controller
         $hotel = Hotel::findOrFail($request->hotel_id);
         $roomType = HotelRoomType::where('id', $request->hotel_room_type_id)->where('hotel_id', $hotel->id)->firstOrFail();
 
+        $checkIn = Carbon::parse($request->check_in)->startOfDay();
+        $checkOut = Carbon::parse($request->check_out)->startOfDay();
+
         $dateRange = collect();
-        $current = $request->check_in->copy();
-        while ($current->lt($request->check_out)) {
+        $current = $checkIn->copy();
+        while ($current->lt($checkOut)) {
             $dateRange->push($current->format('Y-m-d'));
             $current->addDay();
         }
 
-        $inventoryRows = HotelRoomInventory::where('hotel_id', $hotel->id)
-            ->where('hotel_room_type_id', $roomType->id)
-            ->whereBetween('inventory_date', [$request->check_in, $request->check_out->copy()->subDay()])
-            ->get();
-
-        if ($inventoryRows->count() !== $dateRange->count() || $inventoryRows->min('available_rooms') < 1) {
-            return back()->withErrors(['hotel_room_type_id' => 'No available room inventory found for the selected dates.']);
-        }
-
-        $availableRoom = HotelRoom::where('hotel_room_type_id', $roomType->id)
-            ->where('status', 'Available')
-            ->whereDoesntHave('dateStatuses', fn ($query) => $query->whereIn('inventory_date', $dateRange)->whereNotIn('status', ['Available']))
-            ->inRandomOrder()
-            ->first();
-
-        if (! $availableRoom) {
+        $availableRooms = $roomType->availableRoomsForDates($checkIn, $checkOut);
+        if ($availableRooms < 1) {
             return back()->withErrors(['hotel_room_type_id' => 'No available room was found for the selected dates.']);
         }
 
-        foreach ($inventoryRows as $inventory) {
-            $inventory->available_rooms = max($inventory->available_rooms - 1, 0);
-            $inventory->booked_rooms = $inventory->booked_rooms + 1;
-            $inventory->status = $inventory->available_rooms > 0 ? 'Available' : 'Sold Out';
-            $inventory->save();
+        $availableRoom = $roomType->hasHotelRooms() ? $roomType->findAvailableRoomForDates($checkIn, $checkOut) : null;
+
+        if ($roomType->hasHotelRooms() && ! $availableRoom) {
+            return back()->withErrors(['hotel_room_type_id' => 'No available room was found for the selected dates.']);
         }
+
+        $mealPlan = $request->include_meal ? HotelMealPlan::find($request->meal_plan_id) : null;
+        $totalGuests = $request->adults + $request->children + $request->infants;
+        $mealPricePerPerson = $mealPlan?->price_per_person ?? 0;
+        $mealPriceTotal = $request->include_meal ? $mealPricePerPerson * $totalGuests : 0;
 
         $booking = Booking::create([
             'hotel_id' => $hotel->id,
             'hotel_room_type_id' => $roomType->id,
-            'hotel_room_id' => $availableRoom->id,
+            'hotel_room_id' => $availableRoom?->id,
             'meal_plan_id' => $request->meal_plan_id,
             'reference_number' => strtoupper(Str::random(10)),
-            'check_in' => $request->check_in,
-            'check_out' => $request->check_out,
+            'check_in' => $checkIn,
+            'check_out' => $checkOut,
             'adults' => $request->adults,
             'children' => $request->children,
             'infants' => $request->infants,
-            'total_passengers' => $request->adults + $request->children + $request->infants,
+            'total_passengers' => $totalGuests,
             'room_price' => $roomType->daily_rate,
-            'meal_price' => $request->include_meal ? HotelMealPlan::find($request->meal_plan_id)?->price_per_person ?? 0 : 0,
+            'meal_price' => $mealPriceTotal,
             'taxes' => 0,
             'discount' => 0,
             'grand_total' => 0,
@@ -237,6 +217,8 @@ class PublicHotelBookingController extends Controller
             'contact_name' => $request->contact_name,
             'contact_email' => $request->contact_email,
             'contact_phone' => $request->contact_phone,
+            'payment_status' => 'Pending',
+            'contacted' => false,
         ]);
 
         foreach ($request->input('passengers', []) as $passenger) {
@@ -246,19 +228,84 @@ class PublicHotelBookingController extends Controller
         $taxes = ($booking->room_price + $booking->meal_price) * 0.10;
         $booking->update(['taxes' => $taxes, 'grand_total' => $booking->room_price + $booking->meal_price + $taxes]);
 
-        foreach ($dateRange as $date) {
-            HotelRoomDateStatus::updateOrCreate([
-                'hotel_room_id' => $availableRoom->id,
-                'inventory_date' => $date,
-            ], [
-                'booking_id' => $booking->id,
-                'status' => 'Reserved',
+        if ($availableRoom) {
+            foreach ($dateRange as $date) {
+                HotelRoomDateStatus::updateOrCreate([
+                    'hotel_room_id' => $availableRoom->id,
+                    'inventory_date' => $date,
+                ], [
+                    'booking_id' => $booking->id,
+                    'status' => 'Reserved',
+                ]);
+            }
+
+            $availableRoom->update(['status' => 'Reserved']);
+        } elseif (! $roomType->hasHotelRooms()) {
+            $this->reserveInventoryDates($roomType, $checkIn, $checkOut);
+        }
+
+        if ($request->expectsJson()) {
+            $booking->load(['hotel', 'roomType', 'mealPlan']);
+
+            return response()->json([
+                'success' => true,
+                'booking' => [
+                    'id' => $booking->id,
+                    'reference_number' => $booking->reference_number,
+                    'hotel_name' => $booking->hotel->hotel_name,
+                    'check_in' => $booking->check_in->format('d M Y'),
+                    'check_out' => $booking->check_out->format('d M Y'),
+                    'total_passengers' => $booking->total_passengers,
+                    'grand_total' => number_format($booking->grand_total, 2),
+                    'booking_details_url' => route('hotels.booking.confirmation', ['booking' => $booking->id]),
+                ],
             ]);
         }
 
-        $availableRoom->update(['status' => 'Reserved']);
-
         return redirect()->route('hotels.booking.confirmation', ['booking' => $booking->id]);
+    }
+
+    private function reserveInventoryDates(HotelRoomType $roomType, Carbon $checkIn, Carbon $checkOut): void
+    {
+        $current = $checkIn->copy();
+
+        while ($current->lt($checkOut)) {
+            $date = $current->format('Y-m-d');
+
+            $inventory = HotelRoomInventory::where('hotel_id', $roomType->hotel_id)
+                ->where('hotel_room_type_id', $roomType->id)
+                ->whereDate('inventory_date', $date)
+                ->first();
+
+            if (! $inventory) {
+                $inventory = HotelRoomInventory::where('hotel_id', $roomType->hotel_id)
+                    ->where('hotel_room_type_id', $roomType->id)
+                    ->whereDate('inventory_date', '<=', $date)
+                    ->whereNotNull('inventory_date_to')
+                    ->whereDate('inventory_date_to', '>=', $date)
+                    ->orderByDesc('inventory_date_to')
+                    ->first();
+            }
+
+            if ($inventory) {
+                HotelRoomInventory::updateOrCreate([
+                    'hotel_id' => $roomType->hotel_id,
+                    'hotel_room_type_id' => $roomType->id,
+                    'inventory_date' => $date,
+                ], [
+                    'hotel_id' => $roomType->hotel_id,
+                    'hotel_room_type_id' => $roomType->id,
+                    'inventory_date' => $date,
+                    'inventory_date_to' => $date,
+                    'total_rooms' => $inventory->total_rooms,
+                    'available_rooms' => max(0, $inventory->available_rooms - 1),
+                    'booked_rooms' => $inventory->booked_rooms + 1,
+                    'status' => $inventory->status,
+                ]);
+            }
+
+            $current->addDay();
+        }
     }
 
     public function cancel(Booking $booking)

@@ -34,7 +34,8 @@ class HotelRepository
         }
 
         if (! empty($filters['city'])) {
-            $query->where('city', $filters['city']);
+            $normalizedCity = $this->normalizeCity($filters['city']);
+            $query->whereRaw('LOWER(city) = ?', [mb_strtolower($normalizedCity)]);
         }
 
         if (! empty($filters['status'])) {
@@ -65,19 +66,43 @@ class HotelRepository
 
     public function create(array $data): Hotel
     {
+        if (array_key_exists('city', $data)) {
+            $data['city'] = $this->normalizeCity($data['city']);
+        }
+
         return Hotel::create($data);
     }
 
     public function update(Hotel $hotel, array $data): Hotel
     {
+        if (array_key_exists('city', $data)) {
+            $data['city'] = $this->normalizeCity($data['city']);
+        }
+
         $hotel->update($data);
 
         return $hotel;
     }
 
+    private function normalizeCity(?string $city): ?string
+    {
+        if ($city === null) {
+            return null;
+        }
+
+        $trimmed = trim($city);
+        $normalized = mb_strtolower($trimmed);
+
+        return match ($normalized) {
+            'makkah', 'makkah al mukarramah', 'makkah al-mukarramah' => 'Makkah',
+            'madina', 'madinah', 'madinah al munawwarah', 'madina al munawwarah' => 'Madina',
+            default => $trimmed,
+        };
+    }
+
     public function delete(Hotel $hotel): bool
     {
-        return $hotel->delete();
+        return $hotel->forceDelete();
     }
 
     public function export(array $filters): Collection

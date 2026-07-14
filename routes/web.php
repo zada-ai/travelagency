@@ -1,6 +1,7 @@
 ﻿<?php
 
 use App\Http\Controllers\AdminHotelController;
+use App\Http\Controllers\AdminBookingController;
 use App\Http\Controllers\AdminHotelManagementController;
 use App\Http\Controllers\AdminHotelRoomTypeController;
 use App\Http\Controllers\AdminHotelFacilityController;
@@ -14,9 +15,9 @@ use App\Http\Controllers\PublicHotelBookingConfirmationController;
 use App\Http\Controllers\PublicHotelBookingController;
 use App\Http\Controllers\PublicHotelController;
 use App\Http\Controllers\AdminHotelRoomInventoryController;
-use App\Models\Hotel;
+use App\Http\Controllers\AdminRoomBlockController;
 use Illuminate\Support\Facades\Route;
-
+use App\Models\Ticket;
 $adminPages = [
     'user-management' => 'User Management',
     'customer-management' => 'Customer Management',
@@ -74,6 +75,16 @@ Route::get('/hotels', fn () => redirect()->route('hotels.booking'));
 Route::middleware(['auth'])->group(function () use ($adminPages) {
     Route::view('/dashboard', 'dashboard')->name('dashboard');
 
+    Route::get('/admin/booking-management', fn () => redirect()->route('admin.bookings.index'))->name('admin.booking-management');
+    Route::get('/admin/bookings', [AdminBookingController::class, 'index'])->name('admin.bookings.index');
+    Route::get('/admin/bookings/export', [AdminBookingController::class, 'export'])->name('admin.bookings.export');
+    Route::get('/admin/bookings/{booking}/edit', [AdminBookingController::class, 'edit'])->name('admin.bookings.edit');
+    Route::put('/admin/bookings/{booking}', [AdminBookingController::class, 'update'])->name('admin.bookings.update');
+    Route::delete('/admin/bookings/{booking}', [AdminBookingController::class, 'destroy'])->name('admin.bookings.destroy');
+    Route::get('/admin/bookings/{booking}/print', [AdminBookingController::class, 'print'])->name('admin.bookings.print');
+    Route::get('/admin/bookings/{booking}', [AdminBookingController::class, 'show'])->name('admin.bookings.show');
+    Route::post('/admin/bookings/{booking}/cancel', [AdminBookingController::class, 'cancel'])->name('admin.bookings.cancel');
+
     Route::get('/admin/hotel-management', [AdminHotelManagementController::class, 'index'])->name('admin.hotel-management');
 
     Route::get('/admin/hotels', [AdminHotelController::class, 'index'])->name('admin.hotels.index');
@@ -83,6 +94,12 @@ Route::middleware(['auth'])->group(function () use ($adminPages) {
     Route::put('/admin/hotels/{hotel}', [AdminHotelController::class, 'update'])->name('admin.hotels.update');
     Route::delete('/admin/hotels/{hotel}', [AdminHotelController::class, 'destroy'])->name('admin.hotels.destroy');
     Route::get('/admin/hotels/export', [AdminHotelController::class, 'export'])->name('admin.hotels.export');
+    Route::post('/admin/hotels/upload-images', [AdminHotelController::class, 'uploadImages'])->name('admin.hotels.upload-images');
+    Route::get('/admin/hotel-images', [AdminHotelController::class, 'hotelImageIndex'])->name('admin.hotel-images.index');
+    Route::get('/admin/hotel-images/{hotelImage}', [AdminHotelController::class, 'hotelImageShow'])->name('admin.hotel-images.show');
+    Route::get('/admin/hotel-images/{hotelImage}/edit', [AdminHotelController::class, 'hotelImageEdit'])->name('admin.hotel-images.edit');
+    Route::put('/admin/hotel-images/{hotelImage}', [AdminHotelController::class, 'hotelImageUpdate'])->name('admin.hotel-images.update');
+    Route::delete('/admin/hotel-images/{hotelImage}', [AdminHotelController::class, 'hotelImageDestroy'])->name('admin.hotel-images.destroy');
 
     Route::get('/admin/hotel-room-types', [AdminHotelRoomTypeController::class, 'index'])->name('admin.hotel-room-types.index');
     Route::get('/admin/hotel-room-types/create', [AdminHotelRoomTypeController::class, 'create'])->name('admin.hotel-room-types.create');
@@ -91,6 +108,14 @@ Route::middleware(['auth'])->group(function () use ($adminPages) {
     Route::put('/admin/hotel-room-types/{hotel_room_type}', [AdminHotelRoomTypeController::class, 'update'])->name('admin.hotel-room-types.update');
     Route::delete('/admin/hotel-room-types/{hotel_room_type}', [AdminHotelRoomTypeController::class, 'destroy'])->name('admin.hotel-room-types.destroy');
     Route::get('/admin/hotel-room-types/export', [AdminHotelRoomTypeController::class, 'export'])->name('admin.hotel-room-types.export');
+
+    Route::get('/admin/hotel-room-blocks', [AdminRoomBlockController::class, 'index'])->name('admin.room-blocks.index');
+    Route::get('/admin/hotel-room-blocks/create', [AdminRoomBlockController::class, 'create'])->name('admin.room-blocks.create');
+    Route::post('/admin/hotel-room-blocks', [AdminRoomBlockController::class, 'store'])->name('admin.room-blocks.store');
+    Route::get('/admin/hotel-room-blocks/{room_block}/edit', [AdminRoomBlockController::class, 'edit'])->name('admin.room-blocks.edit');
+    Route::put('/admin/hotel-room-blocks/{room_block}', [AdminRoomBlockController::class, 'update'])->name('admin.room-blocks.update');
+    Route::delete('/admin/hotel-room-blocks/{room_block}', [AdminRoomBlockController::class, 'destroy'])->name('admin.room-blocks.destroy');
+    Route::get('/admin/hotel-room-blocks/calendar', [AdminRoomBlockController::class, 'calendar'])->name('admin.room-blocks.calendar');
 
     Route::get('/admin/hotel-seasonal-rates', [AdminHotelSeasonalRateController::class, 'index'])->name('admin.hotel-seasonal-rates.index');
     Route::get('/admin/hotel-seasonal-rates/create', [AdminHotelSeasonalRateController::class, 'create'])->name('admin.hotel-seasonal-rates.create');
@@ -136,10 +161,17 @@ Route::middleware(['auth'])->group(function () use ($adminPages) {
     Route::delete('/admin/agents/{agent}', [AdminTravelAgentController::class, 'destroy'])->name('admin.agents.destroy');
 
     foreach ($adminPages as $slug => $title) {
-        if (in_array($slug, ['agent-management', 'hotel-management'], true)) {
+        if (in_array($slug, ['agent-management', 'hotel-management', 'booking-management'], true)) {
             continue;
         }
         Route::view("/admin/{$slug}", "admin.{$slug}", ['pageTitle' => $title])
             ->name("admin.{$slug}");
     }
+});
+Route::get('/ticket', function () {
+    return view('user.ticket');
+});
+
+Route::get('/user/ticket', function () {
+    return view('user.ticket');
 });

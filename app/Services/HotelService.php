@@ -31,7 +31,7 @@ class HotelService
 
     public function delete(Hotel $hotel): bool
     {
-        Storage::disk('public')->delete($hotel->images()->pluck('path')->all());
+        Storage::disk('public')->delete($hotel->allImages()->pluck('path')->all());
 
         return $this->repository->delete($hotel);
     }

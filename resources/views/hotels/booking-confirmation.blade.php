@@ -19,6 +19,13 @@
             <div class="text-center mb-8">
                 <h1 class="text-4xl font-bold">Booking {{ $booking->status === 'Cancelled' ? 'Status' : 'Confirmed' }}</h1>
                 <p class="mt-3 text-slate-500">Your reservation is {{ $booking->status === 'Cancelled' ? 'cancelled and inventory restored' : 'complete and the room has been assigned automatically' }}.</p>
+                <div class="mt-6 inline-block text-left max-w-xl">
+                    <div class="rounded-lg bg-emerald-50 border border-emerald-100 p-4 text-emerald-800">
+                        <p class="font-semibold">Thank you — we received your booking.</p>
+                        <p class="mt-1 text-sm">Our team will contact you within 2 hours to confirm details. For immediate assistance, call <strong>{{ config('app.admin_phone', env('ADMIN_PHONE', '+966-000-0000')) }}</strong>.</p>
+                        <p class="mt-2 text-xs text-slate-500">All booking details have been recorded and are available in the Admin → Bookings area.</p>
+                    </div>
+                </div>
             </div>
 
             <div class="grid gap-6 lg:grid-cols-3">
@@ -39,7 +46,7 @@
                 </div>
             </div>
 
-            <div class="mt-10 grid gap-6 lg:grid-cols-2">
+            <div class="mt-10 grid gap-6 lg:grid-cols-3">
                 <div class="rounded-[1.75rem] bg-white border border-slate-200 p-6">
                     <h3 class="text-xl font-semibold text-slate-900 mb-4">Stay details</h3>
                     <div class="space-y-3 text-sm text-slate-600">
@@ -49,6 +56,39 @@
                         <div class="flex justify-between"><span>Meal plan</span><span>{{ $booking->mealPlan->meal_plan_name ?? 'No meals' }}</span></div>
                     </div>
                 </div>
+                <div class="rounded-[1.75rem] bg-white border border-slate-200 p-6 lg:col-span-2">
+                    <h3 class="text-xl font-semibold text-slate-900 mb-4">Passenger details</h3>
+                    <div class="space-y-4 text-sm text-slate-600">
+                        @foreach($booking->passengers as $passenger)
+                            <div class="rounded-3xl border border-slate-200 bg-slate-50 p-4">
+                                <div class="flex flex-wrap items-center justify-between gap-3 mb-3">
+                                    <span class="text-sm font-semibold text-slate-900">{{ $passenger->passenger_type }} {{ $loop->iteration }}</span>
+                                    <span class="text-xs uppercase tracking-[0.24em] text-slate-400">{{ $passenger->nationality }}</span>
+                                </div>
+                                <div class="grid gap-2 sm:grid-cols-2 text-sm text-slate-600">
+                                    <div>
+                                        <p class="font-semibold text-slate-900">Name</p>
+                                        <p>{{ $passenger->first_name }} {{ $passenger->last_name }}</p>
+                                    </div>
+                                    <div>
+                                        <p class="font-semibold text-slate-900">Date of Birth</p>
+                                        <p>{{ optional($passenger->date_of_birth)->format('d M Y') }}</p>
+                                    </div>
+                                    <div>
+                                        <p class="font-semibold text-slate-900">Passport</p>
+                                        <p>{{ $passenger->passport_number }}</p>
+                                    </div>
+                                    <div>
+                                        <p class="font-semibold text-slate-900">Expiry</p>
+                                        <p>{{ optional($passenger->passport_expiry)->format('d M Y') }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+            </div>
+            <div class="mt-6 grid gap-6 lg:grid-cols-2">
                 <div class="rounded-[1.75rem] bg-slate-50 border border-slate-200 p-6">
                     <h3 class="text-xl font-semibold text-slate-900 mb-4">Price summary</h3>
                     <div class="space-y-3 text-sm text-slate-600">

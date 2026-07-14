@@ -61,7 +61,7 @@
                                 </span>
                                 <select name="city" class="form-select w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 text-sm font-medium h-[50px]">
                                     <option value="Makkah" {{ old('city', $city ?? '') === 'Makkah' ? 'selected' : '' }}>Makkah Al Mukarramah</option>
-                                    <option value="Madinah" {{ old('city', $city ?? '') === 'Madinah' ? 'selected' : '' }}>Madinah Al Munawwarah</option>
+                                    <option value="Madina" {{ old('city', $city ?? '') === 'Madina' ? 'selected' : '' }}>Madina Al Munawwarah</option>
                                 </select>
                             </div>
                         </div>
@@ -352,7 +352,13 @@
                                             <span class="text-2xl font-extrabold text-slate-900">SAR {{ number_format(optional($hotel->bestRoomType)->daily_rate ?? ($hotel->roomTypes->min('daily_rate') ?? 0), 2) }}</span>
                                             <span class="text-xs text-slate-400 font-semibold">Excl. VAT</span>
                                         </div>
-                                        <p class="text-xs text-slate-500 mt-1">{{ $hotel->availability['available_rooms'] > 0 ? $hotel->availability['available_rooms'].' rooms available' : 'Sold out for selected dates' }}</p>
+                                        <p class="text-xs text-slate-500 mt-1">
+                                            @if($hotel->availability['status'] === 'Select dates')
+                                                Select your dates to show live availability.
+                                            @else
+                                                {{ $hotel->availability['available_rooms'] > 0 ? $hotel->availability['available_rooms'].' room'.($hotel->availability['available_rooms'] === 1 ? '' : 's').' available for your stay' : 'Sold out for selected dates' }}
+                                            @endif
+                                        </p>
                                     </div>
                                     <div class="flex items-center gap-2">
                                         <a href="{{ route('hotels.details', $hotel) }}" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold px-4 py-2.5 rounded-xl text-sm transition">View Details</a>

@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
+use App\Models\HotelRoomInventory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\HotelRoomInventory;
 
 class Booking extends Model
 {
@@ -31,6 +31,10 @@ class Booking extends Model
         'contact_name',
         'contact_email',
         'contact_phone',
+        'payment_status',
+        'contacted',
+        'contacted_by',
+        'contacted_at',
     ];
 
     protected $casts = [
@@ -41,7 +45,12 @@ class Booking extends Model
         'taxes' => 'decimal:2',
         'discount' => 'decimal:2',
         'grand_total' => 'decimal:2',
+        'contacted' => 'boolean',
+        'contacted_at' => 'datetime',
     ];
+
+    public const UNAVAILABLE_STATUSES = ['Reserved', 'Occupied'];
+    public const BOOKED_STATUSES = ['Reserved', 'Occupied'];
 
     public function hotel()
     {
@@ -68,37 +77,74 @@ class Booking extends Model
         return $this->hasMany(BookingPassenger::class);
     }
 
+    public function getTotalNightsAttribute(): int
+    {
+        return $this->check_in && $this->check_out ? $this->check_in->diffInDays($this->check_out) : 0;
+    }
+
+    public function getContactStatusAttribute(): string
+    {
+        return $this->contacted ? 'Contacted' : 'Not Contacted';
+    }
+
     public function cancel()
     {
         if ($this->status === 'Cancelled') {
             return $this;
         }
 
-        $dateRange = collect();
-        $current = $this->check_in->copy();
-        while ($current->lt($this->check_out)) {
-            $dateRange->push($current->format('Y-m-d'));
-            $current->addDay();
+        if ($this->hotel_room_id && $this->room) {
+            $hasCurrentOrFutureBooking = $this->room->bookings()
+                ->whereIn('status', self::BOOKED_STATUSES)
+                ->where('id', '!=', $this->id)
+                ->whereDate('check_out', '>', now()->startOfDay())
+                ->exists();
+
+            $hasActiveBlock = $this->room->blocks()
+                ->active()
+                ->whereDate('block_to', '>', now()->startOfDay())
+                ->exists();
+
+            if (! $hasCurrentOrFutureBooking && ! $hasActiveBlock) {
+                $this->room->update(['status' => 'Available']);
+            }
         }
 
-        $inventoryRows = HotelRoomInventory::where('hotel_id', $this->hotel_id)
-            ->where('hotel_room_type_id', $this->hotel_room_type_id)
-            ->whereIn('inventory_date', $dateRange)
-            ->get();
-
-        foreach ($inventoryRows as $inventory) {
-            $inventory->available_rooms = min($inventory->total_rooms, $inventory->available_rooms + 1);
-            $inventory->booked_rooms = max(0, $inventory->booked_rooms - 1);
-            $inventory->status = $inventory->available_rooms > 0 ? 'Available' : 'Sold Out';
-            $inventory->save();
+        if (! $this->hotel_room_id) {
+            $this->restoreInventoryForCancelledBooking();
         }
 
         $this->update(['status' => 'Cancelled']);
 
-        if ($this->room) {
-            $this->room->update(['status' => 'Available']);
+        return $this;
+    }
+
+    private function restoreInventoryForCancelledBooking(): void
+    {
+        if (! $this->hotel_room_type_id || ! $this->check_in || ! $this->check_out) {
+            return;
         }
 
-        return $this;
+        $roomTypeId = $this->hotel_room_type_id;
+        $hotelId = $this->hotel_id;
+        $current = $this->check_in->copy();
+
+        while ($current->lt($this->check_out)) {
+            $date = $current->format('Y-m-d');
+
+            $inventory = HotelRoomInventory::where('hotel_id', $hotelId)
+                ->where('hotel_room_type_id', $roomTypeId)
+                ->whereDate('inventory_date', $date)
+                ->first();
+
+            if ($inventory) {
+                $inventory->update([
+                    'available_rooms' => max(0, $inventory->available_rooms + 1),
+                    'booked_rooms' => max(0, $inventory->booked_rooms - 1),
+                ]);
+            }
+
+            $current->addDay();
+        }
     }
 }
