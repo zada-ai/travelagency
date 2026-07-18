@@ -17,6 +17,7 @@
                 <nav class="space-y-2 text-sm">
                     <a href="#overview" class="block rounded-2xl px-4 py-3 bg-slate-800 text-slate-100 hover:bg-slate-700">Overview</a>
                     <a href="{{ route('travel-agents.hotels.index') }}" class="block rounded-2xl px-4 py-3 hover:bg-slate-800">Hotels</a>
+                    <a href="{{ route('travel-agents.tickets') }}" class="block rounded-2xl px-4 py-3 hover:bg-slate-800">Tickets</a>
                     <a href="#profile" class="block rounded-2xl px-4 py-3 hover:bg-slate-800">Profile</a>
                     <a href="#documents" class="block rounded-2xl px-4 py-3 hover:bg-slate-800">Documents</a>
                     <a href="#status" class="block rounded-2xl px-4 py-3 hover:bg-slate-800">Approval Status</a>
@@ -52,6 +53,51 @@
                             <p class="text-sm text-slate-400">Location</p>
                             <p class="mt-2 font-semibold text-slate-100">{{ $agent->city }}, {{ $agent->country }}</p>
                         </div>
+                    </div>
+                </section>
+
+                <section id="packages" class="rounded-3xl bg-slate-900 border border-slate-800 p-8 shadow-xl">
+                    <div class="flex items-center justify-between gap-4">
+                        <div>
+                            <h2 class="text-2xl font-semibold">Agent Packages</h2>
+                            <p class="text-slate-400 mt-2">Choose from Umrah packages or group ticket booking.</p>
+                        </div>
+                    </div>
+
+                    <div class="mt-8 grid gap-6 md:grid-cols-2">
+                        <a href="{{ route('travel-agents.hotels.index', ['package' => 'umrah']) }}" class="group block rounded-3xl bg-gradient-to-br from-slate-800 via-slate-900 to-slate-950 border border-slate-700 p-6 text-white transition hover:-translate-y-1 hover:shadow-xl">
+                            <div class="flex items-center justify-between gap-4">
+                                <div>
+                                    <p class="text-xs uppercase tracking-[0.3em] text-emerald-300">Umrah Package</p>
+                                    <h3 class="mt-4 text-2xl font-semibold">Explore Umrah Packages</h3>
+                                </div>
+                                <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-emerald-500/15 text-emerald-300">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 22 12 18.56 5.82 22 7 14.14l-5-4.87 6.91-1.01L12 2z"/></svg>
+                                </div>
+                            </div>
+                            <p class="mt-6 text-sm text-slate-400">View curated Umrah hotel and package options for your clients.</p>
+                            <div class="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-emerald-300">
+                                Click To Book Now
+                                <span aria-hidden="true">→</span>
+                            </div>
+                        </a>
+
+                        <a href="{{ route('travel-agents.group-booking') }}" class="group block rounded-3xl bg-gradient-to-br from-slate-800 via-slate-900 to-slate-950 border border-slate-700 p-6 text-white transition hover:-translate-y-1 hover:shadow-xl">
+                            <div class="flex items-center justify-between gap-4">
+                                <div>
+                                    <p class="text-xs uppercase tracking-[0.3em] text-amber-300">Group Ticket</p>
+                                    <h3 class="mt-4 text-2xl font-semibold">Book Group Packages</h3>
+                                </div>
+                                <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-amber-500/15 text-amber-300">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 3.13a4 4 0 010 7.75"/><path d="M12 7h.01"/><path d="M12 12c0-2.21 1.79-4 4-4h4"/><path d="M2 20v-2a4 4 0 014-4h8a4 4 0 014 4v2"/></svg>
+                                </div>
+                            </div>
+                            <p class="mt-6 text-sm text-slate-400">Create group booking requests and manage packages quickly.</p>
+                            <div class="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-amber-300">
+                                Click To Book Now
+                                <span aria-hidden="true">→</span>
+                            </div>
+                        </a>
                     </div>
                 </section>
 

@@ -16,8 +16,12 @@ use App\Http\Controllers\PublicHotelBookingController;
 use App\Http\Controllers\PublicHotelController;
 use App\Http\Controllers\AdminHotelRoomInventoryController;
 use App\Http\Controllers\AdminRoomBlockController;
+use App\Http\Controllers\AdminTicketController;
+use App\Http\Controllers\AdminAirlineFlightController;
+use App\Http\Controllers\AdminFlightBookingController;
+use App\Http\Controllers\PublicTicketController;
 use Illuminate\Support\Facades\Route;
-use App\Models\Ticket;
+use App\Models\login;
 $adminPages = [
     'user-management' => 'User Management',
     'customer-management' => 'Customer Management',
@@ -45,20 +49,36 @@ Route::get('/', function () {
     if (auth()->check()) {
         return redirect('/dashboard');
     }
-    return redirect('/login');
+
+    if (auth('travel_agent')->check()) {
+        return redirect()->route('travel-agents.dashboard');
+    }
+
+    return redirect()->route('travel-agents.login');
 });
 
 Route::middleware('guest:travel_agent')->group(function () {
     Route::get('/travel-agent/register', [TravelAgentRegistrationController::class, 'create'])->name('travel-agents.register');
-    Route::post('/travel-agent/register', [TravelAgentRegistrationController::class, 'store']);
+    Route::post('/travel-agent/register', [TravelAgentRegistrationController::class, 'store'])->name('travel-agents.register.submit');
     Route::get('/travel-agent/register/success', [TravelAgentRegistrationController::class, 'success'])->name('travel-agents.register.success');
 
     Route::get('/travel-agent/login', [TravelAgentAuthController::class, 'showLoginForm'])->name('travel-agents.login');
     Route::post('/travel-agent/login', [TravelAgentAuthController::class, 'login'])->name('travel-agents.login.submit');
+    Route::get('/travel-agent/password/reset', [TravelAgentAuthController::class, 'showForgotPasswordForm'])->name('travel-agents.password.request');
+    Route::post('/travel-agent/password/email', [TravelAgentAuthController::class, 'sendResetLinkEmail'])->name('travel-agents.password.email');
+    Route::get('/travel-agent/password/reset/{token}', [TravelAgentAuthController::class, 'showResetForm'])->name('travel-agents.password.reset');
+    Route::post('/travel-agent/password/reset', [TravelAgentAuthController::class, 'resetPassword'])->name('travel-agents.password.update');
 });
 
 Route::middleware('auth:travel_agent')->group(function () {
     Route::get('/travel-agent/dashboard', [TravelAgentAuthController::class, 'dashboard'])->name('travel-agents.dashboard');
+    Route::get('/travel-agent/tickets', [TravelAgentAuthController::class, 'tickets'])->name('travel-agents.tickets');
+    Route::post('/travel-agent/tickets/{ticket}/book', [AdminFlightBookingController::class, 'store'])->name('travel-agents.tickets.book');
+    Route::get('/travel-agent/bookings', [AdminFlightBookingController::class, 'agentBookings'])->name('travel-agents.bookings');
+    Route::get('/travel-agent/bookings/review', [AdminFlightBookingController::class, 'review'])->name('travel-agents.bookings.review');
+    Route::post('/travel-agent/bookings/confirm', [AdminFlightBookingController::class, 'confirm'])->name('travel-agents.bookings.confirm');
+    Route::post('/travel-agent/bookings/cancel-review', [AdminFlightBookingController::class, 'cancelReview'])->name('travel-agents.bookings.cancel-review');
+    Route::get('/travel-agent/group-booking', [TravelAgentHotelController::class, 'groupBooking'])->name('travel-agents.group-booking');
     Route::post('/travel-agent/logout', [TravelAgentAuthController::class, 'logout'])->name('travel-agents.logout');
 });
 
@@ -84,6 +104,24 @@ Route::middleware(['auth'])->group(function () use ($adminPages) {
     Route::get('/admin/bookings/{booking}/print', [AdminBookingController::class, 'print'])->name('admin.bookings.print');
     Route::get('/admin/bookings/{booking}', [AdminBookingController::class, 'show'])->name('admin.bookings.show');
     Route::post('/admin/bookings/{booking}/cancel', [AdminBookingController::class, 'cancel'])->name('admin.bookings.cancel');
+
+    Route::get('/admin/airline-ticket-management', [AdminTicketController::class, 'index'])->name('admin.airline-ticket-management');
+    Route::post('/admin/airline-ticket-management', [AdminTicketController::class, 'store'])->name('admin.airline-ticket-management.store');
+
+    Route::get('/admin/airline-flights', [AdminAirlineFlightController::class, 'index'])->name('admin.airline-flights.index');
+    Route::get('/admin/airline-flights/create', [AdminAirlineFlightController::class, 'create'])->name('admin.airline-flights.create');
+    Route::post('/admin/airline-flights', [AdminAirlineFlightController::class, 'store'])->name('admin.airline-flights.store');
+    Route::get('/admin/airline-flights/{ticket}', [AdminAirlineFlightController::class, 'show'])->name('admin.airline-flights.show');
+    Route::get('/admin/airline-flights/{ticket}/edit', [AdminAirlineFlightController::class, 'edit'])->name('admin.airline-flights.edit');
+    Route::put('/admin/airline-flights/{ticket}', [AdminAirlineFlightController::class, 'update'])->name('admin.airline-flights.update');
+    Route::put('/admin/airline-flights/{ticket}/status', [AdminAirlineFlightController::class, 'updateStatus'])->name('admin.airline-flights.status.update');
+    Route::delete('/admin/airline-flights/{ticket}', [AdminAirlineFlightController::class, 'destroy'])->name('admin.airline-flights.destroy');
+
+    Route::post('/admin/airline-bookings/{flightBooking}/cancel', [AdminFlightBookingController::class, 'cancel'])->name('admin.airline-bookings.cancel');
+    Route::get('/admin/airline-bookings', [AdminFlightBookingController::class, 'index'])->name('admin.airline-bookings.index');
+    Route::get('/admin/airline-bookings/{flightBooking}', [AdminFlightBookingController::class, 'show'])->name('admin.airline-bookings.show');
+    Route::put('/admin/airline-bookings/{flightBooking}/status', [AdminFlightBookingController::class, 'updateStatus'])->name('admin.airline-bookings.status.update');
+    Route::delete('/admin/airline-bookings/{flightBooking}', [AdminFlightBookingController::class, 'destroy'])->name('admin.airline-bookings.destroy');
 
     Route::get('/admin/hotel-management', [AdminHotelManagementController::class, 'index'])->name('admin.hotel-management');
 
@@ -161,17 +199,16 @@ Route::middleware(['auth'])->group(function () use ($adminPages) {
     Route::delete('/admin/agents/{agent}', [AdminTravelAgentController::class, 'destroy'])->name('admin.agents.destroy');
 
     foreach ($adminPages as $slug => $title) {
-        if (in_array($slug, ['agent-management', 'hotel-management', 'booking-management'], true)) {
+        if (in_array($slug, ['agent-management', 'hotel-management', 'booking-management', 'airline-ticket-management'], true)) {
             continue;
         }
         Route::view("/admin/{$slug}", "admin.{$slug}", ['pageTitle' => $title])
             ->name("admin.{$slug}");
     }
 });
-Route::get('/ticket', function () {
-    return view('user.ticket');
-});
+Route::get('/ticket/{ticket}', [PublicTicketController::class, 'show'])->name('ticket.details');
+Route::get('/user/ticket', fn () => redirect()->route('ticket.details', ['ticket' => 1]));
 
-Route::get('/user/ticket', function () {
-    return view('user.ticket');
+Route::get('/user/login', function () {
+    return view('user.login');
 });

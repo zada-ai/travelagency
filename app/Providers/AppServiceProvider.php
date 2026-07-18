@@ -2,7 +2,9 @@
 
 namespace App\Providers;
 
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Auth\Middleware\RedirectIfAuthenticated;
 use Laravel\Fortify\Fortify;
 
 class AppServiceProvider extends ServiceProvider
@@ -16,7 +18,6 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
-        
         Fortify::loginView(function () {
             return view('auth.login'); 
         });
@@ -24,6 +25,14 @@ class AppServiceProvider extends ServiceProvider
        
         Fortify::registerView(function () {
             return view('auth.register'); 
+        });
+
+        RedirectIfAuthenticated::redirectUsing(function ($request) {
+            if (Auth::guard('travel_agent')->check()) {
+                return route('travel-agents.dashboard');
+            }
+
+            return route('dashboard');
         });
     }
 }

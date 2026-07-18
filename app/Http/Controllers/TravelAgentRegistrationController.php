@@ -20,7 +20,13 @@ class TravelAgentRegistrationController extends Controller
         $requestData['company_logo'] = $request->file('company_logo')->store('travel_agents/logos', 'public');
         $requestData['dts_license'] = $request->file('dts_license')->store('travel_agents/licenses', 'public');
         $requestData['cnic_front'] = $request->file('cnic_front')->store('travel_agents/cnic', 'public');
-        $requestData['cnic_back'] = $request->file('cnic_back')->store('travel_agents/cnic', 'public');
+
+        if ($request->hasFile('cnic_back')) {
+            $requestData['cnic_back'] = $request->file('cnic_back')->store('travel_agents/cnic', 'public');
+        } else {
+            unset($requestData['cnic_back']);
+        }
+
         $requestData['status'] = 'Pending';
         $requestData['created_by'] = auth()->id();
 

@@ -121,14 +121,10 @@
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                            <label class="block text-sm font-semibold text-slate-300 mb-2" for="cnic_front">CNIC Front</label>
+                            <label class="block text-sm font-semibold text-slate-300 mb-2" for="cnic_front">Owner CNIC</label>
                             <input id="cnic_front" name="cnic_front" type="file" accept="image/*,.pdf"
                                 class="w-full rounded-2xl border border-slate-800 bg-slate-950 px-4 py-3 text-slate-100" />
-                        </div>
-                        <div>
-                            <label class="block text-sm font-semibold text-slate-300 mb-2" for="cnic_back">CNIC Back</label>
-                            <input id="cnic_back" name="cnic_back" type="file" accept="image/*,.pdf"
-                                class="w-full rounded-2xl border border-slate-800 bg-slate-950 px-4 py-3 text-slate-100" />
+                            <p class="mt-2 text-xs text-slate-500">Upload the unified CNIC document here.</p>
                         </div>
                     </div>
 

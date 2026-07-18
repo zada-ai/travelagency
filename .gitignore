@@ -1,3 +1,4 @@
+# /public/build   <-- Aise shuru mein # laga dein taaki yeh ignore na ho
 *.log
 .DS_Store
 .env

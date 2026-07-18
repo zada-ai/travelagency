@@ -19,6 +19,19 @@
 
         <main class="flex-1 p-8">
             <div class="max-w-5xl mx-auto space-y-6">
+                @if(session('success'))
+                    <div class="rounded-3xl border border-emerald-500/20 bg-emerald-500/10 p-4 text-sm text-emerald-900">{{ session('success') }}</div>
+                @endif
+                @if($errors->any())
+                    <div class="rounded-3xl border border-rose-500/20 bg-rose-500/10 p-4 text-sm text-rose-900">
+                        <ul class="list-disc list-inside">
+                            @foreach($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
+
                 <div class="rounded-3xl bg-slate-900 border border-slate-800 p-8 shadow-xl">
                     <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                         <div>
@@ -27,11 +40,15 @@
                         </div>
                         <div class="flex flex-wrap gap-2">
                             <a href="{{ route('admin.agents.edit', $agent) }}" class="rounded-2xl bg-slate-800 px-4 py-2 text-sm text-slate-100 hover:bg-slate-700">Edit</a>
-                            <form action="{{ route('admin.agents.approve', $agent) }}" method="POST" class="inline-block">
-                                @csrf
-                                <button type="submit" class="rounded-2xl bg-emerald-500 px-4 py-2 text-sm text-slate-950 hover:bg-emerald-400">Approve</button>
-                            </form>
-                            <button type="button" onclick="document.getElementById('reject-modal').classList.remove('hidden');" class="rounded-2xl bg-rose-500 px-4 py-2 text-sm text-slate-950 hover:bg-rose-400">Reject</button>
+                            @if($agent->status !== 'Approved')
+                                <form action="{{ route('admin.agents.approve', $agent) }}" method="POST" class="inline-block">
+                                    @csrf
+                                    <button type="submit" class="rounded-2xl bg-emerald-500 px-4 py-2 text-sm text-slate-950 hover:bg-emerald-400">Approve</button>
+                                </form>
+                            @endif
+                            @if($agent->status !== 'Rejected')
+                                <button type="button" onclick="document.getElementById('reject-modal').classList.remove('hidden');" class="rounded-2xl bg-rose-500 px-4 py-2 text-sm text-slate-950 hover:bg-rose-400">Reject</button>
+                            @endif
                             <form action="{{ route('admin.agents.destroy', $agent) }}" method="POST" class="inline-block">
                                 @csrf
                                 @method('DELETE')
@@ -67,8 +84,7 @@
                             <div class="mt-4 space-y-2 text-slate-300">
                                 <a href="{{ asset('storage/'.$agent->company_logo) }}" target="_blank" class="block text-emerald-300 hover:text-emerald-200">Company Logo</a>
                                 <a href="{{ asset('storage/'.$agent->dts_license) }}" target="_blank" class="block text-emerald-300 hover:text-emerald-200">DTS License</a>
-                                <a href="{{ asset('storage/'.$agent->cnic_front) }}" target="_blank" class="block text-emerald-300 hover:text-emerald-200">CNIC Front</a>
-                                <a href="{{ asset('storage/'.$agent->cnic_back) }}" target="_blank" class="block text-emerald-300 hover:text-emerald-200">CNIC Back</a>
+                                <a href="{{ asset('storage/'.$agent->cnic_front) }}" target="_blank" class="block text-emerald-300 hover:text-emerald-200">Owner CNIC</a>
                             </div>
                         </div>
                         <div class="rounded-3xl bg-slate-800 p-6">

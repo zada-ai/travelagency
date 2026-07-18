@@ -75,10 +75,10 @@
 <body class="min-h-screen antialiased flex flex-col justify-center">
     
     <!-- Main Grid Container - Centered Vertically -->
-    <div class="w-full max-w-7xl mx-auto grid grid-cols-2 lg:grid-cols-12 gap-5 px-4 py-8 lg:py-12 items-start">
+    <div class="w-full max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-5 px-4 py-8 lg:py-12 items-center">
         
         <!-- Left Section: Welcome Text -->
-        <div class="lg:col-span-6 flex flex-col justify-center text-white p-6 lg:p-12 relative lg:pt-20">
+        <div class="lg:col-span-4 flex flex-col justify-center text-white p-6 relative">
             <!-- Background Subtle Blur Accent Effect -->
             <div class="absolute -top-50 -left-10 w-72 h-72 bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
             
@@ -90,22 +90,22 @@
                     </span>
                 </div>
 
-                <h1 class="text-3xl sm:text-5xl lg:text-3xl font-extrabold font-display tracking-tight leading-[1.05] text-white py-10">
+                <h1 class="text-3xl sm:text-5xl lg:text-4xl font-extrabold font-display tracking-tight leading-[1.1] text-white">
                     Welcome to <br>
                     <span class="bg-gradient-to-r from-amber-300 via-amber-200 to-yellow-400 bg-clip-text text-transparent drop-shadow-[0_2px_10px_rgba(245,158,11,0.2)]">
                         Umrah Booking Agency
                     </span>
                 </h1>
 
-                <p class="text-slate-300 text-sm sm:text-base lg:text-lg font-normal leading-relaxed max-w-lg border-l-2 border-amber-400/45 pl-4">
+                <p class="text-slate-300 text-sm font-normal leading-relaxed max-w-lg border-l-2 border-amber-400/45 pl-4">
                     Best place to find your next destination either be it flight, hotel, car and much more...
                 </p>
             </div>
         </div>
 
         <!-- Right Section: Complete Form Container -->
-        <div class="lg:col-span-5 lg:col-start-8 flex justify-center w-full">
-            <div class="w-full max-w-sm bg-white rounded-xl shadow-2xl p-6 sm:p-8 border border-slate-100">
+        <div class="lg:col-span-8 flex justify-center w-full">
+            <div class="w-full max-w-4xl bg-white rounded-xl shadow-2xl p-6 sm:p-8 border border-slate-100">
                 
                 <h2 class="text-2xl font-extrabold text-slate-900 font-display mb-6 text-center">
                     Signup Account
@@ -122,43 +122,43 @@
                     </div>
                 @endif
 
-                <form action="{{ route('travel-agents.register') }}" method="POST" enctype="multipart/form-data" class="space-y-4">
+                <form action="{{ route('travel-agents.register.submit') }}" method="POST" enctype="multipart/form-data" class="space-y-4">
                     @csrf
 
-                    <!-- First Name & Last Name -->
-                    <div class="grid grid-cols-2 gap-3">
+                    <!-- Row 1: First Name, Last Name & Company Name -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
                         <div>
                             <label for="first_name" class="form-label">First Name</label>
-                            <input id="first_name" name="first_name" type="text" value="{{ old('first_name') }}" required placeholder="Enter First Name" class="form-input" />
+                            <input id="first_name" name="first_name" type="text" value="{{ old('first_name') }}" required placeholder="First Name" class="form-input" />
                         </div>
                         <div>
                             <label for="last_name" class="form-label">Last Name</label>
-                            <input id="last_name" name="last_name" type="text" value="{{ old('last_name') }}" required placeholder="Enter Last Name" class="form-input" />
+                            <input id="last_name" name="last_name" type="text" value="{{ old('last_name') }}" required placeholder="Last Name" class="form-input" />
+                        </div>
+                        <div>
+                            <label for="company_name" class="form-label">Company Name</label>
+                            <input id="company_name" name="company_name" type="text" value="{{ old('company_name') }}" required placeholder="Company Name" class="form-input" />
                         </div>
                     </div>
 
-                    <!-- Company Name -->
-                    <div>
-                        <label for="company_name" class="form-label">Company Name</label>
-                        <input id="company_name" name="company_name" type="text" value="{{ old('company_name') }}" required placeholder="Enter Company Name" class="form-input" />
-                    </div>
-
-                    <!-- Email & Mobile -->
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <!-- Row 2: Email, Mobile & Company Address -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
                         <div>
                             <label for="email" class="form-label">Email Address</label>
                             <input id="email" name="email" type="email" value="{{ old('email') }}" required placeholder="Enter Email Address" class="form-input" />
                         </div>
                         <div>
                             <label for="mobile" class="form-label">Mobile Number</label>
-                            <div class="flex">
-                                <input id="mobile" name="mobile" type="text" value="{{ old('mobile') }}" required placeholder="Enter Mobile Number" class="form-input rounded-l-none" />
-                            </div>
+                            <input id="mobile" name="mobile" type="text" value="{{ old('mobile') }}" required placeholder="Enter Mobile Number" class="form-input" />
+                        </div>
+                        <div>
+                            <label for="company_address" class="form-label">Company Address</label>
+                            <input id="company_address" name="company_address" type="text" value="{{ old('company_address') }}" required placeholder="Enter Company Address" class="form-input" />
                         </div>
                     </div>
 
-                    <!-- Passwords -->
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <!-- Row 3: Passwords & Country -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
                         <div class="relative">
                             <label for="password" class="form-label">Password</label>
                             <input id="password" name="password" type="password" required placeholder="••••••••" class="form-input" />
@@ -168,26 +168,6 @@
                             <label for="password_confirmation" class="form-label">Confirm Password</label>
                             <input id="password_confirmation" name="password_confirmation" type="password" required placeholder="••••••••" class="form-input" />
                         </div>
-                    </div>
-
-                    <!-- Password strength indicator -->
-                    <div class="space-y-1">
-                        <div class="flex items-center justify-between text-[10px] text-slate-500">
-                            <span>Password strength: <span id="strength-text" class="font-semibold text-slate-700">Weak</span></span>
-                        </div>
-                        <div class="h-1 w-full bg-slate-100 rounded-full overflow-hidden">
-                            <div id="strength-bar" class="h-full w-0 bg-red-500 transition-all duration-300"></div>
-                        </div>
-                    </div>
-
-                    <!-- Company Address -->
-                    <div>
-                        <label for="company_address" class="form-label">Company Address</label>
-                        <input id="company_address" name="company_address" type="text" value="{{ old('company_address') }}" required placeholder="Enter Company Address" class="form-input" />
-                    </div>
-
-                    <!-- Country & City -->
-                    <div class="grid grid-cols-2 gap-3">
                         <div>
                             <label for="country" class="form-label">Country</label>
                             <select id="country" name="country" required class="form-select text-xs sm:text-sm">
@@ -200,61 +180,62 @@
                                 <option value="Other" {{ old('country') == 'Other' ? 'selected' : '' }}>Other</option>
                             </select>
                         </div>
+                    </div>
+
+                    <!-- Row 4: City & Password Strength Block (Keeping it aligned nicely) -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3 items-end">
                         <div>
                             <label for="city" class="form-label">City</label>
                             <input id="city" name="city" type="text" value="{{ old('city') }}" required placeholder="Select City" class="form-input" />
                         </div>
-                    </div>
-
-                    <!-- Company Logo Upload -->
-                    <div>
-                        <label class="form-label">Company Logo</label>
-                        <div class="file-input-wrapper">
-                            <label for="company_logo" class="file-input-btn">Choose File</label>
-                            <span id="logo-preview" class="file-input-name">No file chosen</span>
-                            <input id="company_logo" name="company_logo" type="file" accept="image/*" required class="hidden" onchange="previewFile('company_logo', 'logo-preview')" />
+                        <div class="md:col-span-2 space-y-1 pb-3">
+                            <div class="flex items-center justify-between text-[10px] text-slate-500">
+                                <span>Password strength: <span id="strength-text" class="font-semibold text-slate-700">Weak</span></span>
+                            </div>
+                            <div class="h-1 w-full bg-slate-100 rounded-full overflow-hidden">
+                                <div id="strength-bar" class="h-full w-0 bg-red-500 transition-all duration-300"></div>
+                            </div>
                         </div>
                     </div>
 
-                    <!-- DTS License Upload -->
-                    <div>
-                        <label class="form-label">DTS License</label>
-                        <div class="file-input-wrapper">
-                            <label for="dts_license" class="file-input-btn">Choose File</label>
-                            <span id="license-preview" class="file-input-name">No file chosen</span>
-                            <input id="dts_license" name="dts_license" type="file" accept="image/*,.pdf" required class="hidden" onchange="previewFile('dts_license', 'license-preview')" />
-                        </div>
-                    </div>
-
-                    <!-- Owner CNIC Front & Back Upload -->
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <!-- Row 5: Company Logo, DTS License & Single Owner CNIC Upload -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
                         <div>
-                            <label class="form-label">Owner CNIC Front</label>
+                            <label class="form-label">Company Logo</label>
                             <div class="file-input-wrapper">
-                                <label for="cnic_front" class="file-input-btn">Choose File</label>
-                                <span id="cnic-front-preview" class="file-input-name">No file chosen</span>
-                                <input id="cnic_front" name="cnic_front" type="file" accept="image/*,.pdf" required class="hidden" onchange="previewFile('cnic_front', 'cnic-front-preview')" />
+                                <label for="company_logo" class="file-input-btn">Choose File</label>
+                                <span id="logo-preview" class="file-input-name">No file chosen</span>
+                                <input id="company_logo" name="company_logo" type="file" accept="image/*" required class="hidden" onchange="previewFile('company_logo', 'logo-preview')" />
                             </div>
                         </div>
                         <div>
-                            <label class="form-label">Owner CNIC Back</label>
+                            <label class="form-label">DTS License</label>
                             <div class="file-input-wrapper">
-                                <label for="cnic_back" class="file-input-btn">Choose File</label>
-                                <span id="cnic-back-preview" class="file-input-name">No file chosen</span>
-                                <input id="cnic_back" name="cnic_back" type="file" accept="image/*,.pdf" required class="hidden" onchange="previewFile('cnic_back', 'cnic-back-preview')" />
+                                <label for="dts_license" class="file-input-btn">Choose File</label>
+                                <span id="license-preview" class="file-input-name">No file chosen</span>
+                                <input id="dts_license" name="dts_license" type="file" accept="image/*,.pdf" required class="hidden" onchange="previewFile('dts_license', 'license-preview')" />
+                            </div>
+                        </div>
+                        <div>
+                            <label class="form-label">Owner CNIC</label>
+                            <div class="file-input-wrapper">
+                                <label for="cnic_front" class="file-input-btn">Choose File</label>
+                                <span id="cnic-front-preview" class="file-input-name">No file chosen</span>
+                                <!-- Note: Input id and name are kept as 'cnic_front' so your backend controller remains unchanged -->
+                                <input id="cnic_front" name="cnic_front" type="file" accept="image/*,.pdf" required class="hidden" onchange="previewFile('cnic_front', 'cnic-front-preview')" />
                             </div>
                         </div>
                     </div>
 
                     <!-- Terms checkbox -->
-                    <div class="flex items-center gap-2 py-4">
+                    <div class="flex items-center gap-2 py-1">
                         <input type="checkbox" id="terms" name="terms" value="1" required class="h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500" />
                         <label for="terms" class="text-xs text-slate-600">I agree to the terms and conditions.</label>
                     </div>
 
                     <!-- Actions -->
                     <div class="flex flex-col gap-3 pt-3 border-t border-slate-100">
-                        <button type="submit" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold  p-4 rounded transition duration-150 shadow-md text-sm">
+                        <button type="submit" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold p-3.5 rounded transition duration-150 shadow-md text-sm">
                             Submit Application
                         </button>
                         <div class="text-center">

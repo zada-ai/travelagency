@@ -26,7 +26,7 @@ class StoreTravelAgentRequest extends FormRequest
             'company_logo' => ['required', 'image', 'mimes:jpg,jpeg,png', 'max:5120'],
             'dts_license' => ['required', 'file', 'mimes:jpg,jpeg,png,pdf', 'max:10240'],
             'cnic_front' => ['required', 'file', 'mimes:jpg,jpeg,png,pdf', 'max:5120'],
-            'cnic_back' => ['required', 'file', 'mimes:jpg,jpeg,png,pdf', 'max:5120'],
+            'cnic_back' => ['nullable', 'file', 'mimes:jpg,jpeg,png,pdf', 'max:5120'],
             'terms' => ['required', 'accepted'],
         ];
     }
