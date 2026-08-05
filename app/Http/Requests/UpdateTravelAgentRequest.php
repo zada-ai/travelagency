@@ -13,7 +13,8 @@ class UpdateTravelAgentRequest extends FormRequest
 
     public function rules(): array
     {
-        $agentId = $this->route('agent')->id;
+        $subAgent = $this->route('subAgent');
+        $agentId = $subAgent instanceof \App\Models\TravelAgent ? $subAgent->id : null;
 
         return [
             'first_name' => ['required', 'string', 'max:255'],

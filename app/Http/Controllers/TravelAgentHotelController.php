@@ -11,6 +11,8 @@ class TravelAgentHotelController extends Controller
     {
         $agent = Auth::guard('travel_agent')->user() ?? auth()->user();
         $hotels = Hotel::with(['roomTypes', 'seasonalRates', 'mealPlans', 'facilities', 'inventories', 'images', 'coverImage'])
+            ->active()
+            ->visibleToPortal('agent')
             ->orderBy('hotel_name')
             ->get();
 

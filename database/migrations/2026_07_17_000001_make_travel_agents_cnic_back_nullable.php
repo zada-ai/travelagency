@@ -9,15 +9,27 @@ return new class extends Migration
 {
     public function up()
     {
-        if (Schema::hasTable('travel_agents')) {
-            DB::statement('ALTER TABLE `travel_agents` MODIFY `cnic_back` VARCHAR(255) NULL');
+        if (! Schema::hasTable('travel_agents')) {
+            return;
         }
+
+        if (DB::getDriverName() === 'sqlite') {
+            return;
+        }
+
+        DB::statement('ALTER TABLE `travel_agents` MODIFY `cnic_back` VARCHAR(255) NULL');
     }
 
     public function down()
     {
-        if (Schema::hasTable('travel_agents')) {
-            DB::statement('ALTER TABLE `travel_agents` MODIFY `cnic_back` VARCHAR(255) NOT NULL');
+        if (! Schema::hasTable('travel_agents')) {
+            return;
         }
+
+        if (DB::getDriverName() === 'sqlite') {
+            return;
+        }
+
+        DB::statement('ALTER TABLE `travel_agents` MODIFY `cnic_back` VARCHAR(255) NOT NULL');
     }
 };

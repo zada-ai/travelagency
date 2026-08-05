@@ -14,7 +14,7 @@ class RoomAvailabilityService
     public function availableRoomQuery(HotelRoomType $roomType, Carbon $checkIn, Carbon $checkOut)
     {
         return $roomType->hotelRooms()
-            ->whereNotIn('status', ['Maintenance', 'Cleaning'])
+            ->where('status', 'Available')
             ->whereDoesntHave('bookings', function ($query) use ($checkIn, $checkOut) {
                 $query->whereIn('status', Booking::UNAVAILABLE_STATUSES)
                     ->whereDate('check_in', '<', $checkOut)

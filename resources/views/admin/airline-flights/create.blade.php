@@ -11,7 +11,14 @@
             <div class="grid gap-4 sm:grid-cols-2">
                 <label class="block text-sm text-slate-700">
                     <span class="text-xs uppercase tracking-[0.24em] text-slate-500">Airline</span>
-                    <input type="text" name="airline" value="{{ old('airline') }}" class="mt-2 w-full rounded-2xl border border-slate-300 px-4 py-3 focus:border-amber-500 focus:outline-none" />
+                    <select name="airline_id" class="mt-2 w-full rounded-2xl border border-slate-300 px-4 py-3 focus:border-amber-500 focus:outline-none">
+                        <option value="">Select airline</option>
+                        @foreach($airlines as $airline)
+                            <option value="{{ $airline->id }}" {{ old('airline_id') == $airline->id ? 'selected' : '' }}>{{ $airline->name }} ({{ $airline->code }})</option>
+                        @endforeach
+                    </select>
+                    @error('airline_id')<p class="mt-1 text-xs text-rose-600">{{ $message }}</p>@enderror
+                    <input type="text" name="airline" value="{{ old('airline') }}" placeholder="Custom airline name" class="mt-2 w-full rounded-2xl border border-slate-300 px-4 py-3 focus:border-amber-500 focus:outline-none" />
                     @error('airline')<p class="mt-1 text-xs text-rose-600">{{ $message }}</p>@enderror
                 </label>
                 <label class="block text-sm text-slate-700">
@@ -28,12 +35,115 @@
                     @error('flight_number')<p class="mt-1 text-xs text-rose-600">{{ $message }}</p>@enderror
                 </label>
                 <label class="block text-sm text-slate-700">
+                    <span class="text-xs uppercase tracking-[0.24em] text-slate-500">Ticket Type</span>
+                    <select name="ticket_type" class="mt-2 w-full rounded-2xl border border-slate-300 px-4 py-3 focus:border-amber-500 focus:outline-none">
+                        <option value="One-way"{{ old('ticket_type') === 'One-way' ? ' selected' : '' }}>One-way</option>
+                        <option value="Round-trip"{{ old('ticket_type') === 'Round-trip' ? ' selected' : '' }}>Round-trip</option>
+                        <option value="Multi-city"{{ old('ticket_type') === 'Multi-city' ? ' selected' : '' }}>Multi-city</option>
+                    </select>
+                    @error('ticket_type')<p class="mt-1 text-xs text-rose-600">{{ $message }}</p>@enderror
+                </label>
+                <label class="block text-sm text-slate-700">
                     <span class="text-xs uppercase tracking-[0.24em] text-slate-500">Reference</span>
                     <input type="text" name="reference" value="{{ old('reference') }}" class="mt-2 w-full rounded-2xl border border-slate-300 px-4 py-3 focus:border-amber-500 focus:outline-none" />
                     @error('reference')<p class="mt-1 text-xs text-rose-600">{{ $message }}</p>@enderror
                 </label>
             </div>
 
+            <div class="grid gap-4 sm:grid-cols-2">
+                <label class="block text-sm text-slate-700">
+                    <span class="text-xs uppercase tracking-[0.24em] text-slate-500">Departure Airport</span>
+                    <select name="departure_airport_id" class="mt-2 w-full rounded-2xl border border-slate-300 px-4 py-3 focus:border-amber-500 focus:outline-none">
+                        <option value="">Select departure airport</option>
+                        @foreach($airports as $airport)
+                            <option value="{{ $airport->id }}" {{ old('departure_airport_id') == $airport->id ? 'selected' : '' }}>{{ $airport->code }} — {{ $airport->city }}</option>
+                        @endforeach
+                    </select>
+                    @error('departure_airport_id')<p class="mt-1 text-xs text-rose-600">{{ $message }}</p>@enderror
+                </label>
+                <label class="block text-sm text-slate-700">
+                    <span class="text-xs uppercase tracking-[0.24em] text-slate-500">Arrival Airport</span>
+                    <select name="arrival_airport_id" class="mt-2 w-full rounded-2xl border border-slate-300 px-4 py-3 focus:border-amber-500 focus:outline-none">
+                        <option value="">Select arrival airport</option>
+                        @foreach($airports as $airport)
+                            <option value="{{ $airport->id }}" {{ old('arrival_airport_id') == $airport->id ? 'selected' : '' }}>{{ $airport->code }} — {{ $airport->city }}</option>
+                        @endforeach
+                    </select>
+                    @error('arrival_airport_id')<p class="mt-1 text-xs text-rose-600">{{ $message }}</p>@enderror
+                </label>
+            </div>
+
+            <div class="grid gap-4 sm:grid-cols-2">
+    <label class="block text-sm text-slate-700">
+        <span class="text-xs uppercase tracking-[0.24em] text-slate-500">
+            Departure Time
+        </span>
+
+        <input
+            type="time"
+            name="departure_time"
+            value="{{ old('departure_time') }}"
+            class="mt-2 w-full rounded-2xl border border-slate-300 px-4 py-3 focus:border-amber-500 focus:outline-none"
+        />
+
+        @error('departure_time')
+            <p class="mt-1 text-xs text-rose-600">{{ $message }}</p>
+        @enderror
+    </label>
+
+    <label class="block text-sm text-slate-700">
+        <span class="text-xs uppercase tracking-[0.24em] text-slate-500">
+            Arrival Time
+        </span>
+
+        <input
+            type="time"
+            name="arrival_time"
+            value="{{ old('arrival_time') }}"
+            class="mt-2 w-full rounded-2xl border border-slate-300 px-4 py-3 focus:border-amber-500 focus:outline-none"
+        />
+
+        @error('arrival_time')
+            <p class="mt-1 text-xs text-rose-600">{{ $message }}</p>
+        @enderror
+    </label>
+</div>
+
+<div class="grid gap-4 sm:grid-cols-2">
+    <label class="block text-sm text-slate-700">
+        <span class="text-xs uppercase tracking-[0.24em] text-slate-500">
+            Return Departure Time
+        </span>
+
+        <input
+            type="time"
+            name="return_departure_time"
+            value="{{ old('return_departure_time') }}"
+            class="mt-2 w-full rounded-2xl border border-slate-300 px-4 py-3 focus:border-amber-500 focus:outline-none"
+        />
+
+        @error('return_departure_time')
+            <p class="mt-1 text-xs text-rose-600">{{ $message }}</p>
+        @enderror
+    </label>
+
+    <label class="block text-sm text-slate-700">
+        <span class="text-xs uppercase tracking-[0.24em] text-slate-500">
+            Return Arrival Time
+        </span>
+
+        <input
+            type="time"
+            name="return_arrival_time"
+            value="{{ old('return_arrival_time') }}"
+            class="mt-2 w-full rounded-2xl border border-slate-300 px-4 py-3 focus:border-amber-500 focus:outline-none"
+        />
+
+        @error('return_arrival_time')
+            <p class="mt-1 text-xs text-rose-600">{{ $message }}</p>
+        @enderror
+    </label>
+</div>
             <div class="grid gap-4 sm:grid-cols-2">
                 <label class="block text-sm text-slate-700">
                     <span class="text-xs uppercase tracking-[0.24em] text-slate-500">Departure Date</span>
@@ -46,17 +156,37 @@
                     @error('return_date')<p class="mt-1 text-xs text-rose-600">{{ $message }}</p>@enderror
                 </label>
             </div>
-
             <div class="grid gap-4 sm:grid-cols-2">
                 <label class="block text-sm text-slate-700">
-                    <span class="text-xs uppercase tracking-[0.24em] text-slate-500">Departure Time</span>
-                    <input type="text" name="departure_time" value="{{ old('departure_time') }}" placeholder="23:10" class="mt-2 w-full rounded-2xl border border-slate-300 px-4 py-3 focus:border-amber-500 focus:outline-none" />
-                    @error('departure_time')<p class="mt-1 text-xs text-rose-600">{{ $message }}</p>@enderror
+                    <span class="text-xs uppercase tracking-[0.24em] text-slate-500">Return Departure Airport</span>
+                    <select name="return_departure_airport_id" class="mt-2 w-full rounded-2xl border border-slate-300 px-4 py-3 focus:border-amber-500 focus:outline-none">
+                        <option value="">Select return departure airport</option>
+                        @foreach($airports as $airport)
+                            <option value="{{ $airport->id }}" {{ old('return_departure_airport_id') == $airport->id ? 'selected' : '' }}>{{ $airport->code }} — {{ $airport->city }}</option>
+                        @endforeach
+                    </select>
+                    @error('return_departure_airport_id')<p class="mt-1 text-xs text-rose-600">{{ $message }}</p>@enderror
                 </label>
                 <label class="block text-sm text-slate-700">
-                    <span class="text-xs uppercase tracking-[0.24em] text-slate-500">Arrival Time</span>
-                    <input type="text" name="arrival_time" value="{{ old('arrival_time') }}" placeholder="04:25" class="mt-2 w-full rounded-2xl border border-slate-300 px-4 py-3 focus:border-amber-500 focus:outline-none" />
-                    @error('arrival_time')<p class="mt-1 text-xs text-rose-600">{{ $message }}</p>@enderror
+                    <span class="text-xs uppercase tracking-[0.24em] text-slate-500">Return Arrival Airport</span>
+                    <select name="return_arrival_airport_id" class="mt-2 w-full rounded-2xl border border-slate-300 px-4 py-3 focus:border-amber-500 focus:outline-none">
+                        <option value="">Select return arrival airport</option>
+                        @foreach($airports as $airport)
+                            <option value="{{ $airport->id }}" {{ old('return_arrival_airport_id') == $airport->id ? 'selected' : '' }}>{{ $airport->code }} — {{ $airport->city }}</option>
+                        @endforeach
+                    </select>
+                    @error('return_arrival_airport_id')<p class="mt-1 text-xs text-rose-600">{{ $message }}</p>@enderror
+                </label>
+            </div>
+            <div class="grid gap-4 sm:grid-cols-2">
+                <label class="block text-sm text-slate-700">
+                    <span class="text-xs uppercase tracking-[0.24em] text-slate-500">Refundable</span>
+                    <div class="mt-2 flex items-center gap-3">
+                        <input type="hidden" name="refundable" value="0" />
+                        <input type="checkbox" name="refundable" value="1" {{ old('refundable') ? 'checked' : '' }} class="h-4 w-4 rounded border-slate-300 text-amber-500 focus:ring-amber-500" />
+                        <span class="text-slate-500">Enable refundable fares</span>
+                    </div>
+                    @error('refundable')<p class="mt-1 text-xs text-rose-600">{{ $message }}</p>@enderror
                 </label>
             </div>
 
@@ -97,6 +227,89 @@
                 </label>
             </div>
             <div class="grid gap-4 sm:grid-cols-2">
+    <label class="block text-sm text-slate-700">
+        <span class="text-xs uppercase tracking-[0.24em] text-slate-500">
+            Economy Price
+        </span>
+
+        <input
+            type="number"
+            name="cabin_prices[Economy]"
+            value="{{ old('cabin_prices.Economy') }}"
+            min="0"
+            step="0.01"
+            placeholder="24400"
+            class="mt-2 w-full rounded-2xl border border-slate-300 px-4 py-3 focus:border-amber-500 focus:outline-none"
+        />
+
+        @error('cabin_prices.Economy')
+            <p class="mt-1 text-xs text-rose-600">{{ $message }}</p>
+        @enderror
+    </label>
+
+    <label class="block text-sm text-slate-700">
+        <span class="text-xs uppercase tracking-[0.24em] text-slate-500">
+            Premium Economy Price
+        </span>
+
+        <input
+            type="number"
+            name="cabin_prices[Premium Economy]"
+            value="{{ old('cabin_prices.Premium Economy') }}"
+            min="0"
+            step="0.01"
+            placeholder="32000"
+            class="mt-2 w-full rounded-2xl border border-slate-300 px-4 py-3 focus:border-amber-500 focus:outline-none"
+        />
+
+        @error('cabin_prices.Premium Economy')
+            <p class="mt-1 text-xs text-rose-600">{{ $message }}</p>
+        @enderror
+    </label>
+</div>
+
+<div class="grid gap-4 sm:grid-cols-2">
+    <label class="block text-sm text-slate-700">
+        <span class="text-xs uppercase tracking-[0.24em] text-slate-500">
+            Business Price
+        </span>
+
+        <input
+            type="number"
+            name="cabin_prices[Business]"
+            value="{{ old('cabin_prices.Business') }}"
+            min="0"
+            step="0.01"
+            placeholder="50000"
+            class="mt-2 w-full rounded-2xl border border-slate-300 px-4 py-3 focus:border-amber-500 focus:outline-none"
+        />
+
+        @error('cabin_prices.Business')
+            <p class="mt-1 text-xs text-rose-600">{{ $message }}</p>
+        @enderror
+    </label>
+
+    <label class="block text-sm text-slate-700">
+        <span class="text-xs uppercase tracking-[0.24em] text-slate-500">
+            First Class Price
+        </span>
+
+        <input
+            type="number"
+            name="cabin_prices[First]"
+            value="{{ old('cabin_prices.First') }}"
+            min="0"
+            step="0.01"
+            placeholder="80000"
+            class="mt-2 w-full rounded-2xl border border-slate-300 px-4 py-3 focus:border-amber-500 focus:outline-none"
+        />
+
+        @error('cabin_prices.First')
+            <p class="mt-1 text-xs text-rose-600">{{ $message }}</p>
+        @enderror
+    </label>
+</div>
+            <div class="grid gap-4 sm:grid-cols-2">
                 <label class="block text-sm text-slate-700">
                     <span class="text-xs uppercase tracking-[0.24em] text-slate-500">Child Price</span>
                     <input type="text" name="child_price" value="{{ old('child_price') }}" placeholder="SAR 18,000" class="mt-2 w-full rounded-2xl border border-slate-300 px-4 py-3 focus:border-amber-500 focus:outline-none" />
@@ -132,6 +345,7 @@
                         <option value="Pending"{{ old('status') === 'Pending' ? ' selected' : '' }}>Pending</option>
                         <option value="Approved"{{ old('status') === 'Approved' ? ' selected' : '' }}>Approved</option>
                         <option value="Processing"{{ old('status') === 'Processing' ? ' selected' : '' }}>Processing</option>
+                        <option value="Cancelled"{{ old('status') === 'Cancelled' ? ' selected' : '' }}>Cancelled</option>
                     </select>
                     @error('status')<p class="mt-1 text-xs text-rose-600">{{ $message }}</p>@enderror
                 </label>
@@ -152,18 +366,13 @@
 
             <div class="grid gap-4 sm:grid-cols-2">
                 <label class="block text-sm text-slate-700">
-                    <span class="text-xs uppercase tracking-[0.24em] text-slate-500">Status</span>
-                    <select name="status" class="mt-2 w-full rounded-2xl border border-slate-300 px-4 py-3 focus:border-amber-500 focus:outline-none">
-                        <option value="Pending"{{ old('status') === 'Pending' ? ' selected' : '' }}>Pending</option>
-                        <option value="Approved"{{ old('status') === 'Approved' ? ' selected' : '' }}>Approved</option>
-                        <option value="Processing"{{ old('status') === 'Processing' ? ' selected' : '' }}>Processing</option>
+                    <span class="text-xs uppercase tracking-[0.24em] text-slate-500">Flight Visibility</span>
+                    <select name="visibility" class="mt-2 w-full rounded-2xl border border-slate-300 px-4 py-3 focus:border-amber-500 focus:outline-none">
+                        <option value="Both"{{ old('visibility', 'Both') === 'Both' ? ' selected' : '' }}>Both (Agent + Customer)</option>
+                        <option value="Agent Only"{{ old('visibility') === 'Agent Only' ? ' selected' : '' }}>Agent Only</option>
+                        <option value="Customer Only"{{ old('visibility') === 'Customer Only' ? ' selected' : '' }}>Customer Only</option>
                     </select>
-                    @error('status')<p class="mt-1 text-xs text-rose-600">{{ $message }}</p>@enderror
-                </label>
-                <label class="block text-sm text-slate-700">
-                    <span class="text-xs uppercase tracking-[0.24em] text-slate-500">Client</span>
-                    <input type="text" name="client" value="{{ old('client') }}" class="mt-2 w-full rounded-2xl border border-slate-300 px-4 py-3 focus:border-amber-500 focus:outline-none" />
-                    @error('client')<p class="mt-1 text-xs text-rose-600">{{ $message }}</p>@enderror
+                    @error('visibility')<p class="mt-1 text-xs text-rose-600">{{ $message }}</p>@enderror
                 </label>
             </div>
 

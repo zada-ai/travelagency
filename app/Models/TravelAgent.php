@@ -29,6 +29,7 @@ class TravelAgent extends Authenticatable
         'status',
         'remarks',
         'created_by',
+        'parent_agent_id',
         'updated_by',
     ];
 
@@ -36,4 +37,14 @@ class TravelAgent extends Authenticatable
         'password',
         'remember_token',
     ];
+
+    public function parentAgent()
+    {
+        return $this->belongsTo(self::class, 'parent_agent_id');
+    }
+
+    public function subAgents()
+    {
+        return $this->hasMany(self::class, 'parent_agent_id');
+    }
 }

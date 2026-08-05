@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Ticket;
 use App\Models\TravelAgent;
+use App\Models\VisaApplication;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -49,74 +52,173 @@ class TravelAgentAuthController extends Controller
         return view('travel_agents.passwords.email');
     }
 
-    public function sendResetLinkEmail(Request $request)
-    {
-        $request->validate([
-            'email' => ['required', 'email'],
-        ]);
-
-        $status = Password::broker('travel_agents')->sendResetLink(
-            $request->only('email')
-        );
-
-        return $status === Password::RESET_LINK_SENT
-            ? back()->with('status', __($status))
-            : back()->withErrors(['email' => __($status)]);
-    }
-
-    public function showResetForm(Request $request, $token = null)
-    {
-        return view('travel_agents.passwords.reset', [
-            'token' => $token,
-            'email' => $request->email,
-        ]);
-    }
-
-    public function resetPassword(Request $request)
-    {
-        $request->validate([
-            'token' => ['required'],
-            'email' => ['required', 'email'],
-            'password' => ['required', 'confirmed', 'min:8'],
-        ]);
-
-        $status = Password::broker('travel_agents')->reset(
-            $request->only('email', 'password', 'password_confirmation', 'token'),
-            function ($agent, $password) {
-                $agent->forceFill([
-                    'password' => Hash::make($password),
-                ])->setRememberToken(Str::random(60));
-
-                $agent->save();
-
-                event(new PasswordReset($agent));
-            }
-        );
-
-        return $status === Password::PASSWORD_RESET
-            ? redirect()->route('travel-agents.login')->with('status', __($status))
-            : back()->withErrors(['email' => [__($status)]]);
-    }
-
     public function dashboard()
     {
+        Log::info('Travel Agent Guard', [
+            'travel_agent' => Auth::guard('travel_agent')->check(),
+            'web' => Auth::check(),
+            'user' => Auth::user(),
+            'travelAgent' => Auth::guard('travel_agent')->user(),
+        ]);
+
         $agent = Auth::guard('travel_agent')->user();
+        $internalUser = auth()->user();
 
-        if (! $agent || $agent->status !== 'Approved') {
-            Auth::guard('travel_agent')->logout();
+        $internalUserIsVisaOfficer = $internalUser && (
+            (method_exists($internalUser, 'hasRole') && ($internalUser->hasRole('visa_office') || $internalUser->hasRole('Visa Officer')))
+            || in_array(strtolower($internalUser->role ?? ''), ['visa_office', 'visa officer', 'visa_officer'], true)
+            || in_array(strtolower($internalUser->designation ?? ''), ['visa officer', 'visa_officer'], true)
+            || str_contains(strtolower($internalUser->email ?? ''), 'officer')
+            || str_contains(strtolower($internalUser->name ?? ''), 'visa officer')
+        );
 
-            return redirect()->route('travel-agents.login')->withErrors([
-                'email' => 'Your account is not approved yet or has been rejected.',
-            ]);
+        // If neither guard has a user, redirect to agent login
+        if (! $agent && ! $internalUser) {
+            return redirect()->route('travel-agents.login');
         }
 
-        return view('travel_agents.dashboard', compact('agent'));
+        $viewAgent = null;
+        $userRole = null;
+        $visaOfficerId = null;
+
+        if ($internalUserIsVisaOfficer) {
+            return redirect()->route('visa-office.dashboard');
+        }
+
+        if ($agent) {
+            if ($agent->status !== 'Approved') {
+                Auth::guard('travel_agent')->logout();
+
+                return redirect()->route('travel-agents.login')->withErrors([
+                    'email' => 'Your account is not approved yet or has been rejected.',
+                ]);
+            }
+
+            $viewAgent = $agent;
+            $userRole = $agent->role ?? 'travel_agent';
+            $visaOfficerId = null;
+        } else {
+            $viewAgent = (object) [
+                'company_name' => $internalUser->name ?? ($internalUser->email ?? 'Officer'),
+                'first_name' => explode(' ', trim($internalUser->name ?? 'Officer'))[0] ?? 'Officer',
+                'name' => $internalUser->name ?? null,
+                'email' => $internalUser->email ?? null,
+                'mobile' => $internalUser->phone ?? null,
+                'phone' => $internalUser->phone ?? null,
+                'city' => $internalUser->city ?? null,
+                'country' => $internalUser->country ?? null,
+                'company_address' => $internalUser->department ?? null,
+                'department' => $internalUser->department ?? null,
+                'company_logo' => null,
+                'dts_license' => null,
+                'cnic_front' => null,
+                'cnic_back' => null,
+                'status' => 'Active',
+                'remarks' => null,
+                'created_at' => $internalUser->created_at ?? now(),
+                'employee_id' => $internalUser->employee_id ?? null,
+                'designation' => $internalUser->designation ?? null,
+                'role' => method_exists($internalUser, 'getRoleNames') ? Str::slug($internalUser->getRoleNames()->first() ?? 'web_user', '_') : 'web_user',
+            ];
+
+            $userRole = $internalUser->role ?? (method_exists($internalUser, 'getRoleNames') && $internalUser->getRoleNames()->first() ? Str::slug($internalUser->getRoleNames()->first(), '_') : 'web_user');
+            $visaOfficerId = $internalUser->id;
+            $agent = $viewAgent;
+        }
+
+        // Prepare visa-officer specific dashboard data when applicable
+        $totalAssigned = 0;
+        $pending = 0;
+        $underReview = 0;
+        $documentsRequired = 0;
+        $approved = 0;
+        $rejected = 0;
+        $issuedToday = 0;
+        $todaysTasks = 0;
+
+        $recentApplications = collect();
+        $pendingReviews = collect();
+        $recentlyIssuedVisas = collect();
+        $upcomingPassportExpiry = collect();
+        $recentNotifications = collect();
+
+        if (isset($visaOfficerId)) {
+            $query = VisaApplication::where('visa_officer_id', $visaOfficerId);
+
+            $totalAssigned = (int) $query->count();
+            $pending = (int) (clone $query)->where('status', 'Pending')->count();
+            $underReview = (int) (clone $query)->where('status', 'Under Review')->count();
+            $documentsRequired = (int) (clone $query)->where('status', 'Documents Required')->count();
+            $approved = (int) (clone $query)->where('status', 'Approved')->count();
+            $rejected = (int) (clone $query)->where('status', 'Rejected')->count();
+            $issuedToday = (int) (clone $query)->where('status', 'Issued')
+                ->whereDate('updated_at', Carbon::today())
+                ->count();
+
+            $todaysTasks = (int) (clone $query)->whereDate('created_at', Carbon::today())->count();
+
+            $recentApplications = (clone $query)->orderByDesc('created_at')->limit(10)->get();
+            $pendingReviews = (clone $query)->whereIn('status', ['Pending', 'Documents Required'])->orderByDesc('created_at')->limit(10)->get();
+            $recentlyIssuedVisas = (clone $query)->where('status', 'Issued')->orderByDesc('updated_at')->limit(10)->get();
+            $upcomingPassportExpiry = VisaApplication::where('visa_officer_id', $visaOfficerId)
+                ->whereHas('applicants', function ($applicantQuery) {
+                    $applicantQuery->whereBetween('passport_expiry_date', [Carbon::today(), Carbon::today()->addDays(90)]);
+                })
+                ->with(['applicants' => function ($applicantQuery) {
+                    $applicantQuery->whereBetween('passport_expiry_date', [Carbon::today(), Carbon::today()->addDays(90)]);
+                }])
+                ->get()
+                ->sortBy(function ($application) {
+                    return $application->applicants->min('passport_expiry_date');
+                })
+                ->take(10);
+        }
+
+        Log::info('Dashboard Role', [
+            'userRole' => $userRole,
+            'agent' => $agent,
+            'viewAgent' => $viewAgent,
+        ]);
+
+        $subAgents = collect();
+        if ($agent instanceof TravelAgent) {
+            $subAgents = $agent->subAgents()->orderByDesc('created_at')->get();
+        }
+
+        return view('travel_agents.dashboard', compact(
+            'agent',
+            'viewAgent',
+            'userRole',
+            'totalAssigned',
+            'pending',
+            'underReview',
+            'documentsRequired',
+            'approved',
+            'rejected',
+            'issuedToday',
+            'todaysTasks',
+            'recentApplications',
+            'pendingReviews',
+            'recentlyIssuedVisas',
+            'upcomingPassportExpiry',
+            'recentNotifications',
+            'subAgents'
+        ));
+
     }
 
-    public function tickets()
+    public function tickets(Request $request)
     {
         $agent = Auth::guard('travel_agent')->user();
-        $tickets = Ticket::where('status', 'Approved')
+
+        $tickets = Ticket::query()
+            ->forPortal('agent')
+            ->when($request->filled('from'), fn ($query) => $query->where('route', 'like', '%' . $request->input('from') . '%'))
+            ->when($request->filled('to'), fn ($query) => $query->where('route', 'like', '%' . $request->input('to') . '%'))
+            ->when($request->filled('departure'), fn ($query) => $query->whereDate('departure_date', $request->input('departure')))
+            ->when($request->filled('return'), fn ($query) => $query->whereDate('return_date', $request->input('return')))
+            ->when($request->filled('airline'), fn ($query) => $query->where('airline', 'like', '%' . $request->input('airline') . '%'))
+            ->whereNotIn('status', ['Cancelled', 'Rejected'])
             ->orderByDesc('created_at')
             ->get();
 

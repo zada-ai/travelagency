@@ -56,7 +56,10 @@
                     <h2 class="text-xl font-semibold text-slate-900">Bookings</h2>
                     <p class="mt-2 text-sm text-slate-500">{{ $bookings->total() }} bookings found.</p>
                 </div>
-                <a href="{{ route('admin.bookings.export') }}?{{ http_build_query(request()->query()) }}" class="inline-flex items-center justify-center rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50">Export CSV</a>
+                <div class="flex flex-wrap gap-2">
+                    <a href="{{ route('admin.vouchers.index') }}" class="inline-flex items-center justify-center rounded-2xl bg-indigo-600 px-4 py-3 text-sm font-semibold text-white hover:bg-indigo-500">New Vouchers</a>
+                    <a href="{{ route('admin.bookings.export') }}?{{ http_build_query(request()->query()) }}" class="inline-flex items-center justify-center rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50">Export CSV</a>
+                </div>
             </div>
 
             <div class="overflow-hidden rounded-3xl border border-slate-200">
@@ -94,6 +97,12 @@
                                 <td class="px-4 py-4">
                                     <div class="flex flex-wrap gap-2">
                                         <a href="{{ route('admin.bookings.show', $booking) }}" class="rounded-2xl bg-slate-900 px-3 py-2 text-xs font-semibold text-white hover:bg-slate-800">View</a>
+                                        @if($booking->status === 'Pending')
+                                            <form action="{{ route('admin.bookings.reserve', $booking) }}" method="POST" class="inline-block" onsubmit="return confirm('Mark this booking as Reserved?');">
+                                                @csrf
+                                                <button type="submit" class="rounded-2xl bg-blue-600 px-3 py-2 text-xs font-semibold text-white hover:bg-blue-700">Reserve</button>
+                                            </form>
+                                        @endif
                                         @if($booking->status !== 'Cancelled')
                                             <form action="{{ route('admin.bookings.cancel', $booking) }}" method="POST" class="inline-block" onsubmit="return confirm('Cancel this booking?');">
                                                 @csrf
@@ -105,7 +114,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="9" class="px-4 py-8 text-center text-slate-500">No bookings found.</td>
+                                <td colspan="10" class="px-4 py-8 text-center text-slate-500">No bookings found.</td>
                             </tr>
                         @endforelse
                     </tbody>

@@ -2,9 +2,11 @@
 
 namespace App\Http\Requests;
 
+use App\Models\HotelRoomInventory;
+use App\Models\HotelRoomType;
+use Illuminate\Support\Carbon;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
-use Carbon\Carbon;
 
 class StoreBookingRequest extends FormRequest
 {
@@ -17,14 +19,19 @@ class StoreBookingRequest extends FormRequest
     {
         return [
             'hotel_id' => ['required', 'exists:hotels,id'],
-            'hotel_room_type_id' => ['required', 'exists:hotel_room_types,id'],
+            'hotel_room_type_id' => [
+                'required',
+                Rule::exists('hotel_room_types', 'id')->where(fn ($query) => $query->where('hotel_id', $this->input('hotel_id'))),
+            ],
             'meal_plan_id' => ['nullable', 'exists:hotel_meal_plans,id', 'required_if:include_meal,1'],
             'check_in' => ['required', 'date', 'after_or_equal:today'],
-            'check_out' => ['required', 'date', 'after_or_equal:check_in'],
+            'check_out' => ['required', 'date', 'after:check_in'],
             'adults' => ['required', 'integer', 'min:1'],
             'children' => ['required', 'integer', 'min:0'],
             'infants' => ['required', 'integer', 'min:0'],
             'include_meal' => ['nullable', 'boolean'],
+            'include_visa' => ['nullable', 'boolean'],
+            'include_transport' => ['nullable', 'boolean'],
             'contact_name' => ['required', 'string', 'max:255'],
             'contact_email' => ['required', 'email', 'max:255'],
             'contact_phone' => ['required', 'string', 'max:40'],
@@ -95,6 +102,41 @@ class StoreBookingRequest extends FormRequest
                     $validator->errors()->add('passengers', "Passenger count mismatch: expected {$expected} {$passengerType} passenger(s). Please update passenger details.");
                 }
             }
+
+            $hotelRoomType = HotelRoomType::find($this->input('hotel_room_type_id'));
+            if (! $hotelRoomType || $hotelRoomType->hotel_id !== (int) $this->input('hotel_id')) {
+                $validator->errors()->add('hotel_room_type_id', 'The selected room type is invalid for the chosen hotel.');
+                return;
+            }
+
+            try {
+                $checkIn = Carbon::parse($this->input('check_in'))->startOfDay();
+                $checkOut = Carbon::parse($this->input('check_out'))->startOfDay();
+            } catch (\Exception $exception) {
+                return;
+            }
+
+            if ($checkIn->gte($checkOut)) {
+                return;
+            }
+
+            $bounds = $this->getRoomTypeInventoryBounds($hotelRoomType);
+
+            if ($bounds) {
+                $maxBookingCheckOut = $bounds['max']->copy()->addDay();
+
+                if ($checkIn->lt($bounds['min'])) {
+                    $validator->errors()->add('check_in', "Check-in must be on or after {$bounds['min']->format('Y-m-d')} for the selected room type.");
+                }
+
+                if ($checkOut->gt($maxBookingCheckOut)) {
+                    $validator->errors()->add('check_out', "Check-out must be on or before {$maxBookingCheckOut->format('Y-m-d')} for the selected room type.");
+                }
+            }
+
+            if ($hotelRoomType->availableRoomsForDates($checkIn, $checkOut) < 1) {
+                $validator->errors()->add('hotel_room_type_id', 'No available room was found for the selected dates.');
+            }
         });
     }
 
@@ -114,6 +156,33 @@ class StoreBookingRequest extends FormRequest
             'passengers.*.passport_expiry.required' => 'Each passenger must have a passport expiry date.',
             'passengers.*.passport_expiry.after_or_equal' => 'Passport expiry date cannot be in the past.',
             'passengers.*.nationality.required' => 'Each passenger must have a nationality.',
+            'check_out.after' => 'Check-out must be after check-in.',
+        ];
+    }
+
+    private function getRoomTypeInventoryBounds(HotelRoomType $roomType): ?array
+    {
+        $inventory = HotelRoomInventory::where('hotel_id', $roomType->hotel_id)
+            ->where('hotel_room_type_id', $roomType->id)
+            ->where('status', 'Active')
+            ->get();
+
+        if ($inventory->isEmpty()) {
+            return null;
+        }
+
+        $minDate = $inventory->min('inventory_date');
+        $maxDate = $inventory
+            ->map(fn ($item) => $item->inventory_date_to ? $item->inventory_date_to->format('Y-m-d') : $item->inventory_date->format('Y-m-d'))
+            ->max();
+
+        if (! $minDate || ! $maxDate) {
+            return null;
+        }
+
+        return [
+            'min' => Carbon::parse($minDate)->startOfDay(),
+            'max' => Carbon::parse($maxDate)->startOfDay(),
         ];
     }
 
@@ -123,6 +192,8 @@ class StoreBookingRequest extends FormRequest
             'check_in' => $this->input('check_in') ? now()->parse($this->input('check_in'))->format('Y-m-d') : null,
             'check_out' => $this->input('check_out') ? now()->parse($this->input('check_out'))->format('Y-m-d') : null,
             'include_meal' => $this->boolean('include_meal'),
+            'include_visa' => $this->boolean('include_visa'),
+            'include_transport' => $this->boolean('include_transport'),
         ]);
     }
 }

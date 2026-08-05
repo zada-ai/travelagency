@@ -1,0 +1,77 @@
+ GET|HEAD / .. home ??? routes/web.php:68
+ GET|HEAD admin/packages admin.packages.index ??? AdminPackageController@ind???
+ POST admin/packages admin.packages.store ??? AdminPackageController@sto???
+ GET|HEAD admin/packages/create admin.packages.create ??? AdminPackageContro???
+ GET|HEAD admin/packages/{package} admin.packages.show ??? AdminPackageContr???
+ PUT|PATCH admin/packages/{package} admin.packages.update ??? AdminPackageCon???
+ DELETE admin/packages/{package} admin.packages.destroy ??? AdminPackageCo???
+ GET|HEAD admin/packages/{package}/edit admin.packages.edit ??? AdminPackage???
+ GET|HEAD customer/packages/create customer.packages.create ??? CustomerPack???
+ GET|HEAD home .. home ??? routes/web.php:288
+ GET|HEAD login login ??? Laravel\Fortify ??? AuthenticatedSessionController@c???
+ POST login login.store ??? Laravel\Fortify ??? AuthenticatedSessionContro???
+ GET|HEAD packages .. packages.index ??? CustomerPackageController@index
+ GET|HEAD packages/{package}/book packages.book ??? PackageBookingController???
+ POST packages/{package}/book packages.store ??? PackageBookingControlle???
+ GET|HEAD register .. register ??? CustomerRegistrationController@create
+ POST register . register.submit ??? CustomerRegistrationController@store
+ GET|HEAD travel-agent/booking-history travel-agents.booking-history.index???
+ GET|HEAD travel-agent/booking-history/flight/{id} travel-agents.booking-h???
+ POST travel-agent/booking-history/flight/{id}/cancel travel-agents.bo???
+ GET|HEAD travel-agent/booking-history/hotel/{id} travel-agents.booking-hi???
+ POST travel-agent/booking-history/hotel/{id}/cancel travel-agents.boo???
+ GET|HEAD travel-agent/bookings travel-agents.bookings ??? AdminFlightBookin???
+ POST travel-agent/bookings/cancel-review travel-agents.bookings.cance???
+ POST travel-agent/bookings/confirm travel-agents.bookings.confirm ??? A???
+ GET|HEAD travel-agent/bookings/review travel-agents.bookings.review ??? Adm???
+ GET|HEAD travel-agent/commission travel-agents.commission.index ??? TravelA???
+ GET|HEAD travel-agent/customer-visa travel-agents.customer-visa.index ??? T???
+ GET|HEAD travel-agent/customer-visa/{id} travel-agents.customer-visa.show???
+ GET|HEAD travel-agent/customer-visa/{id}/download-document/{field} travel???
+ GET|HEAD travel-agent/customer-visa/{id}/download-visa travel-agents.cust???
+ GET|HEAD travel-agent/dashboard travel-agents.dashboard ??? TravelAgentAuth???
+ GET|HEAD travel-agent/group-booking travel-agents.group-booking ??? TravelA???
+ GET|HEAD travel-agent/hotels .. routes/web.php:186
+ GET|HEAD travel-agent/login travel-agents.login ??? TravelAgentAuthControll???
+ POST travel-agent/login travel-agents.login.submit ??? TravelAgentAuthC???
+ POST travel-agent/logout travel-agents.logout ??? TravelAgentAuthContro???
+ GET|HEAD travel-agent/package-bookings/{id}/voucher travel-agents.package???
+ GET|HEAD travel-agent/packages travel-agents.packages.index ??? CustomerPac???
+ POST travel-agent/password/email travel-agents.password.email ??? Trave???
+ GET|HEAD travel-agent/password/reset travel-agents.password.request ??? Tra???
+ POST travel-agent/password/reset travel-agents.password.update ??? Trav???
+ GET|HEAD travel-agent/password/reset/{token} travel-agents.password.reset???
+ GET|HEAD travel-agent/register travel-agents.register ??? TravelAgentRegist???
+ POST travel-agent/register travel-agents.register.submit ??? TravelAgen???
+ GET|HEAD travel-agent/register/success travel-agents.register.success ??? T???
+ GET|HEAD travel-agent/reports travel-agents.reports.index ??? TravelAgentRe???
+ GET|HEAD travel-agent/reports/booking travel-agents.reports.booking ??? Tra???
+ GET|HEAD travel-agent/reports/commission travel-agents.reports.commission???
+ GET|HEAD travel-agent/reports/customer travel-agents.reports.customer ??? T???
+ GET|HEAD travel-agent/reports/hotel travel-agents.reports.hotel ??? TravelA???
+ GET|HEAD travel-agent/reports/payment travel-agents.reports.payment ??? Tra???
+ GET|HEAD travel-agent/reports/sales travel-agents.reports.sales ??? TravelA???
+ GET|HEAD travel-agent/reports/ticket travel-agents.reports.ticket ??? Trave???
+ GET|HEAD travel-agent/reports/visa travel-agents.reports.visa ??? TravelAge???
+ POST travel-agent/sub-agent travel-agents.sub-agents.store ??? TravelAg???
+ GET|HEAD travel-agent/sub-agent/create travel-agents.sub-agents.create ??? ???
+ GET|HEAD travel-agent/sub-agents travel-agents.sub-agents.index ??? TravelA???
+ GET|HEAD travel-agent/sub-agents/{subAgent} travel-agents.sub-agents.show???
+ PUT travel-agent/sub-agents/{subAgent} travel-agents.sub-agents.upda???
+ DELETE travel-agent/sub-agents/{subAgent} travel-agents.sub-agents.dest???
+ GET|HEAD travel-agent/sub-agents/{subAgent}/edit travel-agents.sub-agents???
+ GET|HEAD travel-agent/tickets travel-agents.tickets ??? TravelAgentAuthCont???
+ POST travel-agent/tickets/{ticket}/book travel-agents.tickets.book ??? ???
+ GET|HEAD travel-agent/visa-applications travel-agents.visa-applications ???
+ POST travel-agent/visa-applications travel-agents.visa-applications.s???
+ GET|HEAD travel-agent/visa-applications/create travel-agents.visa-applica???
+ GET|HEAD travel-agent/visa-applications/{id} travel-agents.visa-applicati???
+ PUT travel-agent/visa-applications/{id} travel-agents.visa-applicati???
+ DELETE travel-agent/visa-applications/{id} travel-agents.visa-applicati???
+ GET|HEAD travel-agent/visa-applications/{id}/document/{field} travel-agen???
+ GET|HEAD travel-agent/visa-applications/{id}/edit travel-agents.visa-appl???
+ GET|HEAD travel-agent/visa-applications/{id}/print travel-agents.visa-app???
+ GET|HEAD travel-agents/hotels/index travel-agents.hotels.index ??? TravelAg???
+ GET|HEAD two-factor-challenge two-factor.login ??? Laravel\Fortify ??? TwoFac???
+ POST two-factor-challenge two-factor.login.store ??? Laravel\Fortify ??? ???
+ GET|HEAD user/login .. routes/web.php:230

@@ -6,6 +6,7 @@ use App\Models\HotelRoomType;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Carbon;
 
 class HotelRoomInventory extends Model
 {
@@ -64,11 +65,8 @@ class HotelRoomInventory extends Model
 
         $inventoryRows = self::where('hotel_id', $hotelId)
             ->where('hotel_room_type_id', $roomTypeId)
-            ->whereDate('inventory_date', '>=', $checkIn)
-            ->whereDate('inventory_date', '<', $checkOut)
             ->where('status', 'Active')
-            ->get()
-            ->keyBy(fn ($row) => $row->inventory_date->format('Y-m-d'));
+            ->get();
 
         $current = $checkIn->copy();
         $dateDetails = collect();
@@ -79,23 +77,22 @@ class HotelRoomInventory extends Model
 
         while ($current->lt($checkOut)) {
             $dateKey = $current->format('Y-m-d');
+            $row = self::findInventoryRowForDate($inventoryRows, $current);
+            $available = $row ? $row->available_rooms > 0 : false;
 
-            if ($inventoryRows->has($dateKey)) {
-                $row = $inventoryRows->get($dateKey);
-                $available = $row->available_rooms > 0;
+            $dateDetails->push([
+                'date' => $dateKey,
+                'available_rooms' => $row ? $row->available_rooms : 0,
+                'booked_rooms' => $row ? $row->booked_rooms : 0,
+                'total_rooms' => $row ? $row->total_rooms : 0,
+                'available' => $available,
+            ]);
 
-                $dateDetails->push([
-                    'date' => $dateKey,
-                    'available_rooms' => $row->available_rooms,
-                    'booked_rooms' => $row->booked_rooms,
-                    'total_rooms' => $row->total_rooms,
-                    'available' => $available,
-                ]);
+            if ($available) {
+                $availableDays++;
+            }
 
-                if ($available) {
-                    $availableDays++;
-                }
-
+            if ($row) {
                 $minAvailableRooms = is_null($minAvailableRooms)
                     ? $row->available_rooms
                     : min($minAvailableRooms, $row->available_rooms);
@@ -103,14 +100,6 @@ class HotelRoomInventory extends Model
                 $totalRooms = is_null($totalRooms)
                     ? $row->total_rooms
                     : min($totalRooms, $row->total_rooms);
-            } else {
-                $dateDetails->push([
-                    'date' => $dateKey,
-                    'available_rooms' => 0,
-                    'booked_rooms' => 0,
-                    'total_rooms' => 0,
-                    'available' => false,
-                ]);
             }
 
             $current->addDay();
@@ -130,5 +119,26 @@ class HotelRoomInventory extends Model
             'dates' => $dateDetails->toArray(),
             'unavailable_dates' => $occupiedDates,
         ];
+    }
+
+    private static function findInventoryRowForDate($inventoryRows, Carbon $date)
+    {
+        return $inventoryRows->filter(function ($row) use ($date) {
+            if ($row->inventory_date->gt($date)) {
+                return false;
+            }
+
+            if ($row->inventory_date_to) {
+                return $row->inventory_date_to->gte($date);
+            }
+
+            return $row->inventory_date->eq($date);
+        })->sort(function ($a, $b) {
+            if ($a->inventory_date->eq($b->inventory_date)) {
+                return $a->inventory_date_to->timestamp <=> $b->inventory_date_to->timestamp;
+            }
+
+            return $a->inventory_date->gt($b->inventory_date) ? -1 : 1;
+        })->first();
     }
 }

@@ -94,6 +94,8 @@
                     <div class="space-y-3 text-sm text-slate-600">
                         <div class="flex justify-between"><span>Room</span><span>SAR {{ number_format($booking->room_price, 2) }}</span></div>
                         <div class="flex justify-between"><span>Meal</span><span>SAR {{ number_format($booking->meal_price, 2) }}</span></div>
+                        <div class="flex justify-between"><span>Transport</span><span>SAR {{ number_format($booking->transport_price, 2) }}</span></div>
+                        <div class="flex justify-between"><span>Visa</span><span>SAR {{ number_format($booking->visa_price, 2) }}</span></div>
                         <div class="flex justify-between"><span>Tax</span><span>SAR {{ number_format($booking->taxes, 2) }}</span></div>
                         <div class="border-t border-slate-200 pt-3 flex justify-between font-semibold text-slate-900"><span>Total</span><span>SAR {{ number_format($booking->grand_total, 2) }}</span></div>
                     </div>

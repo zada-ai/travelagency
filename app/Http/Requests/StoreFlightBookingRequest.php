@@ -24,15 +24,18 @@ class StoreFlightBookingRequest extends FormRequest
             'special_requests' => ['nullable', 'string', 'max:1000'],
             'status' => ['required', 'in:Pending,Confirmed,Cancelled'],
             'payment_status' => ['required', 'in:Paid,Unpaid'],
-            'cabin_class' => ['nullable', 'string', 'max:255'],
+            'cabin_class' => ['required', 'string', 'in:Economy,Premium Economy,Business,First'],
+            
+            // --- NEW ADDONS RULES ---
+            'include_visa' => ['nullable', 'boolean'],
+            'include_transport' => ['nullable', 'boolean'],
+            // ------------------------
+
             'passengers' => ['required', 'array', 'min:1'],
-            'passengers.*.first_name' => ['required', 'string', 'max:255'],
-            'passengers.*.last_name' => ['required', 'string', 'max:255'],
-            'passengers.*.gender' => ['required', 'string', 'in:Male,Female,Other'],
-            'passengers.*.date_of_birth' => ['required', 'date', 'before:today'],
-            'passengers.*.nationality' => ['required', 'string', 'max:255'],
-            'passengers.*.passport_number' => ['required', 'string', 'max:255'],
-            'passengers.*.passport_expiry' => ['required', 'date', 'after:today'],
+            'passengers.*.full_name' => ['required', 'string', 'max:255'],
+            'passengers.*.date_of_birth' => ['required', 'date'],
+            'passengers.*.passport_upload' => ['required', 'file', 'mimes:jpg,jpeg,png,pdf', 'max:5120'],
+            'passengers.*.cnic_upload' => ['required', 'file', 'mimes:jpg,jpeg,png,pdf', 'max:5120'],
             'passengers.*.passenger_type' => ['required', 'string', 'in:Adult,Child,Infant'],
         ];
     }
@@ -73,5 +76,13 @@ class StoreFlightBookingRequest extends FormRequest
                 }
             }
         });
+    }
+
+    public function prepareForValidation(): void
+    {
+        $this->merge([
+            'include_visa' => $this->boolean('include_visa'),
+            'include_transport' => $this->boolean('include_transport'),
+        ]);
     }
 }

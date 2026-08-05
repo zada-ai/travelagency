@@ -19,6 +19,15 @@ class PublicHotelController extends Controller
 
         $hotel->load(['roomTypes.hotelRooms', 'seasonalRates', 'mealPlans', 'facilities', 'images', 'coverImage']);
 
+        $visibilityRole = auth()->guard('travel_agent')->check() ? 'agent' : 'customer';
+        if (! in_array($hotel->visibility, ['Both', 'Agent Only'], true) && $visibilityRole === 'agent') {
+            abort(404);
+        }
+
+        if (! in_array($hotel->visibility, ['Both', 'Customer Only'], true) && $visibilityRole === 'customer') {
+            abort(404);
+        }
+
         $availableRoomsNow = $hotel->rooms()->where('status', 'Available')->count();
 
         $initialRoomTypes = $hotel->roomTypes->where('status', 'Active')->map(function ($roomType) {
@@ -60,6 +69,7 @@ class PublicHotelController extends Controller
         }
 
         $recommendations = Hotel::active()
+            ->visibleToPortal($visibilityRole)
             ->whereRaw('LOWER(city) = ?', [mb_strtolower($hotel->city)])
             ->where('id', '!=', $hotel->id)
             ->orderByDesc('featured')
@@ -67,24 +77,7 @@ class PublicHotelController extends Controller
             ->take(3)
             ->get();
 
-        $policyHighlights = [
-            [
-                'title' => 'Free cancellation',
-                'text' => 'Cancel up to 24 hours before arrival without any fees.',
-            ],
-            [
-                'title' => 'Haram shuttle',
-                'text' => 'Complimentary shuttle service to the holy mosque every 30 minutes.',
-            ],
-            [
-                'title' => 'Flexible check-in',
-                'text' => 'Early arrival subject to availability and priority guest support.',
-            ],
-            [
-                'title' => 'Inclusive breakfast',
-                'text' => 'Daily buffet breakfast included for all confirmed room bookings.',
-            ],
-        ];
+        $policyHighlights = $hotel->stayPolicyHighlights();
 
         $reviews = [
             [

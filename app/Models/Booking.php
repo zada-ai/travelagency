@@ -24,9 +24,13 @@ class Booking extends Model
         'total_passengers',
         'room_price',
         'meal_price',
+        'visa_price',
+        'transport_price',
         'taxes',
         'discount',
         'grand_total',
+        'include_visa',
+        'include_transport',
         'status',
         'contact_name',
         'contact_email',
@@ -35,6 +39,7 @@ class Booking extends Model
         'contacted',
         'contacted_by',
         'contacted_at',
+        'travel_agent_id',
     ];
 
     protected $casts = [
@@ -42,9 +47,13 @@ class Booking extends Model
         'check_out' => 'date',
         'room_price' => 'decimal:2',
         'meal_price' => 'decimal:2',
+        'visa_price' => 'decimal:2',
+        'transport_price' => 'decimal:2',
         'taxes' => 'decimal:2',
         'discount' => 'decimal:2',
         'grand_total' => 'decimal:2',
+        'include_visa' => 'boolean',
+        'include_transport' => 'boolean',
         'contacted' => 'boolean',
         'contacted_at' => 'datetime',
     ];
@@ -75,6 +84,16 @@ class Booking extends Model
     public function passengers()
     {
         return $this->hasMany(BookingPassenger::class);
+    }
+
+    public function travelAgent()
+    {
+        return $this->belongsTo(TravelAgent::class);
+    }
+
+    public function scopeForAgent($query, $agentId)
+    {
+        return $query->where('travel_agent_id', $agentId);
     }
 
     public function getTotalNightsAttribute(): int

@@ -65,6 +65,15 @@ class AdminBookingController extends Controller
         return redirect()->route('admin.bookings.show', $booking)->with('success', 'Booking cancelled successfully.');
     }
 
+    public function reserve(Booking $booking)
+    {
+        if ($booking->status === 'Pending') {
+            $booking->update(['status' => 'Reserved']);
+        }
+
+        return redirect()->route('admin.bookings.show', $booking)->with('success', 'Booking marked as Reserved.');
+    }
+
     public function export(Request $request): StreamedResponse
     {
         $filters = $request->only(['search', 'hotel_id', 'status', 'check_in_from', 'check_in_to']);

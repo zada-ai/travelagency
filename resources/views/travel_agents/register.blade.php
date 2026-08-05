@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Signup Account | UMRAH BOOKING</title>
+    <title>{{ $pageTitle ?? 'Signup Account' }} | UMRAH BOOKING</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -108,7 +108,7 @@
             <div class="w-full max-w-4xl bg-white rounded-xl shadow-2xl p-6 sm:p-8 border border-slate-100">
                 
                 <h2 class="text-2xl font-extrabold text-slate-900 font-display mb-6 text-center">
-                    Signup Account
+                    {{ $pageTitle ?? 'Signup Account' }}
                 </h2>
 
                 <!-- Laravel Session Errors -->
@@ -122,7 +122,7 @@
                     </div>
                 @endif
 
-                <form action="{{ route('travel-agents.register.submit') }}" method="POST" enctype="multipart/form-data" class="space-y-4">
+                <form action="{{ $action ?? route('travel-agents.register.submit') }}" method="POST" enctype="multipart/form-data" class="space-y-4">
                     @csrf
 
                     <!-- Row 1: First Name, Last Name & Company Name -->
@@ -236,7 +236,7 @@
                     <!-- Actions -->
                     <div class="flex flex-col gap-3 pt-3 border-t border-slate-100">
                         <button type="submit" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold p-3.5 rounded transition duration-150 shadow-md text-sm">
-                            Submit Application
+                            {{ $buttonText ?? 'Submit Application' }}
                         </button>
                         <div class="text-center">
                             <a href="{{ route('travel-agents.login') }}" class="text-xs font-semibold text-blue-600 hover:text-blue-700">

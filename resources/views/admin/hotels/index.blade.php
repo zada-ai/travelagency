@@ -68,6 +68,7 @@
                             <th class="px-4 py-4 font-semibold">Hotel Name</th>
                             <th class="px-4 py-4 font-semibold">Code</th>
                             <th class="px-4 py-4 font-semibold">City</th>
+                            <th class="px-4 py-4 font-semibold">About</th>
                             <th class="px-4 py-4 font-semibold">Category</th>
                             <th class="px-4 py-4 font-semibold">Status</th>
                             <th class="px-4 py-4 font-semibold">Featured</th>
@@ -81,6 +82,7 @@
                                 <td class="px-4 py-4">{{ $hotel->hotel_name }}</td>
                                 <td class="px-4 py-4">{{ $hotel->hotel_code }}</td>
                                 <td class="px-4 py-4">{{ $hotel->city }}</td>
+                                <td class="px-4 py-4 max-w-xs overflow-hidden text-ellipsis whitespace-nowrap">{{ Str::limit($hotel->about ?? $hotel->description, 80) }}</td>
                                 <td class="px-4 py-4">{{ $hotel->category }}</td>
                                 <td class="px-4 py-4">{{ $hotel->status }}</td>
                                 <td class="px-4 py-4">{{ $hotel->featured ? 'Yes' : 'No' }}</td>

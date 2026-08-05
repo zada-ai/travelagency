@@ -24,6 +24,7 @@ return new class extends Migration
             $table->text('description')->nullable();
             $table->enum('status', ['Active', 'Inactive'])->default('Active');
             $table->boolean('featured')->default(false);
+            $table->text('about')->nullable();  
             $table->timestamps();
             $table->softDeletes();
         });

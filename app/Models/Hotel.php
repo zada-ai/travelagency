@@ -17,6 +17,10 @@ class Hotel extends Model
 {
     use HasFactory, SoftDeletes;
 
+    public const VISIBILITY_BOTH = 'Both';
+    public const VISIBILITY_AGENT_ONLY = 'Agent Only';
+    public const VISIBILITY_CUSTOMER_ONLY = 'Customer Only';
+
     protected $fillable = [
         'hotel_name',
         'hotel_code',
@@ -30,8 +34,14 @@ class Hotel extends Model
         'latitude',
         'longitude',
         'description',
+        'about',
+        'stay_policy_free_cancellation',
+        'stay_policy_haram_shuttle',
+        'stay_policy_flexible_checkin',
+        'stay_policy_inclusive_breakfast',
         'status',
         'featured',
+        'visibility',
     ];
 
     protected $casts = [
@@ -41,6 +51,28 @@ class Hotel extends Model
         'featured' => 'boolean',
     ];
 
+    public function stayPolicyHighlights(): array
+    {
+        return [
+            [
+                'title' => 'Free cancellation',
+                'text' => $this->stay_policy_free_cancellation ?: 'Cancel up to 24 hours before arrival without any fees.',
+            ],
+            [
+                'title' => 'Haram shuttle',
+                'text' => $this->stay_policy_haram_shuttle ?: 'Complimentary shuttle service to the holy mosque every 30 minutes.',
+            ],
+            [
+                'title' => 'Flexible check-in',
+                'text' => $this->stay_policy_flexible_checkin ?: 'Early arrival subject to availability and priority guest support.',
+            ],
+            [
+                'title' => 'Inclusive breakfast',
+                'text' => $this->stay_policy_inclusive_breakfast ?: 'Daily buffet breakfast included for all confirmed room bookings.',
+            ],
+        ];
+    }
+
     public function scopeActive($query)
     {
         return $query->where('status', 'Active');
@@ -49,6 +81,15 @@ class Hotel extends Model
     public function scopeInactive($query)
     {
         return $query->where('status', 'Inactive');
+    }
+
+    public function scopeVisibleToPortal($query, string $portal = 'customer')
+    {
+        if ($portal === 'agent') {
+            return $query->whereIn('visibility', [self::VISIBILITY_BOTH, self::VISIBILITY_AGENT_ONLY]);
+        }
+
+        return $query->whereIn('visibility', [self::VISIBILITY_BOTH, self::VISIBILITY_CUSTOMER_ONLY]);
     }
 
     public function roomTypes()

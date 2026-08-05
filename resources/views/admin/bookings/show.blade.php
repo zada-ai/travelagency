@@ -19,7 +19,13 @@
                     <p class="mt-2 text-sm text-slate-500">Booked on {{ $booking->created_at->format('d M Y, h:i A') }}</p>
                 </div>
                 <div class="flex flex-wrap gap-3">
-                    <span class="inline-flex rounded-full px-4 py-2 text-sm font-semibold {{ $booking->status === 'Cancelled' ? 'bg-rose-100 text-rose-700' : 'bg-emerald-100 text-emerald-700' }}">{{ $booking->status }}</span>
+                    <span class="inline-flex rounded-full px-4 py-2 text-sm font-semibold {{ $booking->status === 'Cancelled' ? 'bg-rose-100 text-rose-700' : ($booking->status === 'Reserved' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700') }}">{{ $booking->status }}</span>
+                    @if($booking->status === 'Pending')
+                        <form action="{{ route('admin.bookings.reserve', $booking) }}" method="POST" class="inline-block" onsubmit="return confirm('Mark this booking as Reserved?');">
+                            @csrf
+                            <button type="submit" class="inline-flex items-center justify-center rounded-2xl bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700">Reserve</button>
+                        </form>
+                    @endif
                     @if($booking->status !== 'Cancelled')
                         <form action="{{ route('admin.bookings.cancel', $booking) }}" method="POST" class="inline-block" onsubmit="return confirm('Cancel this booking?');">
                             @csrf

@@ -82,6 +82,17 @@ class AdminHotelController extends Controller
         return redirect()->route('admin.hotels.index')->with('success', 'Hotel updated successfully.');
     }
 
+    public function updateAbout(Request $request, Hotel $hotel)
+    {
+        $data = $request->validate([
+            'about' => ['nullable', 'string', 'max:2000'],
+        ]);
+
+        $hotel->update($data);
+
+        return redirect()->route('admin.hotel-management')->with('success', 'Hotel about text updated successfully.');
+    }
+
     public function destroy(Hotel $hotel)
     {
         $this->hotelService->delete($hotel);
@@ -102,13 +113,14 @@ class AdminHotelController extends Controller
 
         return response()->stream(function () use ($hotels) {
             $handle = fopen('php://output', 'w');
-            fputcsv($handle, ['Hotel Name', 'Hotel Code', 'City', 'Category', 'Status', 'Featured', 'Distance From Haram']);
+            fputcsv($handle, ['Hotel Name', 'Hotel Code', 'City', 'About', 'Category', 'Status', 'Featured', 'Distance From Haram']);
 
             foreach ($hotels as $hotel) {
                 fputcsv($handle, [
                     $hotel->hotel_name,
                     $hotel->hotel_code,
                     $hotel->city,
+                    $hotel->about,
                     $hotel->category,
                     $hotel->status,
                     $hotel->featured ? 'Yes' : 'No',

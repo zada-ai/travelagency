@@ -39,7 +39,17 @@ class HotelRoomInventoryRepository
         }
 
         if (! empty($filters['date'])) {
-            $query->where('inventory_date', $filters['date']);
+            $query->where(function (Builder $sub) use ($filters) {
+                $sub->whereDate('inventory_date', '<=', $filters['date'])
+                    ->where(function (Builder $sub2) use ($filters) {
+                        $sub2->whereNotNull('inventory_date_to')
+                            ->whereDate('inventory_date_to', '>=', $filters['date']);
+                        $sub2->orWhere(function (Builder $sub3) use ($filters) {
+                            $sub3->whereNull('inventory_date_to')
+                                ->whereDate('inventory_date', $filters['date']);
+                        });
+                    });
+            });
         }
 
         $sort = $filters['sort'] ?? 'inventory_date';
@@ -57,51 +67,22 @@ class HotelRoomInventoryRepository
             $data['inventory_date'] = $data['inventory_date_from'];
         }
 
+        $payload = $data;
+
         if (! empty($data['inventory_date_to'])) {
-            $start = 
-                $data['inventory_date'] instanceof \DateTimeInterface
-                    ? clone $data['inventory_date']
-                    : new \DateTimeImmutable($data['inventory_date']);
-            $end = new \DateTimeImmutable($data['inventory_date_to']);
-
-            $current = $start;
-            $firstInventory = null;
-
-            while ($current <= $end) {
-                $date = $current->format('Y-m-d');
-                $attributes = [
-                    'hotel_id' => $data['hotel_id'],
-                    'hotel_room_type_id' => $data['hotel_room_type_id'],
-                    'inventory_date' => $date,
-                ];
-
-                $payload = array_merge($data, [
-                    'inventory_date' => $date,
-                    'inventory_date_to' => $date,
-                ]);
-
-                $inventory = HotelRoomInventory::updateOrCreate($attributes, $payload);
-                $firstInventory = $firstInventory ?? $inventory;
-                $current = $current->modify('+1 day');
-            }
-
-            return $firstInventory;
+            $payload['inventory_date'] = $data['inventory_date'];
+            $payload['inventory_date_to'] = $data['inventory_date_to'];
+        } elseif (isset($data['inventory_date'])) {
+            $payload['inventory_date_to'] = $data['inventory_date'];
         }
 
-        if (isset($data['inventory_date'])) {
-            $attributes = [
-                'hotel_id' => $data['hotel_id'],
-                'hotel_room_type_id' => $data['hotel_room_type_id'],
-                'inventory_date' => $data['inventory_date'],
-            ];
+        $attributes = [
+            'hotel_id' => $data['hotel_id'],
+            'hotel_room_type_id' => $data['hotel_room_type_id'],
+            'inventory_date' => $payload['inventory_date'],
+        ];
 
-            // keep inventory_date_to in payload if provided
-            $payload = $data;
-
-            return HotelRoomInventory::updateOrCreate($attributes, $payload);
-        }
-
-        return HotelRoomInventory::create($data);
+        return HotelRoomInventory::updateOrCreate($attributes, $payload);
     }
 
     public function update(HotelRoomInventory $inventory, array $data): HotelRoomInventory

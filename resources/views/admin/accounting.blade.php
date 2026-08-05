@@ -1,17 +1,19 @@
-﻿<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Accounting</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-gray-100">
-<div class="min-h-screen p-6">
-    <a href="{{ url('/dashboard') }}" class="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm hover:bg-slate-50">Back to Dashboard</a>
-    <div class="mt-6 rounded-3xl bg-white p-6 shadow-sm">
-        <h1 class="text-3xl font-bold text-slate-900">Accounting</h1>
-        <p class="mt-4 text-slate-600">This is the Accounting area.</p>
+﻿@extends('admin.layouts.app')
+
+@section('title', 'Accounting')
+@section('page-heading', 'Accounting')
+@section('page-description', 'Manage invoices, payments, and financial records inside the main admin panel.')
+
+@section('content')
+<div class="space-y-6">
+    <div class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+        <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+                <p class="text-xs uppercase tracking-[0.24em] text-slate-500">Accounting</p>
+                <h1 class="mt-2 text-3xl font-semibold text-slate-950">Accounting Overview</h1>
+                <p class="mt-3 text-sm leading-6 text-slate-600">Track payments, invoices, and financial workflows from the shared admin interface.</p>
+            </div>
+        </div>
     </div>
 </div>
-</body>
-</html>
+@endsection

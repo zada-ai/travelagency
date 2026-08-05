@@ -55,7 +55,16 @@ class AdminHotelManagementController extends Controller
                 ->count(),
         ];
 
-        $hotels = Hotel::active()->orderBy('hotel_name')->get(['id', 'hotel_name']);
+        $hotels = Hotel::active()->orderBy('hotel_name')->get([
+            'id',
+            'hotel_name',
+            'city',
+            'about',
+            'stay_policy_free_cancellation',
+            'stay_policy_haram_shuttle',
+            'stay_policy_flexible_checkin',
+            'stay_policy_inclusive_breakfast',
+        ]);
 
         return view('admin.hotel-management', compact('metrics', 'hotels'));
     }

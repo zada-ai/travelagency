@@ -25,11 +25,7 @@
                     <div class="space-y-2 rounded-3xl bg-slate-900/70 px-4 py-4">
                         <a href="{{ route('admin.airline-ticket-management') }}" class="block rounded-2xl px-4 py-2 text-slate-200 hover:bg-slate-800">All Tickets</a>
                         <a href="{{ route('admin.airline-ticket-management') }}#upload" class="block rounded-2xl px-4 py-2 text-slate-200 hover:bg-slate-800">Upload Ticket</a>
-                        <a href="{{ route('admin.airline-flights.index') }}" class="block rounded-2xl px-4 py-2 text-slate-200 hover:bg-slate-800">Flight Management</a>
-                        <a href="#" class="block rounded-2xl px-4 py-2 text-slate-400 hover:text-white">Active Tickets</a>
-                    </div>
-                </div>
-
+                            <a href="{{ route('admin.airlines.index') }}" class="block rounded-2xl px-4 py-2 text-slate-200 hover:bg-slate-800">Airlines</a>
                 <div class="space-y-3">
                     <p class="text-xs uppercase tracking-[0.3em] text-slate-500">Flight Status</p>
                     <div class="space-y-2 rounded-3xl bg-slate-900/70 px-4 py-4">

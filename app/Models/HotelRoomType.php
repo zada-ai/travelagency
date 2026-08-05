@@ -80,16 +80,12 @@ class HotelRoomType extends Model
             return 0;
         }
 
-        $inventorySummary = $this->inventorySummaryForDates($checkIn, $checkOut);
-        if ($inventorySummary !== null) {
-            return $inventorySummary['available_rooms'];
-        }
-
         if ($this->hasHotelRooms()) {
             return (new RoomAvailabilityService())->countAvailableRooms($this, $checkIn, $checkOut);
         }
 
-        return 0;
+        $inventorySummary = $this->inventorySummaryForDates($checkIn, $checkOut);
+        return $inventorySummary['available_rooms'] ?? 0;
     }
 
     public function findAvailableRoomForDates(Carbon $checkIn, Carbon $checkOut): ?HotelRoom
@@ -114,7 +110,8 @@ class HotelRoomType extends Model
                          ->whereDate('inventory_date_to', '>=', $date);
                   });
             })
-            ->orderByDesc('inventory_date_to')
+            ->orderByDesc('inventory_date')
+            ->orderBy('inventory_date_to')
             ->first();
     }
 
@@ -188,16 +185,12 @@ class HotelRoomType extends Model
             ];
         }
 
-        $inventorySummary = $this->inventorySummaryForDates($checkIn, $checkOut);
-        if ($inventorySummary !== null) {
-            return $inventorySummary;
-        }
-
         if ($this->hasHotelRooms()) {
             return (new RoomAvailabilityService())->summarizeAvailability($this, $checkIn, $checkOut);
         }
 
-        return [
+        $inventorySummary = $this->inventorySummaryForDates($checkIn, $checkOut);
+        return $inventorySummary ?? [
             'total_rooms' => 0,
             'available_rooms' => 0,
             'booked_rooms' => 0,

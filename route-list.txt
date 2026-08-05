@@ -1,0 +1,296 @@
+
+ GET|HEAD / .. home ??? routes/web.php:68
+ GET|HEAD admin/accounting .. admin.accounting
+ GET|HEAD admin/agent-management admin.agent-management ??? AdminTravelAgent???
+ GET|HEAD admin/agents admin.agents.index ??? AdminTravelAgentController@ind???
+ GET|HEAD admin/agents/export/csv admin.agents.export.csv ??? AdminTravelAge???
+ GET|HEAD admin/agents/export/excel admin.agents.export.excel ??? AdminTrave???
+ GET|HEAD admin/agents/{agent} admin.agents.show ??? AdminTravelAgentControl???
+ PUT admin/agents/{agent} admin.agents.update ??? AdminTravelAgentContr???
+ DELETE admin/agents/{agent} admin.agents.destroy ??? AdminTravelAgentCont???
+ POST admin/agents/{agent}/approve admin.agents.approve ??? AdminTravelA???
+ GET|HEAD admin/agents/{agent}/edit admin.agents.edit ??? AdminTravelAgentCo???
+ POST admin/agents/{agent}/reject admin.agents.reject ??? AdminTravelAge???
+ GET|HEAD admin/airline-bookings admin.airline-bookings.index ??? AdminFligh???
+ GET|HEAD admin/airline-bookings/{flightBooking} admin.airline-bookings.sh???
+ DELETE admin/airline-bookings/{flightBooking} admin.airline-bookings.de???
+ POST admin/airline-bookings/{flightBooking}/cancel admin.airline-book???
+ PUT admin/airline-bookings/{flightBooking}/status admin.airline-book???
+ GET|HEAD admin/airline-flights admin.airline-flights.index ??? AdminAirline???
+ POST admin/airline-flights admin.airline-flights.store ??? AdminAirline???
+ GET|HEAD admin/airline-flights/create admin.airline-flights.create ??? Admi???
+ GET|HEAD admin/airline-flights/{ticket} admin.airline-flights.show ??? Admi???
+ PUT admin/airline-flights/{ticket} admin.airline-flights.update ??? Ad???
+ DELETE admin/airline-flights/{ticket} admin.airline-flights.destroy ??? A???
+ GET|HEAD admin/airline-flights/{ticket}/edit admin.airline-flights.edit ???
+ PUT admin/airline-flights/{ticket}/status admin.airline-flights.stat???
+ GET|HEAD admin/airline-ticket-management admin.airline-ticket-management ???
+ POST admin/airline-ticket-management admin.airline-ticket-management.???
+ GET|HEAD admin/airlines admin.airlines.index ??? AdminAirlineController@ind???
+ POST admin/airlines admin.airlines.store ??? AdminAirlineController@sto???
+ GET|HEAD admin/airlines/create admin.airlines.create ??? AdminAirlineContro???
+ PUT|PATCH admin/airlines/{airline} admin.airlines.update ??? AdminAirlineCon???
+ DELETE admin/airlines/{airline} admin.airlines.destroy ??? AdminAirlineCo???
+ GET|HEAD admin/airlines/{airline}/edit admin.airlines.edit ??? AdminAirline???
+ GET|HEAD admin/airports admin.airports.index ??? AdminAirportController@ind???
+ POST admin/airports admin.airports.store ??? AdminAirportController@sto???
+ GET|HEAD admin/airports/create admin.airports.create ??? AdminAirportContro???
+ PUT|PATCH admin/airports/{airport} admin.airports.update ??? AdminAirportCon???
+ DELETE admin/airports/{airport} admin.airports.destroy ??? AdminAirportCo???
+ GET|HEAD admin/airports/{airport}/edit admin.airports.edit ??? AdminAirport???
+ GET|HEAD admin/booking-management admin.booking-management ??? routes/web.p???
+ GET|HEAD admin/bookings admin.bookings.index ??? AdminBookingController@ind???
+ GET|HEAD admin/bookings/export admin.bookings.export ??? AdminBookingContro???
+ PUT admin/bookings/{booking} admin.bookings.update ??? AdminBookingCon???
+ DELETE admin/bookings/{booking} admin.bookings.destroy ??? AdminBookingCo???
+ GET|HEAD admin/bookings/{booking} admin.bookings.show ??? AdminBookingContr???
+ POST admin/bookings/{booking}/cancel admin.bookings.cancel ??? AdminBoo???
+ GET|HEAD admin/bookings/{booking}/edit admin.bookings.edit ??? AdminBooking???
+ GET|HEAD admin/bookings/{booking}/print admin.bookings.print ??? AdminBooki???
+ POST admin/bookings/{booking}/reserve admin.bookings.reserve ??? AdminB???
+ GET|HEAD admin/crm .. admin.crm
+ GET|HEAD admin/customer-management admin.customer-management ??? AdminCusto???
+ GET|HEAD admin/customers/{customer} admin.customers.show ??? AdminCustomerC???
+ PUT admin/customers/{customer} admin.customers.update ??? AdminCustome???
+ DELETE admin/customers/{customer} admin.customers.destroy ??? AdminCustom???
+ GET|HEAD admin/customers/{customer}/edit admin.customers.edit ??? AdminCust???
+ GET|HEAD admin/dashboard .. admin.dashboard ??? routes/web.php:292
+ GET|HEAD admin/dynamic-package-builder .. admin.dynamic-package-builder
+ GET|HEAD admin/dynamic-package-calculator admin.dynamic-package-calculator
+ GET|HEAD admin/hotel-facilities admin.hotel-facilities.index ??? AdminHotel???
+ POST admin/hotel-facilities admin.hotel-facilities.store ??? AdminHotel???
+ GET|HEAD admin/hotel-facilities/create admin.hotel-facilities.create ??? Ad???
+ GET|HEAD admin/hotel-facilities/export admin.hotel-facilities.export ??? Ad???
+ PUT admin/hotel-facilities/{hotel_facility} admin.hotel-facilities.u???
+ DELETE admin/hotel-facilities/{hotel_facility} admin.hotel-facilities.d???
+ GET|HEAD admin/hotel-facilities/{hotel_facility}/edit admin.hotel-facilit???
+ GET|HEAD admin/hotel-images admin.hotel-images.index ??? AdminHotelControll???
+ GET|HEAD admin/hotel-images/{hotelImage} admin.hotel-images.show ??? AdminH???
+ PUT admin/hotel-images/{hotelImage} admin.hotel-images.update ??? Admi???
+ DELETE admin/hotel-images/{hotelImage} admin.hotel-images.destroy ??? Adm???
+ GET|HEAD admin/hotel-images/{hotelImage}/edit admin.hotel-images.edit ??? A???
+ GET|HEAD admin/hotel-management admin.hotel-management ??? AdminHotelManage???
+ GET|HEAD admin/hotel-meal-plans admin.hotel-meal-plans.index ??? AdminHotel???
+ POST admin/hotel-meal-plans admin.hotel-meal-plans.store ??? AdminHotel???
+ GET|HEAD admin/hotel-meal-plans/create admin.hotel-meal-plans.create ??? Ad???
+ GET|HEAD admin/hotel-meal-plans/export admin.hotel-meal-plans.export ??? Ad???
+ PUT admin/hotel-meal-plans/{hotel_meal_plan} admin.hotel-meal-plans.???
+ DELETE admin/hotel-meal-plans/{hotel_meal_plan} admin.hotel-meal-plans.???
+ GET|HEAD admin/hotel-meal-plans/{hotel_meal_plan}/edit admin.hotel-meal-p???
+ GET|HEAD admin/hotel-room-blocks admin.room-blocks.index ??? AdminRoomBlock???
+ POST admin/hotel-room-blocks admin.room-blocks.store ??? AdminRoomBlock???
+ GET|HEAD admin/hotel-room-blocks/calendar admin.room-blocks.calendar ??? Ad???
+ GET|HEAD admin/hotel-room-blocks/create admin.room-blocks.create ??? AdminR???
+ PUT admin/hotel-room-blocks/{room_block} admin.room-blocks.update ??? ???
+ DELETE admin/hotel-room-blocks/{room_block} admin.room-blocks.destroy ???
+ GET|HEAD admin/hotel-room-blocks/{room_block}/edit admin.room-blocks.edit???
+ GET|HEAD admin/hotel-room-inventory admin.hotel-room-inventory.index ??? Ad???
+ POST admin/hotel-room-inventory admin.hotel-room-inventory.store ??? Ad???
+ GET|HEAD admin/hotel-room-inventory/create admin.hotel-room-inventory.cre???
+ GET|HEAD admin/hotel-room-inventory/export admin.hotel-room-inventory.exp???
+ PUT admin/hotel-room-inventory/{hotel_room_inventory} admin.hotel-ro???
+ DELETE admin/hotel-room-inventory/{hotel_room_inventory} admin.hotel-ro???
+ GET|HEAD admin/hotel-room-inventory/{hotel_room_inventory}/edit admin.hot???
+ GET|HEAD admin/hotel-room-types admin.hotel-room-types.index ??? AdminHotel???
+ POST admin/hotel-room-types admin.hotel-room-types.store ??? AdminHotel???
+ GET|HEAD admin/hotel-room-types/create admin.hotel-room-types.create ??? Ad???
+ GET|HEAD admin/hotel-room-types/export admin.hotel-room-types.export ??? Ad???
+ PUT admin/hotel-room-types/{hotel_room_type} admin.hotel-room-types.???
+ DELETE admin/hotel-room-types/{hotel_room_type} admin.hotel-room-types.???
+ GET|HEAD admin/hotel-room-types/{hotel_room_type}/edit admin.hotel-room-t???
+ GET|HEAD admin/hotel-seasonal-rates admin.hotel-seasonal-rates.index ??? Ad???
+ POST admin/hotel-seasonal-rates admin.hotel-seasonal-rates.store ??? Ad???
+ GET|HEAD admin/hotel-seasonal-rates/create admin.hotel-seasonal-rates.cre???
+ GET|HEAD admin/hotel-seasonal-rates/export admin.hotel-seasonal-rates.exp???
+ PUT admin/hotel-seasonal-rates/{hotel_seasonal_rate} admin.hotel-sea???
+ DELETE admin/hotel-seasonal-rates/{hotel_seasonal_rate} admin.hotel-sea???
+ GET|HEAD admin/hotel-seasonal-rates/{hotel_seasonal_rate}/edit admin.hote???
+ GET|HEAD admin/hotels .. admin.hotels.index ??? AdminHotelController@index
+ POST admin/hotels .. admin.hotels.store ??? AdminHotelController@store
+ GET|HEAD admin/hotels/create admin.hotels.create ??? AdminHotelController@c???
+ GET|HEAD admin/hotels/export admin.hotels.export ??? AdminHotelController@e???
+ POST admin/hotels/upload-images admin.hotels.upload-images ??? AdminHot???
+ PUT admin/hotels/{hotel} admin.hotels.update ??? AdminHotelController@???
+ DELETE admin/hotels/{hotel} admin.hotels.destroy ??? AdminHotelController???
+ PUT admin/hotels/{hotel}/about admin.hotels.update-about ??? AdminHote???
+ GET|HEAD admin/hotels/{hotel}/edit admin.hotels.edit ??? AdminHotelControll???
+ GET|HEAD admin/notifications .. admin.notifications
+ GET|HEAD admin/package-bookings admin.package-bookings.index ??? AdminPacka???
+ GET|HEAD admin/package-bookings/{id}/voucher admin.package-bookings.vouch???
+ GET|HEAD admin/package-bookings/{package_booking} admin.package-bookings.???
+ PUT|PATCH admin/package-bookings/{package_booking} admin.package-bookings.???
+ GET|HEAD admin/package-builder .. admin.package-builder
+ GET|HEAD admin/packages admin.packages.index ??? AdminPackageController@ind???
+ POST admin/packages admin.packages.store ??? AdminPackageController@sto???
+ GET|HEAD admin/packages/create admin.packages.create ??? AdminPackageContro???
+ GET|HEAD admin/packages/{package} admin.packages.show ??? AdminPackageContr???
+ PUT|PATCH admin/packages/{package} admin.packages.update ??? AdminPackageCon???
+ DELETE admin/packages/{package} admin.packages.destroy ??? AdminPackageCo???
+ GET|HEAD admin/packages/{package}/edit admin.packages.edit ??? AdminPackage???
+ GET|HEAD admin/payment-management .. admin.payment-management
+ GET|HEAD admin/quote-management .. admin.quote-management
+ GET|HEAD admin/reports .. admin.reports
+ GET|HEAD admin/transport-management .. admin.transport-management
+ GET|HEAD admin/user-management .. admin.user-management
+ POST admin/visa-applications admin.visa-applications.store ??? AdminVis???
+ GET|HEAD admin/visa-applications/create admin.visa-applications.create ??? ???
+ POST admin/visa-applications/{visaApplication}/assign-officer admin.v???
+ DELETE admin/visa-applications/{visaApplication}/document/{field} admin???
+ GET|HEAD admin/visa-applications/{visaApplication}/document/{field}/download admin.visa-applications.document.download ??? AdminVisaApplicationController@downloadDocu???
+ POST admin/visa-applications/{visaApplication}/document/{field}/replace admin.visa-applications.document.replace ??? AdminVisaApplicationController@replaceDocum???
+ GET|HEAD admin/visa-applications/{visaApplication}/print admin.visa-appli???
+ POST admin/visa-applications/{visaApplication}/status admin.visa-appl???
+ GET|HEAD admin/visa-applications/{visa_application} admin.visa-applicatio???
+ PUT|PATCH admin/visa-applications/{visa_application} admin.visa-applicatio???
+ DELETE admin/visa-applications/{visa_application} admin.visa-applicatio???
+ GET|HEAD admin/visa-applications/{visa_application}/edit admin.visa-appli???
+ GET|HEAD admin/visa-management admin.visa-management ??? AdminVisaApplicati???
+ GET|HEAD admin/visa-reports admin.visa-reports ??? AdminVisaApplicationCont???
+ GET|HEAD admin/visa-reports/export/excel admin.visa-reports.export.excel ???
+ GET|HEAD admin/visa-reports/export/pdf admin.visa-reports.export.pdf ??? Ad???
+ GET|HEAD admin/visa-types admin.visa-types.index ??? AdminVisaTypeControlle???
+ POST admin/visa-types admin.visa-types.store ??? AdminVisaTypeControlle???
+ GET|HEAD admin/visa-types/create admin.visa-types.create ??? AdminVisaTypeC???
+ GET|HEAD admin/visa-types/{visa_type} admin.visa-types.show ??? AdminVisaTy???
+ PUT|PATCH admin/visa-types/{visa_type} admin.visa-types.update ??? AdminVisa???
+ DELETE admin/visa-types/{visa_type} admin.visa-types.destroy ??? AdminVis???
+ GET|HEAD admin/visa-types/{visa_type}/edit admin.visa-types.edit ??? AdminV???
+ GET|HEAD admin/voucher-management admin.voucher-management ??? AdminVoucher???
+ POST admin/voucher-management/logo admin.voucher-management.logo ??? Ad???
+ GET|HEAD admin/website-cms .. admin.website-cms
+ POST bookings/cancel-review bookings.cancel-review ??? AdminFlightBooki???
+ POST bookings/confirm bookings.confirm ??? AdminFlightBookingController???
+ GET|HEAD bookings/review bookings.review ??? AdminFlightBookingController@r???
+ GET|HEAD custom-package .. custom.package ??? routes/web.php:517
+ GET|HEAD customer/bookings customer.bookings ??? AdminFlightBookingControll???
+ GET|HEAD customer/dashboard customer.dashboard ??? CustomerDashboardControl???
+ GET|HEAD customer/package-bookings/{id}/voucher customer.package-bookings???
+ GET|HEAD customer/packages/create customer.packages.create ??? CustomerPack???
+ GET|HEAD customer/visa customer.visa.index ??? CustomerVisaController@index
+ POST customer/visa customer.visa.store ??? CustomerVisaController@store
+ GET|HEAD customer/visa/create customer.visa.create ??? CustomerVisaControll???
+ GET|HEAD customer/visa/{id} customer.visa.show ??? CustomerVisaController@s???
+ GET|HEAD dashboard .. dashboard ??? routes/web.php:260
+ POST email/verification-notification verification.send ??? Laravel\Fort???
+ GET|HEAD email/verify verification.notice ??? Laravel\Fortify ??? EmailVerifi???
+ GET|HEAD email/verify/{id}/{hash} verification.verify ??? Laravel\Fortify ???
+ GET|HEAD forgot-password password.request ??? Laravel\Fortify ??? PasswordRes???
+ POST forgot-password password.email ??? Laravel\Fortify ??? PasswordReset???
+ GET|HEAD home .. home ??? routes/web.php:288
+ GET|HEAD hotels .. routes/web.php:203
+ GET|HEAD hotels/availability hotels.availability ??? PublicHotelBookingCont???
+ POST hotels/book .. hotels.book ??? PublicHotelBookingController@store
+ POST hotels/book/review hotels.book.review ??? PublicHotelBookingContro???
+ POST hotels/book/review/edit hotels.book.review.edit ??? PublicHotelBoo???
+ GET|HEAD hotels/booking hotels.booking ??? PublicHotelBookingController@ind???
+ GET|HEAD hotels/booking/confirmation/{booking} hotels.booking.confirmatio???
+ POST hotels/cancel/{booking} hotels.booking.cancel ??? PublicHotelBooki???
+ GET|HEAD hotels/filter hotels.filter ??? PublicHotelBookingController@filter
+ GET|HEAD hotels/{hotel} .. hotels.details ??? PublicHotelController@show
+ GET|HEAD hotels/{hotel}/booking hotels.booking.create ??? PublicHotelBookin???
+ GET|HEAD login login ??? Laravel\Fortify ??? AuthenticatedSessionController@c???
+ POST login login.store ??? Laravel\Fortify ??? AuthenticatedSessionContro???
+ POST logout logout ??? Laravel\Fortify ??? AuthenticatedSessionController???
+ GET|HEAD packages .. packages.index ??? CustomerPackageController@index
+ GET|HEAD packages/{package}/book packages.book ??? PackageBookingController???
+ POST packages/{package}/book packages.store ??? PackageBookingControlle???
+ GET|HEAD register .. register ??? CustomerRegistrationController@create
+ POST register . register.submit ??? CustomerRegistrationController@store
+ POST reset-password password.update ??? Laravel\Fortify ??? NewPasswordCo???
+ GET|HEAD reset-password/{token} password.reset ??? Laravel\Fortify ??? NewPas???
+ GET|HEAD storage/{path} storage.local ??? vendor/laravel/framework/src/Illu???
+ PUT storage/{path} storage.local.upload ??? vendor/laravel/framework/s???
+ GET|HEAD ticket/{ticket} .. ticket.details ??? PublicTicketController@show
+ POST tickets/{ticket}/book tickets.book ??? AdminFlightBookingControlle???
+ GET|HEAD travel-agent/booking-history travel-agents.booking-history.index???
+ GET|HEAD travel-agent/booking-history/flight/{id} travel-agents.booking-h???
+ POST travel-agent/booking-history/flight/{id}/cancel travel-agents.bo???
+ GET|HEAD travel-agent/booking-history/hotel/{id} travel-agents.booking-hi???
+ POST travel-agent/booking-history/hotel/{id}/cancel travel-agents.boo???
+ GET|HEAD travel-agent/bookings travel-agents.bookings ??? AdminFlightBookin???
+ POST travel-agent/bookings/cancel-review travel-agents.bookings.cance???
+ POST travel-agent/bookings/confirm travel-agents.bookings.confirm ??? A???
+ GET|HEAD travel-agent/bookings/review travel-agents.bookings.review ??? Adm???
+ GET|HEAD travel-agent/commission travel-agents.commission.index ??? TravelA???
+ GET|HEAD travel-agent/customer-visa travel-agents.customer-visa.index ??? T???
+ GET|HEAD travel-agent/customer-visa/{id} travel-agents.customer-visa.show???
+ GET|HEAD travel-agent/customer-visa/{id}/download-document/{field} travel???
+ GET|HEAD travel-agent/customer-visa/{id}/download-visa travel-agents.cust???
+ GET|HEAD travel-agent/dashboard travel-agents.dashboard ??? TravelAgentAuth???
+ GET|HEAD travel-agent/group-booking travel-agents.group-booking ??? TravelA???
+ GET|HEAD travel-agent/hotels .. routes/web.php:186
+ GET|HEAD travel-agent/login travel-agents.login ??? TravelAgentAuthControll???
+ POST travel-agent/login travel-agents.login.submit ??? TravelAgentAuthC???
+ POST travel-agent/logout travel-agents.logout ??? TravelAgentAuthContro???
+ GET|HEAD travel-agent/package-bookings/{id}/voucher travel-agents.package???
+ GET|HEAD travel-agent/packages travel-agents.packages.index ??? CustomerPac???
+ POST travel-agent/password/email travel-agents.password.email ??? Trave???
+ GET|HEAD travel-agent/password/reset travel-agents.password.request ??? Tra???
+ POST travel-agent/password/reset travel-agents.password.update ??? Trav???
+ GET|HEAD travel-agent/password/reset/{token} travel-agents.password.reset???
+ GET|HEAD travel-agent/register travel-agents.register ??? TravelAgentRegist???
+ POST travel-agent/register travel-agents.register.submit ??? TravelAgen???
+ GET|HEAD travel-agent/register/success travel-agents.register.success ??? T???
+ GET|HEAD travel-agent/reports travel-agents.reports.index ??? TravelAgentRe???
+ GET|HEAD travel-agent/reports/booking travel-agents.reports.booking ??? Tra???
+ GET|HEAD travel-agent/reports/commission travel-agents.reports.commission???
+ GET|HEAD travel-agent/reports/customer travel-agents.reports.customer ??? T???
+ GET|HEAD travel-agent/reports/hotel travel-agents.reports.hotel ??? TravelA???
+ GET|HEAD travel-agent/reports/payment travel-agents.reports.payment ??? Tra???
+ GET|HEAD travel-agent/reports/sales travel-agents.reports.sales ??? TravelA???
+ GET|HEAD travel-agent/reports/ticket travel-agents.reports.ticket ??? Trave???
+ GET|HEAD travel-agent/reports/visa travel-agents.reports.visa ??? TravelAge???
+ POST travel-agent/sub-agent travel-agents.sub-agents.store ??? TravelAg???
+ GET|HEAD travel-agent/sub-agent/create travel-agents.sub-agents.create ??? ???
+ GET|HEAD travel-agent/sub-agents travel-agents.sub-agents.index ??? TravelA???
+ GET|HEAD travel-agent/sub-agents/{subAgent} travel-agents.sub-agents.show???
+ PUT travel-agent/sub-agents/{subAgent} travel-agents.sub-agents.upda???
+ DELETE travel-agent/sub-agents/{subAgent} travel-agents.sub-agents.dest???
+ GET|HEAD travel-agent/sub-agents/{subAgent}/edit travel-agents.sub-agents???
+ GET|HEAD travel-agent/tickets travel-agents.tickets ??? TravelAgentAuthCont???
+ POST travel-agent/tickets/{ticket}/book travel-agents.tickets.book ??? ???
+ GET|HEAD travel-agent/visa-applications travel-agents.visa-applications ???
+ POST travel-agent/visa-applications travel-agents.visa-applications.s???
+ GET|HEAD travel-agent/visa-applications/create travel-agents.visa-applica???
+ GET|HEAD travel-agent/visa-applications/{id} travel-agents.visa-applicati???
+ PUT travel-agent/visa-applications/{id} travel-agents.visa-applicati???
+ DELETE travel-agent/visa-applications/{id} travel-agents.visa-applicati???
+ GET|HEAD travel-agent/visa-applications/{id}/document/{field} travel-agen???
+ GET|HEAD travel-agent/visa-applications/{id}/edit travel-agents.visa-appl???
+ GET|HEAD travel-agent/visa-applications/{id}/print travel-agents.visa-app???
+ GET|HEAD travel-agents/hotels/index travel-agents.hotels.index ??? TravelAg???
+ GET|HEAD two-factor-challenge two-factor.login ??? Laravel\Fortify ??? TwoFac???
+ POST two-factor-challenge two-factor.login.store ??? Laravel\Fortify ??? ???
+ GET|HEAD up vendor/laravel/framework/src/Illuminate/Foundation/Configurat???
+ GET|HEAD user/confirm-password password.confirm ??? Laravel\Fortify ??? Confi???
+ POST user/confirm-password password.confirm.store ??? Laravel\Fortify ???
+ GET|HEAD user/confirmed-password-status password.confirmation ??? Laravel\F???
+ POST user/confirmed-two-factor-authentication two-factor.confirm ??? La???
+ GET|HEAD user/login .. routes/web.php:230
+ PUT user/password user-password.update ??? Laravel\Fortify ??? PasswordC???
+ PUT user/profile-information user-profile-information.update ??? Larav???
+ GET|HEAD user/ticket .. tickets.index ??? PublicTicketController@index
+ POST user/two-factor-authentication two-factor.enable ??? Laravel\Forti???
+ DELETE user/two-factor-authentication two-factor.disable ??? Laravel\Fort???
+ GET|HEAD user/two-factor-qr-code two-factor.qr-code ??? Laravel\Fortify ??? T???
+ GET|HEAD user/two-factor-recovery-codes two-factor.recovery-codes ??? Larav???
+ POST user/two-factor-recovery-codes two-factor.regenerate-recovery-co???
+ GET|HEAD user/two-factor-secret-key two-factor.secret-key ??? Laravel\Forti???
+ GET|HEAD visa-office/applications/{visaApplication} visa-office.applicati???
+ GET|HEAD visa-office/applications/{visaApplication}/document/{field}/download visa-office.applications.document.download ??? VisaOfficerController@downloadDoc???
+ GET|HEAD visa-office/applications/{visaApplication}/print visa-office.app???
+ POST visa-office/applications/{visaApplication}/status visa-office.ap???
+ GET|HEAD visa-office/assigned visa-office.assigned ??? VisaOfficerControlle???
+ GET|HEAD visa-office/dashboard visa-office.dashboard ??? VisaOfficerControl???
+ GET|HEAD visa-office/document-queue visa-office.document.queue ??? VisaOffi???
+ GET|HEAD visa-office/issued visa-office.issued ??? VisaOfficerController@is???
+ GET|HEAD visa-office/notifications visa-office.notifications ??? VisaOffice???
+ POST visa-office/notifications/mark-all-read visa-office.notification???
+ POST visa-office/notifications/{notification}/mark-read visa-office.n???
+ GET|HEAD visa-office/profile visa-office.profile ??? VisaOfficerController@???
+ GET|HEAD visa-office/rejected visa-office.rejected ??? VisaOfficerControlle???
+ GET|HEAD visa-office/reports visa-office.reports ??? VisaOfficerController@???
+ GET|HEAD visa-office/visa-management visa-office.visa-management ??? VisaOf???
+
+ Showing [292] routes
+
