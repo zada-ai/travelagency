@@ -4,6 +4,7 @@
 @php
     $booking = $voucher->flightBooking ?? $voucher->packageBooking;
     $isFlight = $voucher->flight_booking_id !== null;
+    $bookingType = $isFlight ? 'Flight' : 'Package';
     $ticket = $isFlight ? $booking?->ticket : null;
     $agent = $isFlight ? $booking?->agent : null;
     $visaIncluded = (bool) ($booking?->include_visa ?? false);
@@ -22,16 +23,55 @@
     <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
         <div class="px-8 py-6 border-b border-slate-200">
             <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-                <div>
-                    <h1 class="text-2xl font-bold text-slate-900">Flight Voucher</h1>
-                    <p class="text-sm text-slate-500 mt-1">Voucher #: {{ $voucher->voucher_number }}</p>
+                {{-- Left: Agent block (shows only when agent exists) --}}
+                <div class="order-1 md:order-1">
+                    @if($agent)
+                        <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4 flex items-center gap-3">
+                            @php
+                                $agentLogo = $agent?->company_logo ?? $agent?->logo ?? null;
+                                $agentLogoUrl = $agentLogo ? (str_starts_with($agentLogo, 'http') ? $agentLogo : asset($agentLogo)) : null;
+                            @endphp
+
+                            @if($agentLogoUrl)
+                                <img src="{{ $agentLogoUrl }}" alt="Agent Logo" class="object-contain" style="max-width:160px; max-height:80px; width:auto; height:auto;" />
+                            @else
+                                <div class="h-12 w-12 rounded bg-slate-100 border border-slate-200 flex items-center justify-center text-xs text-slate-400">AGENT</div>
+                            @endif
+
+                            <div>
+                                <div class="text-sm font-semibold text-slate-900">{{ $agent?->company_name ?? $agent?->name ?? 'Travel Agent' }}</div>
+                                @if($agent?->email)
+                                    <div class="text-xs text-slate-500">{{ $agent->email }}</div>
+                                @endif
+                            </div>
+                        </div>
+                    @endif
+                </div>
+
+                {{-- Middle: Title and meta --}}
+                <div class="flex-1 order-3 md:order-2 text-left md:text-center">
+                    <h1 class="text-2xl font-bold text-slate-900">{{ $bookingType }} Voucher</h1>
                     <p class="text-sm text-slate-500">Issued: {{ optional($voucher->issued_at)->format('d M Y H:i') }}</p>
                 </div>
 
-                <div class="space-x-2">
-                    <a href="{{ route('admin.vouchers.index') }}" class="inline-flex items-center px-4 py-2 rounded-lg bg-slate-900 text-white">Back</a>
-                    <a href="{{ route('admin.vouchers.download', ['voucher' => $voucher->id]) }}" class="inline-flex items-center px-4 py-2 rounded-lg bg-blue-600 text-white">Download PDF</a>
-                    <button type="button" onclick="window.print()" class="inline-flex items-center px-4 py-2 rounded-lg bg-emerald-600 text-white">Print</button>
+                {{-- Right: Admin logo and actions --}}
+                <div class="order-2 md:order-3 text-right">
+                    @if(! empty($voucher->admin_company_logo) || ! empty($voucher->admin_company_name))
+                        <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4 text-left inline-block">
+                            @if(! empty($voucher->admin_company_logo))
+                                <img src="{{ asset($voucher->admin_company_logo) }}" alt="Admin Logo" class="mb-3 object-contain" style="max-width:160px; max-height:80px; width:auto; height:auto;" />
+                            @endif
+                            <div class="text-sm font-semibold text-slate-900">{{ $voucher->admin_company_name ?? 'Admin Company' }}</div>
+                        </div>
+                    @endif
+
+                    {{-- Transport type is set during voucher creation (Generate Voucher modal) and is not editable here. --}}
+
+                    <div class="inline-flex items-center gap-2 ml-3">
+                        <a href="{{ route('admin.vouchers.index') }}" class="inline-flex items-center px-4 py-2 rounded-lg bg-slate-900 text-white">Back</a>
+                        <a href="{{ route('admin.vouchers.download', ['voucher' => $voucher->id]) }}" class="inline-flex items-center px-4 py-2 rounded-lg bg-blue-600 text-white">Download PDF</a>
+                        <button type="button" onclick="window.print()" class="inline-flex items-center px-4 py-2 rounded-lg bg-emerald-600 text-white">Print</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -52,34 +92,102 @@
                 </div>
                 <div class="bg-slate-50 rounded-2xl p-5">
                     <p class="text-xs uppercase tracking-wider text-slate-400">Booking Type</p>
-                    <p class="mt-2 text-lg font-semibold text-slate-900">Flight</p>
+                    <p class="mt-2 text-lg font-semibold text-slate-900">{{ $bookingType }}</p>
                 </div>
+                    <div class="bg-slate-50 rounded-2xl p-5">
+                        <p class="text-xs uppercase tracking-wider text-slate-400">Applicant / Booking Contact</p>
+                        <p class="mt-2 text-lg font-semibold text-slate-900">{{ $booking?->contact_name ?? $booking?->user?->name ?? '-' }}</p>
+                    </div>
+                    <div class="bg-slate-50 rounded-2xl p-5">
+                        <p class="text-xs uppercase tracking-wider text-slate-400">Booked By</p>
+                        <p class="mt-2 text-lg font-semibold text-slate-900">{{ optional($booking?->user)->name ?? 'N/A' }}</p>
+                    </div>
+                    <div class="bg-slate-50 rounded-2xl p-5">
+                        <p class="text-xs uppercase tracking-wider text-slate-400">Email Address</p>
+                        <p class="mt-2 text-lg font-semibold text-slate-900">{{ $booking?->contact_email ?? $booking?->user?->email ?? 'N/A' }}</p>
+                    </div>
+                    <div class="bg-slate-50 rounded-2xl p-5">
+                        <p class="text-xs uppercase tracking-wider text-slate-400">WhatsApp Number</p>
+                        <p class="mt-2 text-lg font-semibold text-slate-900">{{ $booking?->contact_phone ?? $booking?->user?->phone ?? 'N/A' }}</p>
+                    </div>
             </div>
+
+            @php
+                $voucherPassengers = collect();
+                if (method_exists($voucher, 'passengers')) {
+                    $voucherPassengers = $voucher->passengers;
+                }
+                if (! $voucherPassengers->count() && $booking && method_exists($booking, 'passengers')) {
+                    $voucherPassengers = $booking->passengers;
+                }
+            @endphp
+
+            @if($voucherPassengers->count())
+                <div class="rounded-2xl border border-slate-200 p-5 bg-slate-50">
+                    <h2 class="text-lg font-bold text-slate-900">Passenger Information</h2>
+                    <div class="mt-4 overflow-x-auto">
+                        <table class="w-full text-sm border-collapse">
+                            <thead>
+                                <tr class="bg-slate-100 text-left text-xs uppercase tracking-[0.2em] text-slate-500">
+                                    <th class="p-3 font-semibold">Passenger</th>
+                                    <th class="p-3 font-semibold">Type</th>
+                                    <th class="p-3 font-semibold">Passport</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach($voucherPassengers as $passenger)
+                                    <tr class="border-t border-slate-200">
+                                        <td class="p-3 text-slate-900">
+                                            {{ trim(($passenger->first_name ?? '') . ' ' . ($passenger->last_name ?? '')) ?: ($passenger->name ?? ($passenger->full_name ?? 'N/A')) }}
+                                        </td>
+                                        <td class="p-3 text-slate-900">
+                                            {{ $passenger->passenger_type ?? $passenger->type ?? 'ADT' }}
+                                        </td>
+                                        <td class="p-3 text-slate-900">
+                                            {{ $passenger->passport_number ?? $passenger->passport ?? 'N/A' }}
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            @endif
 
             @if($isFlight && $ticket)
                 <div class="grid gap-6">
                     <div>
                         <h2 class="text-lg font-bold text-slate-900">Flight Details</h2>
-                        <div class="mt-4 grid md:grid-cols-4 gap-4">
+                        <div class="grid md:grid-cols-2 gap-4">
                             <div class="rounded-2xl border border-slate-200 p-5">
-                                <p class="text-xs uppercase text-slate-400">Airline</p>
-                                <p class="mt-2 font-semibold text-slate-900">{{ $ticket->airline ?? $ticket->airlineMaster?->name ?? '-' }}</p>
+                                <h3 class="text-lg font-bold text-slate-900">Additional Services</h3>
+                                <div class="mt-4 overflow-x-auto">
+                                    <table class="w-full text-sm border-collapse">
+                                        <thead>
+                                            <tr class="bg-slate-100 text-left text-xs uppercase tracking-[0.2em] text-slate-500">
+                                                <th class="p-3 font-semibold">Service</th>
+                                                <th class="p-3 font-semibold">Type</th>
+                                                <th class="p-3 font-semibold">Status</th>
+                                                <th class="p-3 font-semibold">Amount</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr class="border-t border-slate-200">
+                                                <td class="p-3 text-slate-900">Visa</td>
+                                                <td class="p-3 text-slate-900">-</td>
+                                                <td class="p-3 text-slate-900">{{ $visaIncluded ? 'Included' : 'Not Included' }}</td>
+                                                <td class="p-3 text-slate-900">@if($visaIncluded) SAR {{ number_format($booking?->visa_price ?? 0, 2) }} @else - @endif</td>
+                                            </tr>
+                                            <tr class="border-t border-slate-200">
+                                                <td class="p-3 text-slate-900">Transport</td>
+                                                <td class="p-3 text-slate-900">{{ $voucher->transport_type ?? ($booking?->transport_type ?? '-') }}</td>
+                                                <td class="p-3 text-slate-900">{{ $transportIncluded ? 'Included' : 'Not Included' }}</td>
+                                                <td class="p-3 text-slate-900">@if($transportIncluded) SAR {{ number_format($booking?->transport_price ?? 0, 2) }} @else - @endif</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
-                            <div class="rounded-2xl border border-slate-200 p-5">
-                                <p class="text-xs uppercase text-slate-400">Flight Number</p>
-                                <p class="mt-2 font-semibold text-slate-900">{{ $ticket->flight_number ?? '-' }}</p>
-                            </div>
-                            <div class="rounded-2xl border border-slate-200 p-5">
-                                <p class="text-xs uppercase text-slate-400">Cabin Class</p>
-                                <p class="mt-2 font-semibold text-slate-900">{{ $booking?->cabin_class ?? '-' }}</p>
-                            </div>
-                            <div class="rounded-2xl border border-slate-200 p-5">
-                                <p class="text-xs uppercase text-slate-400">Ticket Type</p>
-                                <p class="mt-2 font-semibold text-slate-900">{{ $ticket->ticket_type ?? '-' }}</p>
-                            </div>
-                        </div>
-                    </div>
-
                     <div class="grid md:grid-cols-2 gap-6">
                         <div class="rounded-2xl border border-slate-200 p-5">
                             <p class="text-xs uppercase text-slate-400">Departure</p>
@@ -156,6 +264,10 @@
                         </div>
                         @if($transportIncluded)
                             <div class="text-sm text-slate-500">Transport Price: SAR {{ number_format($booking?->transport_price ?? 0, 2) }}</div>
+                        @endif
+
+                        @if(! empty($voucher->transport_type))
+                            <div class="text-sm text-slate-700">Transport Type: <span class="font-semibold">{{ $voucher->transport_type }}</span></div>
                         @endif
                     </div>
                 </div>

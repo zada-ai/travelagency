@@ -5,7 +5,10 @@ namespace App\Http\Controllers;
 use App\Models\CustomerVoucher;
 use App\Models\FlightBooking;
 use App\Models\PackageBooking;
+use App\Models\VoucherSetting;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\File;
 use Barryvdh\DomPDF\Facade\Pdf;
 
 class AdminCustomerVoucherController extends Controller
@@ -96,7 +99,7 @@ class AdminCustomerVoucherController extends Controller
                     ->orWhereHas('package', function ($query) use ($q) {
 
                         $query->where(
-                            'name',
+                            'title',
                             'like',
                             "%{$q}%"
                         );
@@ -159,8 +162,9 @@ class AdminCustomerVoucherController extends Controller
             'user',
             'agent',
             'voucher',
+            'passengers',
         ])
-            ->where('status', 'Confirmed')
+            ->where('status', 'Approved')
             ->whereDoesntHave('voucher')
             ->orderByDesc('created_at')
             ->paginate(
@@ -184,6 +188,7 @@ class AdminCustomerVoucherController extends Controller
     public function show(CustomerVoucher $voucher)
     {
         $voucher->load([
+            'passengers',
             'flightBooking.user',
             'flightBooking.agent',
             'flightBooking.ticket.airlineMaster',
@@ -195,6 +200,7 @@ class AdminCustomerVoucherController extends Controller
 
             'packageBooking.user',
             'packageBooking.package',
+            'packageBooking.passengers',
         ]);
 
         return view(
@@ -209,6 +215,7 @@ class AdminCustomerVoucherController extends Controller
     public function download(CustomerVoucher $voucher)
     {
         $voucher->load([
+            'passengers',
             'flightBooking.user',
             'flightBooking.agent',
             'flightBooking.ticket.airlineMaster',
@@ -220,6 +227,7 @@ class AdminCustomerVoucherController extends Controller
 
             'packageBooking.user',
             'packageBooking.package',
+            'packageBooking.passengers',
         ]);
 
         $booking = $voucher->flightBooking
@@ -227,11 +235,14 @@ class AdminCustomerVoucherController extends Controller
 
         abort_unless($booking, 404);
 
+        $setting = VoucherSetting::first();
+
         $pdf = Pdf::loadView(
             'customer.vouchers.pdf',
             [
                 'booking' => $booking,
                 'voucher' => $voucher,
+                'setting' => $setting,
             ]
         );
 
@@ -242,18 +253,101 @@ class AdminCustomerVoucherController extends Controller
         );
     }
 
+    
+
+    protected function ensureAdmin(): void
+    {
+        $user = Auth::guard('web')->user();
+
+        abort_unless(
+            $user &&
+            (
+                $user->hasRole('Super Admin')
+                || in_array(
+                    strtolower((string) ($user->role ?? '')),
+                    ['super_admin', 'super admin', 'admin'],
+                    true
+                )
+            ),
+            403
+        );
+    }
+
+    protected function resolveAdminCompanyAttributes(Request $request): array
+    {
+        $data = $request->validate([
+            'admin_company_name' => ['required', 'string', 'max:255'],
+            'admin_company_logo' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:5120'],
+            'transport_type' => ['nullable', 'string', 'max:100'],
+        ]);
+
+        if ($request->hasFile('admin_company_logo')) {
+            $directory = public_path('voucher-images');
+
+            if (! File::exists($directory)) {
+                File::makeDirectory($directory, 0755, true);
+            }
+
+            $filename = 'voucher-admin-logo-' . time() . '-' . uniqid() . '.' . $request->file('admin_company_logo')->extension();
+
+            $request->file('admin_company_logo')->move($directory, $filename);
+
+            $data['admin_company_logo'] = 'voucher-images/' . $filename;
+        } else {
+            unset($data['admin_company_logo']);
+        }
+
+        if (empty($data['transport_type'])) {
+            unset($data['transport_type']);
+        }
+
+        return $data;
+    }
+
+    protected function resolveVoucherPassengers(Request $request, string $type): array
+    {
+        $passengerRules = [
+            'id' => ['required', 'integer'],
+            'passport_number' => ['required', 'string', 'max:255'],
+        ];
+
+        $attributePrefix = $type === 'flight' ? 'passengers' : 'passengers';
+
+        $data = $request->validate([
+            "{$attributePrefix}" => ['required', 'array', 'min:1'],
+            "{$attributePrefix}.*.id" => $passengerRules['id'],
+            "{$attributePrefix}.*.passport_number" => $passengerRules['passport_number'],
+        ]);
+
+        return $data[$attributePrefix] ?? [];
+    }
+
     /**
      * Generate flight voucher
      */
-    public function generate(FlightBooking $flightBooking)
+    public function generate(Request $request, FlightBooking $flightBooking)
     {
+        $this->ensureAdmin();
+
         abort_unless(
-            $flightBooking->status === 'Confirmed',
+            $flightBooking->status === 'Approved',
             403
         );
 
+        $adminAttributes = $this->resolveAdminCompanyAttributes($request);
+        $passengerInputs = $this->resolveVoucherPassengers($request, 'flight');
+
+        $flightBooking->load('passengers');
+
         $voucher = $this->createVoucherForFlight(
-            $flightBooking
+            $flightBooking,
+            $adminAttributes
+        );
+
+        $this->syncVoucherPassengers(
+            $voucher,
+            $passengerInputs,
+            $flightBooking->passengers
         );
 
         return redirect()
@@ -272,16 +366,29 @@ class AdminCustomerVoucherController extends Controller
     /**
      * Generate package voucher
      */
-    public function generatePackage(
-        PackageBooking $packageBooking
-    ) {
+    public function generatePackage(Request $request, PackageBooking $packageBooking)
+    {
+        $this->ensureAdmin();
+
         abort_unless(
             $packageBooking->status === 'Approved',
             403
         );
 
+        $adminAttributes = $this->resolveAdminCompanyAttributes($request);
+        $passengerInputs = $this->resolveVoucherPassengers($request, 'package');
+
+        $packageBooking->load('passengers');
+
         $voucher = $this->createVoucherForPackage(
-            $packageBooking
+            $packageBooking,
+            $adminAttributes
+        );
+
+        $this->syncVoucherPassengers(
+            $voucher,
+            $passengerInputs,
+            $packageBooking->passengers
         );
 
         return redirect()
@@ -301,21 +408,25 @@ class AdminCustomerVoucherController extends Controller
      * Create flight voucher
      */
     protected function createVoucherForFlight(
-        FlightBooking $flightBooking
+        FlightBooking $flightBooking,
+        array $adminAttributes = []
     ): CustomerVoucher {
 
-        return CustomerVoucher::firstOrCreate(
+        return CustomerVoucher::updateOrCreate(
             [
                 'flight_booking_id' => $flightBooking->id,
             ],
-            [
-                'voucher_number' =>
-                    $this->generateUniqueVoucherNumber(),
+            array_merge(
+                [
+                    'voucher_number' =>
+                        $this->generateUniqueVoucherNumber(),
 
-                'status' => 'Issued',
+                    'status' => 'Issued',
 
-                'issued_at' => now(),
-            ]
+                    'issued_at' => now(),
+                ],
+                $adminAttributes
+            )
         );
     }
 
@@ -323,22 +434,68 @@ class AdminCustomerVoucherController extends Controller
      * Create package voucher
      */
     protected function createVoucherForPackage(
-        PackageBooking $packageBooking
+        PackageBooking $packageBooking,
+        array $adminAttributes = []
     ): CustomerVoucher {
 
-        return CustomerVoucher::firstOrCreate(
+        return CustomerVoucher::updateOrCreate(
             [
                 'package_booking_id' => $packageBooking->id,
             ],
-            [
-                'voucher_number' =>
-                    $this->generateUniqueVoucherNumber(),
+            array_merge(
+                [
+                    'voucher_number' =>
+                        $this->generateUniqueVoucherNumber(),
 
-                'status' => 'Issued',
+                    'status' => 'Issued',
 
-                'issued_at' => now(),
-            ]
+                    'issued_at' => now(),
+                ],
+                $adminAttributes
+            )
         );
+    }
+
+    protected function syncVoucherPassengers(
+        CustomerVoucher $voucher,
+        array $passengerInputs,
+        $bookingPassengers
+    ): void {
+        $passengerIds = collect($passengerInputs)
+            ->pluck('id')
+            ->filter()
+            ->unique()
+            ->values()
+            ->all();
+
+        $voucher->passengers()
+            ->whereNotIn('passenger_id', $passengerIds)
+            ->delete();
+
+        foreach ($passengerInputs as $passengerInput) {
+            $bookingPassenger = $bookingPassengers
+                ->firstWhere('id', $passengerInput['id']);
+
+            if (! $bookingPassenger) {
+                continue;
+            }
+
+            $voucher->passengers()->updateOrCreate(
+                [
+                    'customer_voucher_id' => $voucher->id,
+                    'passenger_id' => $bookingPassenger->id,
+                ],
+                [
+                    'passenger_type' => $bookingPassenger->passenger_type ?? $bookingPassenger->type ?? null,
+                    'first_name' => $bookingPassenger->first_name ?? null,
+                    'last_name' => $bookingPassenger->last_name ?? null,
+                    'name' => $bookingPassenger->name ?? trim(
+                        ($bookingPassenger->first_name ?? '') . ' ' . ($bookingPassenger->last_name ?? '')
+                    ),
+                    'passport_number' => $passengerInput['passport_number'],
+                ]
+            );
+        }
     }
 
     /**

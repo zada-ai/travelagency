@@ -61,6 +61,14 @@
     $arrivalAirport = $ticket?->arrivalAirport;
     $returnDepartureAirport = $ticket?->returnDepartureAirport;
     $returnArrivalAirport = $ticket?->returnArrivalAirport;
+
+    // Determine appropriate download URL for this booking type (flight or package)
+    $downloadUrl = '';
+    if ($booking instanceof \App\Models\FlightBooking) {
+        $downloadUrl = route('customer.vouchers.download', ['flightBooking' => $booking->id]);
+    } elseif ($booking instanceof \App\Models\PackageBooking) {
+        $downloadUrl = route('customer.vouchers.package.download', ['packageBooking' => $booking->id]);
+    }
 @endphp
 
 <div class="max-w-6xl mx-auto py-8 px-4">
@@ -80,21 +88,22 @@
 
         <div class="flex gap-2">
 
-            <a href="{{ route('admin.vouchers.index') }}"
+            <a href="{{ Auth::guard('travel_agent')->check() ? route('travel-agents.bookings') : route('customer.bookings') }}"
                class="px-4 py-2 rounded-lg bg-slate-200 text-slate-800 text-sm font-semibold">
                 Back
             </a>
 
-            <a href="{{ route('admin.vouchers.download', ['voucher' => $voucher->id]) }}"
-               class="px-4 py-2 rounded-lg bg-slate-900 text-white text-sm font-semibold">
-                Download PDF
-            </a>
+            @if(Auth::guard('travel_agent')->check() || Auth::guard('web')->check())
+                <a href="{{ $downloadUrl }}"
+                   class="px-4 py-2 rounded-lg bg-slate-900 text-white text-sm font-semibold" target="_blank" rel="noopener">
+                    Download PDF
+                </a>
 
-            <button type="button"
-                    onclick="window.print()"
-                    class="px-4 py-2 rounded-lg bg-blue-600 text-white text-sm font-semibold">
-                Print
-            </button>
+                <a href="{{ $downloadUrl }}"
+                   class="px-4 py-2 rounded-lg bg-blue-600 text-white text-sm font-semibold" target="_blank" rel="noopener">
+                    Print
+                </a>
+            @endif
 
         </div>
     </div>

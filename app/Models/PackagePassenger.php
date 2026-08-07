@@ -15,6 +15,16 @@ class PackagePassenger extends Model
         'dob' => 'date',
     ];
 
+    protected $fillable = [
+        'package_booking_id',
+        'type',
+        'name',
+        'dob',
+        'cnic_document',
+        'passport_document',
+        'passport_number',
+    ];
+
     public function booking()
     {
         return $this->belongsTo(PackageBooking::class, 'package_booking_id');

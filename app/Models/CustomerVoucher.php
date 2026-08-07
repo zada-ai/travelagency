@@ -15,6 +15,9 @@ class CustomerVoucher extends Model
         'voucher_number',
         'status',
         'issued_at',
+        'admin_company_name',
+        'admin_company_logo',
+        'transport_type',
     ];
 
     protected $casts = [
@@ -29,5 +32,10 @@ class CustomerVoucher extends Model
     public function packageBooking()
     {
         return $this->belongsTo(PackageBooking::class, 'package_booking_id');
+    }
+
+    public function passengers()
+    {
+        return $this->hasMany(CustomerVoucherPassenger::class, 'customer_voucher_id');
     }
 }

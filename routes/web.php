@@ -87,14 +87,14 @@ Route::get('/', function () {
         ->visibleToPortal('customer')
         ->with('coverImage')
         ->latest('id')
-        ->take(4)
+        ->take(3)
         ->get();
 
     $featuredFlights = Ticket::forPortal('customer')
-        ->where('status', 'Active')
+        ->whereNotIn('status', ['Cancelled', 'Rejected'])
         ->where('available_seats', '>', 0)
-        ->latest('departure_date')
-        ->take(4)
+        ->orderByDesc('created_at')
+        ->take(3)
         ->get();
 
     return view('home', compact('featuredPackages', 'featuredHotels', 'featuredFlights'));
@@ -334,6 +334,7 @@ Route::middleware(['auth'])->group(function () use ($adminPages) {
     Route::post('/admin/vouchers/generate/flight/{flightBooking}', [AdminCustomerVoucherController::class, 'generate'])->name('admin.vouchers.generate.flight');
     Route::post('/admin/vouchers/generate/package/{packageBooking}', [AdminCustomerVoucherController::class, 'generatePackage'])->name('admin.vouchers.generate.package');
     Route::get('/admin/vouchers/{voucher}/download', [AdminCustomerVoucherController::class, 'download'])->name('admin.vouchers.download');
+    // Voucher updates are not allowed from show view; transport_type is set at creation via generate routes.
 
     /*
     |--------------------------------------------------------------------------

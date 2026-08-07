@@ -340,7 +340,8 @@ class AdminFlightBookingController extends Controller
     public function agentBookings()
     {
         $agent = Auth::guard('travel_agent')->user();
-        $bookings = FlightBooking::with('ticket')->where('travel_agent_id', $agent->id)
+        $bookings = FlightBooking::with(['ticket', 'voucher'])
+            ->where('travel_agent_id', $agent->id)
             ->orderByDesc('created_at')
             ->get();
 
@@ -349,7 +350,7 @@ class AdminFlightBookingController extends Controller
 
     public function index(Request $request)
     {
-        $bookings = FlightBooking::with(['ticket', 'agent'])
+        $bookings = FlightBooking::with(['ticket', 'agent', 'passengers'])
             ->orderByDesc('created_at')
             ->paginate(15);
 
@@ -358,7 +359,7 @@ class AdminFlightBookingController extends Controller
 
     public function show(FlightBooking $flightBooking)
     {
-        $flightBooking->load(['ticket', 'agent']);
+        $flightBooking->load(['ticket', 'agent', 'passengers']);
 
         return view('admin.airline-bookings.show', compact('flightBooking'));
     }

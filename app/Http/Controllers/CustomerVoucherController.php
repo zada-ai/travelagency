@@ -13,10 +13,11 @@ class CustomerVoucherController extends Controller
 {
     public function show(FlightBooking $flightBooking)
     {
-        abort_unless($flightBooking->status === 'Confirmed', 403);
-        abort_unless($flightBooking->user_id === Auth::id(), 403);
+        abort_unless($flightBooking->status === 'Approved', 403);
+        $this->assertCustomerOrAgentCanAccessFlightBooking($flightBooking);
 
-        $voucher = $this->createVoucherForFlight($flightBooking);
+        $voucher = CustomerVoucher::firstWhere('flight_booking_id', $flightBooking->id);
+        abort_unless($voucher, 404);
 
         return view('customer.vouchers.show', [
             'booking' => $flightBooking,
@@ -26,8 +27,8 @@ class CustomerVoucherController extends Controller
 
     public function download(FlightBooking $flightBooking)
     {
-        abort_unless($flightBooking->status === 'Confirmed', 403);
-        abort_unless($flightBooking->user_id === Auth::id(), 403);
+        abort_unless($flightBooking->status === 'Approved', 403);
+        $this->assertCustomerOrAgentCanAccessFlightBooking($flightBooking);
 
         $voucher = CustomerVoucher::firstWhere('flight_booking_id', $flightBooking->id);
         abort_unless($voucher, 404);
@@ -41,9 +42,10 @@ class CustomerVoucherController extends Controller
     public function showPackage(PackageBooking $packageBooking)
     {
         abort_unless($packageBooking->status === 'Approved', 403);
-        abort_unless($packageBooking->user_id === Auth::id(), 403);
+        abort_unless($packageBooking->user_id === Auth::guard('web')->id(), 403);
 
-        $voucher = $this->createVoucherForPackage($packageBooking);
+        $voucher = CustomerVoucher::firstWhere('package_booking_id', $packageBooking->id);
+        abort_unless($voucher, 404);
 
         return view('customer.vouchers.show', [
             'booking' => $packageBooking,
@@ -54,7 +56,7 @@ class CustomerVoucherController extends Controller
     public function downloadPackage(PackageBooking $packageBooking)
     {
         abort_unless($packageBooking->status === 'Approved', 403);
-        abort_unless($packageBooking->user_id === Auth::id(), 403);
+        abort_unless($packageBooking->user_id === Auth::guard('web')->id(), 403);
 
         $voucher = CustomerVoucher::firstWhere('package_booking_id', $packageBooking->id);
         abort_unless($voucher, 404);
@@ -63,6 +65,18 @@ class CustomerVoucherController extends Controller
         $pdf = Pdf::loadView('customer.vouchers.pdf', compact('booking', 'voucher'));
 
         return $pdf->download('voucher-' . $voucher->voucher_number . '.pdf');
+    }
+
+    protected function assertCustomerOrAgentCanAccessFlightBooking(FlightBooking $flightBooking): void
+    {
+        $webUser = Auth::guard('web')->user();
+        $agentUser = Auth::guard('travel_agent')->user();
+
+        abort_unless(
+            ($webUser && $flightBooking->user_id === $webUser->id) ||
+            ($agentUser && $flightBooking->travel_agent_id === $agentUser->id),
+            403
+        );
     }
 
     protected function createVoucherForFlight(FlightBooking $flightBooking): CustomerVoucher

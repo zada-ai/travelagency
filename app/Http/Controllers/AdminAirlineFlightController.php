@@ -317,8 +317,8 @@ class AdminAirlineFlightController extends Controller
 
     public function show(Ticket $ticket)
     {
+        // Load cabin prices and only the most recent 10 bookings with their passengers
         $ticket->load([
-            'bookings',
             'cabinPrices',
         ])->loadCount([
             'bookings as approved_bookings_count' =>
@@ -330,9 +330,16 @@ class AdminAirlineFlightController extends Controller
                     $query->where('status', 'Pending'),
         ]);
 
-        return view(
-            'admin.airline-flights.show',
-            compact('ticket')
-        );
+        // Fetch only the most recent 10 bookings with their passengers to avoid long queries
+        $recentBookings = $ticket->bookings()
+            ->with('passengers')
+            ->orderByDesc('created_at')
+            ->limit(10)
+            ->get();
+
+        // Attach the recent bookings collection for the view while keeping other counts intact
+        $ticket->setRelation('bookings', $recentBookings);
+
+        return view('admin.airline-flights.show', compact('ticket'));
     }
 }

@@ -223,6 +223,21 @@
                                     <p class="mt-1.5 text-xs font-bold text-blue-600">+92-300-1234567</p>
                                 </div>
                             </div>
+
+                            @if($booking->voucher)
+                                <div class="mt-4 flex flex-wrap gap-3">
+                                    <a href="{{ route('customer.vouchers.show', ['flightBooking' => $booking->id]) }}" class="inline-flex items-center rounded-2xl bg-blue-600 px-4 py-3 text-sm font-semibold text-white hover:bg-blue-500 transition">
+                                        View Voucher
+                                    </a>
+                                    <a href="{{ route('customer.vouchers.download', ['flightBooking' => $booking->id]) }}" class="inline-flex items-center rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50 transition">
+                                        Download PDF
+                                    </a>
+                                </div>
+                            @elseif($booking->status === 'Approved')
+                                <div class="mt-4">
+                                    <span class="inline-flex items-center rounded-full bg-yellow-100 px-3 py-1 text-xs font-semibold text-yellow-800">Voucher not generated yet</span>
+                                </div>
+                            @endif
                         </div>
                     @empty
                         <div class="glass-panel rounded-3xl p-12 text-center text-slate-400 border border-dashed border-slate-200">

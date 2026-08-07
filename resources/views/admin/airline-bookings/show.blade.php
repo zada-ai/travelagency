@@ -120,13 +120,19 @@
 
             <div class="mt-6 flex flex-wrap gap-3">
                 @if($flightBooking->status === 'Approved')
+                    @php
+                        $voucherPassengers = $flightBooking->passengers->map(function ($p) {
+                            return [
+                                'id' => $p->id,
+                                'name' => trim(($p->first_name ?? '') . ' ' . ($p->last_name ?? '')),
+                                'passport_number' => $p->passport_number,
+                            ];
+                        });
+                    @endphp
                     @if($flightBooking->voucher)
                         <a href="{{ route('admin.vouchers.show', ['voucher' => $flightBooking->voucher->id]) }}" class="rounded-2xl bg-blue-600 px-4 py-3 text-sm font-semibold text-white hover:bg-blue-500">View Voucher</a>
                     @else
-                        <form action="{{ route('admin.vouchers.generate.flight', $flightBooking) }}" method="POST" class="inline-block">
-                            @csrf
-                            <button type="submit" class="rounded-2xl bg-indigo-600 px-4 py-3 text-sm font-semibold text-white hover:bg-indigo-500">Generate Voucher</button>
-                        </form>
+                        <button type="button" onclick="openVoucherModal('{{ route('admin.vouchers.generate.flight', $flightBooking) }}', @json($voucherPassengers))" class="rounded-2xl bg-indigo-600 px-4 py-3 text-sm font-semibold text-white hover:bg-indigo-500">Generate Voucher</button>
                     @endif
                 @endif
                 @if($flightBooking->status !== 'Approved')
@@ -148,4 +154,118 @@
             </div>
         </div>
     </div>
+
+    {{-- Generate Voucher Modal --}}
+    <div id="voucherModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-900/50 p-4">
+        <div class="w-full max-w-xl rounded-3xl bg-white shadow-xl">
+            <div class="flex items-center justify-between border-b px-6 py-4">
+                <h2 class="text-lg font-semibold">Generate Voucher</h2>
+                <button type="button" onclick="closeVoucherModal()" class="text-slate-500 hover:text-slate-800">Close</button>
+            </div>
+            <form id="voucherGenerateForm" method="POST" enctype="multipart/form-data" class="space-y-4 px-6 py-6">
+                @csrf
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700">Admin / Company Name</label>
+                    <input type="text" name="admin_company_name" class="mt-2 w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm" required>
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700">Admin / Company Logo</label>
+                    <input type="file" name="admin_company_logo" accept=".jpg,.jpeg,.png,.webp" class="mt-2 w-full text-sm" required>
+                </div>
+                <div id="voucherPassengerFields" class="space-y-4"></div>
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700">Transport Type (optional)</label>
+                    <select name="transport_type" class="mt-2 w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm">
+                        <option value="">None</option>
+                        <option value="Camry">Camry</option>
+                        <option value="Staria">Staria</option>
+                        <option value="GMC">GMC</option>
+                        <option value="Hiace">Hiace</option>
+                        <option value="Coaster">Coaster</option>
+                        <option value="Bus">Bus</option>
+                    </select>
+                </div>
+                <div class="flex items-center justify-end gap-3 pt-4 border-t">
+                    <button type="button" onclick="closeVoucherModal()" class="rounded-2xl border border-slate-300 px-4 py-2 text-sm text-slate-700">Cancel</button>
+                    <button type="submit" class="rounded-2xl bg-indigo-600 px-4 py-2 text-sm font-semibold text-white">Create Voucher</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function openVoucherModal(action, passengers = []) {
+            const form = document.getElementById('voucherGenerateForm');
+            form.action = action;
+
+            const container = document.getElementById('voucherPassengerFields');
+            container.innerHTML = '';
+
+            if (!passengers.length) {
+                const notice = document.createElement('div');
+                notice.className = 'rounded-2xl bg-yellow-50 border border-yellow-200 p-4 text-sm text-yellow-800';
+                notice.textContent = 'No passenger data available for this booking.';
+                container.appendChild(notice);
+            }
+
+            passengers.forEach((passenger, index) => {
+                const passengerBlock = document.createElement('div');
+                passengerBlock.className = 'rounded-2xl bg-slate-50 border border-slate-200 p-4';
+
+                const grid = document.createElement('div');
+                grid.className = 'grid gap-3 sm:grid-cols-3';
+
+                const infoCol = document.createElement('div');
+                infoCol.className = 'sm:col-span-2';
+
+                const passengerLabel = document.createElement('label');
+                passengerLabel.className = 'block text-sm font-semibold text-slate-700';
+                passengerLabel.textContent = 'Passenger';
+
+                const passengerInput = document.createElement('input');
+                passengerInput.type = 'text';
+                passengerInput.value = passenger.name || 'Passenger ' + (index + 1);
+                passengerInput.readOnly = true;
+                passengerInput.className = 'mt-2 w-full rounded-2xl border border-slate-200 bg-slate-100 px-4 py-3 text-sm text-slate-900';
+
+                infoCol.appendChild(passengerLabel);
+                infoCol.appendChild(passengerInput);
+
+                const passportCol = document.createElement('div');
+
+                const passportLabel = document.createElement('label');
+                passportLabel.className = 'block text-sm font-semibold text-slate-700';
+                passportLabel.textContent = 'Passport Number';
+
+                const passportInput = document.createElement('input');
+                passportInput.type = 'text';
+                passportInput.name = `passengers[${index}][passport_number]`;
+                passportInput.value = passenger.passport_number || '';
+                passportInput.placeholder = 'Enter passport #';
+                passportInput.required = true;
+                passportInput.className = 'mt-2 w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900';
+
+                passportCol.appendChild(passportLabel);
+                passportCol.appendChild(passportInput);
+
+                const hiddenId = document.createElement('input');
+                hiddenId.type = 'hidden';
+                hiddenId.name = `passengers[${index}][id]`;
+                hiddenId.value = passenger.id;
+
+                grid.appendChild(infoCol);
+                grid.appendChild(passportCol);
+                passengerBlock.appendChild(grid);
+                passengerBlock.appendChild(hiddenId);
+
+                container.appendChild(passengerBlock);
+            });
+
+            document.getElementById('voucherModal').classList.remove('hidden');
+        }
+
+        function closeVoucherModal() {
+            document.getElementById('voucherModal').classList.add('hidden');
+        }
+    </script>
 @endsection

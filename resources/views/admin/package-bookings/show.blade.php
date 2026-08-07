@@ -6,20 +6,24 @@
 
 @section('content')
 <div class="row g-4">
-    <div class="col-md-8">
-        <div class="card border-0 shadow-sm rounded-xl mb-4">
-            <div class="card-header bg-white border-bottom border-light py-3 d-flex justify-content-between align-items-center">
-                <h6 class="mb-0 fw-bold text-dark">Passengers List</h6>
-            </div>
-            <div class="card-body p-0">
-                <div class="table-responsive">
-                    <table class="table align-middle mb-0">
+    <form action="{{ route('admin.package-bookings.update', $booking->id) }}" method="POST" class="w-100">
+        @csrf
+        @method('PUT')
+        <div class="col-md-8">
+            <div class="card border-0 shadow-sm rounded-xl mb-4">
+                <div class="card-header bg-white border-bottom border-light py-3 d-flex justify-content-between align-items-center">
+                    <h6 class="mb-0 fw-bold text-dark">Passengers List</h6>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table align-middle mb-0">
                         <thead class="table-light">
                             <tr>
                                 <th>#</th>
                                 <th>Name</th>
                                 <th>Type</th>
                                 <th>DOB</th>
+                                <th>Passport No</th>
                                 <th>Documents</th>
                             </tr>
                         </thead>
@@ -30,6 +34,17 @@
                                 <td class="fw-medium text-dark">{{ $passenger->name }}</td>
                                 <td><span class="badge bg-secondary">{{ $passenger->type }}</span></td>
                                 <td>{{ $passenger->dob->format('M d, Y') }}</td>
+                                <td>
+                                    <input type="hidden" name="passengers[{{ $index }}][id]" value="{{ $passenger->id }}" />
+                                    <input
+                                        type="text"
+                                        name="passengers[{{ $index }}][passport_number]"
+                                        value="{{ old('passengers.' . $index . '.passport_number', $passenger->passport_number ?? '') }}"
+                                        class="form-control form-control-sm rounded-2xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900"
+                                        placeholder="Enter passport #"
+                                        required
+                                    />
+                                </td>
                                 <td>
                                     <div class="btn-group">
                                         <a href="{{ Storage::url($passenger->cnic_document) }}" target="_blank" class="btn btn-sm btn-outline-primary" title="View CNIC">CNIC</a>
@@ -83,19 +98,15 @@
                 </ul>
 
                 <h6 class="fw-bold text-dark mb-3">Update Status</h6>
-                <form action="{{ route('admin.package-bookings.update', $booking->id) }}" method="POST">
-                    @csrf
-                    @method('PUT')
-                    <div class="input-group">
-                        <select name="status" class="form-select" required>
-                            <option value="Pending" {{ $booking->status == 'Pending' ? 'selected' : '' }}>Pending</option>
-                            <option value="Approved" {{ $booking->status == 'Approved' ? 'selected' : '' }}>Approved</option>
-                            <option value="Cancelled" {{ $booking->status == 'Cancelled' ? 'selected' : '' }}>Cancelled</option>
-                            <option value="Completed" {{ $booking->status == 'Completed' ? 'selected' : '' }}>Completed</option>
-                        </select>
-                        <button type="submit" class="btn btn-primary fw-bold">Update</button>
-                    </div>
-                </form>
+                <div class="input-group">
+                    <select name="status" class="form-select" required>
+                        <option value="Pending" {{ $booking->status == 'Pending' ? 'selected' : '' }}>Pending</option>
+                        <option value="Approved" {{ $booking->status == 'Approved' ? 'selected' : '' }}>Approved</option>
+                        <option value="Cancelled" {{ $booking->status == 'Cancelled' ? 'selected' : '' }}>Cancelled</option>
+                        <option value="Completed" {{ $booking->status == 'Completed' ? 'selected' : '' }}>Completed</option>
+                    </select>
+                    <button type="submit" class="btn btn-primary fw-bold">Save Changes</button>
+                </div>
                 @if($booking->status === 'Approved')
     <div class="mt-4">
         <a href="{{ route('admin.package-bookings.voucher', $booking->id) }}"
@@ -109,5 +120,6 @@
             </div>
         </div>
     </div>
+    </form>
 </div>
 @endsection

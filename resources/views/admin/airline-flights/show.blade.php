@@ -22,7 +22,6 @@
                         <div class="flex items-center justify-between"><span>First</span><span>{{ $ticket->getClassAvailableSeats('First') }} / {{ $ticket->first_seats }}</span></div>
                         <div class="flex items-center justify-between"><span>Status</span><span>{{ $ticket->status }}</span></div>
                     </div>
-                </div>
 
                 <div class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
                     <div class="flex items-center justify-between gap-4">

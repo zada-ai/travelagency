@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\PackageBooking;
 use App\Models\VoucherSetting;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class AdminPackageBookingController extends Controller
 {
@@ -60,10 +61,13 @@ public function voucher($id)
 
   public function update(Request $request, $id)
 {
-    $booking = PackageBooking::findOrFail($id);
+    $booking = PackageBooking::with('passengers')->findOrFail($id);
 
     $request->validate([
         'status' => 'required|in:Pending,Approved,Cancelled,Completed',
+        'passengers' => 'nullable|array',
+        'passengers.*.id' => 'required|integer|exists:package_passengers,id',
+        'passengers.*.passport_number' => 'required|string|max:100',
     ]);
 
     $data = [
@@ -81,11 +85,9 @@ public function voucher($id)
     | - New approved voucher = current company/logo
     | - Purana voucher = purana company/logo
     | - Future mein Voucher Management change karne se old vouchers change nahi honge
-    |--------------------------------------------------------------------------
     */
 
     if ($request->status === 'Approved' && $booking->status !== 'Approved') {
-
         $setting = VoucherSetting::first();
 
         if ($setting) {
@@ -96,8 +98,20 @@ public function voucher($id)
 
     $booking->update($data);
 
+    if ($request->filled('passengers')) {
+        foreach ($request->input('passengers', []) as $passengerInput) {
+            if (isset($passengerInput['id'])) {
+                $passenger = $booking->passengers->firstWhere('id', $passengerInput['id']);
+                if ($passenger) {
+                    $passenger->passport_number = $passengerInput['passport_number'] ?? null;
+                    $passenger->save();
+                }
+            }
+        }
+    }
+
     return redirect()
         ->back()
-        ->with('success', 'Booking status updated successfully.');
+        ->with('success', 'Booking status and passenger details updated successfully.');
 }
 }

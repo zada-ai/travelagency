@@ -104,7 +104,7 @@ HERO SECTION
                 {{-- top-right floating image --}}
                 <div class="anim-float-slow absolute right-2 top-0 w-[42%] overflow-hidden rounded-2xl border border-white/15 bg-gradient-to-br from-emerald-700 to-slate-900 shadow-xl shadow-black/40 sm:right-0"
                      style="animation-delay:.6s">
-                    <img src="{{ asset('images/Transport.png') }}" alt="Madinah"
+                    <img src="{{ asset('images/Madina.png') }}" alt="Madinah"
                          class="h-32 w-full object-cover sm:h-40"
                          onerror="this.remove();">
                 </div>
@@ -112,7 +112,7 @@ HERO SECTION
                 {{-- bottom-right floating image --}}
                 <div class="anim-float-slow absolute bottom-4 right-0 w-[46%] overflow-hidden rounded-2xl border border-white/15 bg-gradient-to-br from-blue-700 to-emerald-950 shadow-xl shadow-black/40 sm:bottom-8"
                      style="animation-delay:1.2s">
-                    <img src="{{ asset('images/hero-hotel.jpg') }}" alt="Premium hotel"
+                    <img src="{{ asset('images/Makkah.png') }}" alt="Makkah"
                          class="h-36 w-full object-cover sm:h-44"
                          onerror="this.remove();">
                 </div>
@@ -266,6 +266,10 @@ FEATURED PACKAGES (from database, no fake data)
         </div>
     </div>
 </section>
+
+@include('home.sections.flights')
+
+@include('home.sections.hotels')
 
 {{-- =========================================================
 WHY CHOOSE US

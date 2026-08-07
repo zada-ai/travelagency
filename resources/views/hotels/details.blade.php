@@ -263,10 +263,16 @@
                             <p class="mt-1">{{ $hotel->city }}</p>
                         </div>
 
-                        <a href="{{ route('hotels.booking.create', $hotel) }}" class="inline-flex w-full items-center justify-center rounded-3xl bg-blue-600 py-4 text-sm font-semibold text-white hover:bg-blue-700 transition">Book Now</a>
+                            @php
+                                $hotelBookingUrl = auth()->check() || auth()->guard('travel_agent')->check()
+                                    ? route('hotels.booking.create', $hotel)
+                                    : route('login');
+                            @endphp
 
-                        <a href="https://wa.me/923001234567" target="_blank" class="inline-flex w-full items-center justify-center rounded-3xl border border-slate-200 bg-white py-4 text-sm font-semibold text-slate-900 hover:bg-slate-50 transition">Contact support</a>
-                    </div>
+                            <a href="{{ $hotelBookingUrl }}" class="inline-flex w-full items-center justify-center rounded-3xl bg-blue-600 py-4 text-sm font-semibold text-white hover:bg-blue-700 transition">Book Now</a>
+
+                            <a href="https://wa.me/923001234567" target="_blank" class="inline-flex w-full items-center justify-center rounded-3xl border border-slate-200 bg-white py-4 text-sm font-semibold text-slate-900 hover:bg-slate-50 transition">Contact support</a>
+                        </div>
                 </div>
             </aside>
         </div>

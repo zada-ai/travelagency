@@ -35,36 +35,6 @@
                         <a href="{{ route('admin.airline-flights.index') }}" class="block rounded-2xl px-4 py-2 text-sm font-medium transition {{ request()->query('status') === null ? 'bg-amber-500 text-slate-950' : 'text-slate-200 hover:bg-slate-800' }}">All Flights</a>
                     </div>
                 </div>
-
-                <!-- <div class="space-y-3">
-                    <p class="text-xs uppercase tracking-[0.3em] text-slate-500">Airlines</p>
-                    <a href="#" class="block rounded-2xl px-4 py-3 text-slate-200 hover:bg-slate-800">Airlines List</a>
-                </div>
-
-                <div class="space-y-3">
-                    <p class="text-xs uppercase tracking-[0.3em] text-slate-500">Routes</p>
-                    <a href="#" class="block rounded-2xl px-4 py-3 text-slate-200 hover:bg-slate-800">Routes</a>
-                </div>
-
-                <div class="space-y-3">
-                    <p class="text-xs uppercase tracking-[0.3em] text-slate-500">Bookings</p>
-                    <a href="#" class="block rounded-2xl px-4 py-3 text-slate-200 hover:bg-slate-800">Ticket Bookings</a>
-                </div>
-
-                <div class="space-y-3">
-                    <p class="text-xs uppercase tracking-[0.3em] text-slate-500">Agents</p>
-                    <a href="#" class="block rounded-2xl px-4 py-3 text-slate-200 hover:bg-slate-800">Agent Requests</a>
-                </div>
-
-                <div class="space-y-3">
-                    <p class="text-xs uppercase tracking-[0.3em] text-slate-500">Reports</p>
-                    <a href="#" class="block rounded-2xl px-4 py-3 text-slate-200 hover:bg-slate-800">Sales Report</a>
-                </div>
-
-                <div class="space-y-3">
-                    <p class="text-xs uppercase tracking-[0.3em] text-slate-500">Settings</p>
-                    <a href="#" class="block rounded-2xl px-4 py-3 text-slate-200 hover:bg-slate-800">Settings</a>
-                </div> -->
             </nav>
         </aside>
 

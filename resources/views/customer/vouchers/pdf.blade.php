@@ -10,24 +10,33 @@
             margin: 25px;
         }
 
+        html {
+            background: #f7f9fc;
+        }
+
         body {
             font-family: DejaVu Sans, Arial, sans-serif;
             color: #1e293b;
             font-size: 12px;
             margin: 0;
-            background: #fff;
+            background: #f7f9fc;
         }
 
         .container {
             width: 100%;
+            max-width: 980px;
             margin: 0 auto;
+            background: #ffffff;
+            padding: 18px 18px 24px;
+            border-radius: 18px;
+            box-shadow: 0 4px 18px rgba(15, 23, 42, 0.08);
         }
 
         .header {
             width: 100%;
-            border-bottom: 2px solid #0f172a;
-            padding-bottom: 15px;
-            margin-bottom: 18px;
+            padding-bottom: 20px;
+            margin-bottom: 24px;
+            border-bottom: 2px solid #e2e8f0;
         }
 
         .header-table {
@@ -38,28 +47,33 @@
         .header-table td {
             border: none;
             vertical-align: middle;
+            padding: 0;
         }
 
         .agent-logo-cell {
-            width: 100px;
+            width: 145px;
+            padding-right: 12px;
         }
 
-        .agent-logo {
-            width: 80px;
-            height: 60px;
+        .company-logo {
+            display: inline-block;
+            max-width: 145px;
+            max-height: 80px;
+            width: auto;
+            height: auto;
             object-fit: contain;
         }
 
-        .agent-name {
-            font-size: 20px;
-            font-weight: bold;
-            color: #0f172a;
+        .header-meta-cell {
+            text-align: left;
+            width: calc(100% - 370px);
+            padding: 0 14px;
         }
 
-        .agent-small {
-            font-size: 10px;
-            color: #64748b;
-            margin-top: 3px;
+        .header-right-cell {
+            width: 165px;
+            padding-left: 12px;
+            text-align: right;
         }
 
         .voucher-meta {
@@ -67,44 +81,60 @@
         }
 
         .voucher-title {
-            font-size: 20px;
+            font-size: 22px;
             font-weight: bold;
-            color: #0f172a;
+            letter-spacing: 0.12em;
+            margin-bottom: 8px;
+        }
+
+        .voucher-number,
+        .status {
+            display: block;
+            font-size: 10px;
+            color: #475569;
+            margin-top: 6px;
         }
 
         .voucher-number {
-            font-size: 12px;
-            color: #475569;
-            margin-top: 4px;
+            font-weight: 600;
         }
 
         .status {
-            display: inline-block;
-            background: #dcfce7;
-            color: #166534;
-            padding: 4px 9px;
-            border-radius: 10px;
-            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+
+        .agent-name {
+            font-size: 12px;
             font-weight: bold;
-            margin-top: 5px;
+            color: #0f172a;
+            margin-bottom: 4px;
+        }
+
+        .agent-small {
+            font-size: 9px;
+            color: #475569;
+            line-height: 1.5;
         }
 
         .section {
-            margin-top: 18px;
+            margin-bottom: 18px;
+            padding: 14px 16px;
+            border: 1px solid #e2e8f0;
+            border-radius: 16px;
+            background: #ffffff;
         }
 
         .section-title {
-            background: #0f172a;
-            color: #fff;
-            padding: 8px 10px;
-            font-size: 12px;
-            font-weight: bold;
+            font-size: 13px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            color: #0f172a;
+            letter-spacing: 0.04em;
         }
 
         .section-body {
-            border: 1px solid #e2e8f0;
-            border-top: none;
-            padding: 10px;
+            padding-top: 4px;
         }
 
         .info-table {
@@ -114,63 +144,144 @@
 
         .info-table td {
             border: none;
-            padding: 5px 6px;
+            padding: 8px 10px;
             vertical-align: top;
+        }
+
+        .price-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .price-label {
+            text-align: left;
+            color: #64748b;
+            font-size: 10px;
+            padding: 8px 0;
+        }
+
+        .price-value {
+            text-align: right;
+            font-weight: 700;
+            font-size: 10px;
+            padding: 8px 0;
+        }
+
+        .grand-total td {
+            border-top: 2px solid #0f172a;
+            padding-top: 12px;
+            font-size: 13px;
+            font-weight: 700;
+            color: #0f172a;
+        }
+
+        .detail-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .detail-table th {
+            background: #f8fafc;
+            color: #475569;
+            text-align: left;
+            padding: 12px 10px;
+            border: 1px solid #e2e8f0;
+            font-size: 10px;
+            font-weight: 700;
+        }
+
+        .detail-table td {
+            padding: 11px 10px;
+            border: 1px solid #e2e8f0;
+            font-size: 10px;
         }
 
         .label {
             color: #64748b;
             font-size: 9px;
             text-transform: uppercase;
+            letter-spacing: 0.05em;
         }
 
         .value {
             color: #0f172a;
             font-size: 11px;
-            font-weight: bold;
-            margin-top: 2px;
+            font-weight: 700;
+            margin-top: 3px;
         }
 
         .flight-table {
             width: 100%;
             border-collapse: collapse;
+            margin-top: 8px;
         }
 
         .flight-table td {
             border: none;
-            padding: 8px;
-            vertical-align: middle;
+            padding: 10px 0;
+            vertical-align: top;
         }
 
         .airport-code {
-            font-size: 20px;
-            font-weight: bold;
+            font-size: 22px;
+            font-weight: 800;
             color: #0f172a;
+            margin-bottom: 4px;
         }
 
         .airport-name {
             font-size: 9px;
             color: #64748b;
+            line-height: 1.4;
         }
 
         .flight-middle {
             text-align: center;
             width: 30%;
+            padding: 0 10px;
         }
 
         .flight-number {
-            font-weight: bold;
+            font-weight: 700;
             font-size: 12px;
+            margin-bottom: 6px;
         }
 
         .flight-time {
             font-size: 10px;
             color: #475569;
+            line-height: 1.4;
             margin-top: 4px;
         }
 
-        .detail-table {
-            width: 100%;
+        .included {
+            color: #166534;
+            font-weight: 700;
+        }
+
+        .not-included {
+            color: #64748b;
+        }
+
+        .footer {
+            margin-top: 20px;
+            padding-top: 14px;
+            border-top: 1px solid #e2e8f0;
+            text-align: center;
+            color: #64748b;
+            font-size: 9px;
+            line-height: 1.5;
+        }
+
+        .footer strong {
+            color: #0f172a;
+            font-weight: 700;
+        }
+
+        .avoid-break {
+            page-break-inside: avoid;
+        }
+
             border-collapse: collapse;
         }
 
@@ -300,7 +411,11 @@
 
     $passengers = collect();
 
-    if ($booking && method_exists($booking, 'passengers')) {
+    if ($voucher && method_exists($voucher, 'passengers')) {
+        $passengers = $voucher->passengers()->get();
+    }
+
+    if (! $passengers->count() && $booking && method_exists($booking, 'passengers')) {
         $passengers = $booking->passengers()->get();
     }
 
@@ -354,6 +469,7 @@
     */
 
     $logoUrl = null;
+    $canRenderImages = extension_loaded('gd') || extension_loaded('gd2');
 
     if ($agentLogo) {
 
@@ -379,66 +495,108 @@
     {{-- HEADER --}}
     {{-- ========================================================= --}}
 
-    <table class="header-table">
+    <div class="header">
+        <table class="header-table">
 
-        <tr>
+            <tr>
 
-            <td class="agent-logo-cell">
+            @php
+                $hasAgent = $agent && $agent->id;
+                $headerType = $hasAgent ? 'agent' : 'customer';
+            @endphp
 
-                @if($logoUrl && file_exists($logoUrl))
+            @switch($headerType)
 
-                    <img
-                        src="{{ $logoUrl }}"
-                        class="agent-logo"
-                        alt="{{ $agentName }}"
-                    >
+                @case('agent')
+                            <td class="agent-logo-cell">
+                        @if($logoUrl && file_exists($logoUrl) && $canRenderImages)
+                            <img src="{{ $logoUrl }}" class="company-logo" alt="{{ $agentName }}">
+                        @else
+                            <div style="width:120px; height:80px; border:1px solid #e2e8f0; display:flex; align-items:center; justify-content:center; font-size:10px; color:#94a3b8;">
+                                AGENT
+                            </div>
+                        @endif
+                    </td>
 
-                @else
+                    <td class="header-meta-cell">
+                        <div style="font-size:12px; color:#64748b; text-transform:uppercase; letter-spacing:0.08em; margin-bottom:4px;">Agent Details</div>
+                        <div class="agent-name">{{ $agentName }}</div>
+                        @if($agent?->email)
+                            <div class="agent-small">{{ $agent->email }}</div>
+                        @endif
+                        @if($agent?->mobile)
+                            <div class="agent-small">{{ $agent->mobile }}</div>
+                        @endif
+                    </td>
 
-                    <div style="
-                        width:80px;
-                        height:60px;
-                        border:1px solid #e2e8f0;
-                        text-align:center;
-                        padding-top:15px;
-                        box-sizing:border-box;
-                        color:#94a3b8;
-                        font-size:9px;
-                    ">
-                        AGENT
-                    </div>
+                    <td class="header-right-cell">
+                        <div style="display:flex; align-items:center; justify-content:flex-end; gap:10px;">
+                            @php
+                                $adminLogoUrl = null;
 
-                @endif
+                                if (! empty($voucher->admin_company_logo)) {
+                                    $adminLogoUrl = str_starts_with($voucher->admin_company_logo, 'http')
+                                        ? $voucher->admin_company_logo
+                                        : public_path(ltrim($voucher->admin_company_logo, '/'));
+                                }
+                            @endphp
 
-            </td>
+                            @if($adminLogoUrl && file_exists($adminLogoUrl) && $canRenderImages)
+                                <img src="{{ $adminLogoUrl }}" class="company-logo" alt="Admin Logo">
+                            @else
+                                <div style="width:120px; height:80px; border:1px solid #e2e8f0; display:flex; align-items:center; justify-content:center; font-size:10px; color:#94a3b8;">
+                                    ADMIN LOGO
+                                </div>
+                            @endif
+                        </div>
+
+                        <div style="text-align:right; margin-top:10px;">
+                            <div style="font-size:16px; font-weight:bold; color:#0f172a;">
+                                {{ $voucher->admin_company_name ?? ($setting->company_name ?? 'Admin Company') }}
+                            </div>
+                            @if(! empty($setting->company_name) && empty($voucher->admin_company_name))
+                                <div style="font-size:10px; color:#64748b; margin-top:4px;">
+                                    {{ $setting->company_name }}
+                                </div>
+                            @endif
+                        </div>
+                    </td>
+
+                    @break
+
+                @case('customer')
+                    <td colspan="3" style="text-align:center;">
+                        <div style="display:inline-block; text-align:center;">
+                            @php
+                                $adminLogoUrl = null;
+
+                                if (! empty($voucher->admin_company_logo)) {
+                                    $adminLogoUrl = str_starts_with($voucher->admin_company_logo, 'http')
+                                        ? $voucher->admin_company_logo
+                                        : public_path(ltrim($voucher->admin_company_logo, '/'));
+                                }
+                            @endphp
+
+                            @if($adminLogoUrl && file_exists($adminLogoUrl) && $canRenderImages)
+                                <img src="{{ $adminLogoUrl }}" class="company-logo" alt="Admin Logo">
+                            @else
+                                <div style="width:120px; height:80px; border:1px solid #e2e8f0; display:flex; align-items:center; justify-content:center; font-size:10px; color:#94a3b8;">
+                                    ADMIN LOGO
+                                </div>
+                            @endif
+
+                            <div style="font-size:16px; font-weight:bold; color:#0f172a; margin-top:8px;">
+                                {{ $voucher->admin_company_name ?? ($setting->company_name ?? 'Admin Company') }}
+                            </div>
+                        </div>
+                    </td>
+
+                    @break
+
+            @endswitch
 
 
-            <td>
-
-                <div class="agent-name">
-                    {{ $agentName }}
-                </div>
-
-                @if($agent?->email)
-
-                    <div class="agent-small">
-                        {{ $agent->email }}
-                    </div>
-
-                @endif
-
-                @if($agent?->mobile)
-
-                    <div class="agent-small">
-                        {{ $agent->mobile }}
-                    </div>
-
-                @endif
-
-            </td>
-
-
-            <td class="voucher-meta">
+            <td class="voucher-meta" style="text-align:right; padding-left:18px;">
 
                 <div class="voucher-title">
                     FLIGHT VOUCHER
@@ -453,7 +611,7 @@
                     {{ optional($voucher->issued_at)->format('d M Y H:i') }}
                 </div>
 
-                <div class="status">
+                <div class="status" style="margin-top:6px;">
                     {{ $voucher->status }}
                 </div>
 
@@ -471,9 +629,7 @@
 
     <div class="section avoid-break">
 
-        <div class="section-title">
-            Booking & Customer Information
-        </div>
+        <div class="section-title">Booking & Customer Information</div>
 
         <div class="section-body">
 
@@ -527,6 +683,40 @@
                 </tr>
 
             </table>
+
+            <div style="margin-top:12px;">
+                <h4 style="font-size:14px;margin-bottom:8px;color:#0f172a;font-weight:700;">Applicant / Booking Contact</h4>
+                <table class="info-table">
+                    <tr>
+                        <td width="33%">
+                            <div class="label">Contact Name</div>
+                            <div class="value">{{ $booking?->contact_name ?? $booking?->user?->name ?? 'N/A' }}</div>
+                        </td>
+                        <td width="33%">
+                            <div class="label">Booked By</div>
+                            <div class="value">{{ optional($booking?->user)->name ?? 'N/A' }}</div>
+                        </td>
+                        <td width="33%">
+                            <div class="label">Email Address</div>
+                            <div class="value">{{ $booking?->contact_email ?? $booking?->user?->email ?? 'N/A' }}</div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td width="33%">
+                            <div class="label">WhatsApp Number</div>
+                            <div class="value">{{ $booking?->contact_phone ?? $booking?->user?->phone ?? 'N/A' }}</div>
+                        </td>
+                        <td width="33%">
+                            <div class="label">Booking Status</div>
+                            <div class="value">{{ $booking?->status ?? '-' }}</div>
+                        </td>
+                        <td width="33%">
+                            <div class="label">Booking Type</div>
+                            <div class="value">{{ $isFlight ? 'Flight' : 'Package' }}</div>
+                        </td>
+                    </tr>
+                </table>
+            </div>
 
         </div>
 
@@ -975,75 +1165,56 @@
             <table class="detail-table">
 
                 <tr>
-
                     <th>
                         Service
                     </th>
-
+                    <th>
+                        Type
+                    </th>
                     <th>
                         Status
                     </th>
-
                     <th>
                         Amount
                     </th>
-
                 </tr>
 
-
                 <tr>
-
+                    <td>Visa</td>
+                    <td>Travel Document</td>
                     <td>
-                        Visa
-                    </td>
-
-                    <td>
-
                         @if($visaIncluded)
-                            <span class="included">
-                                Included
-                            </span>
+                            <span class="included">Included</span>
                         @else
-                            <span class="not-included">
-                                Not Included
-                            </span>
+                            <span class="not-included">Not Included</span>
                         @endif
-
                     </td>
-
                     <td>
-                        SAR
-                        {{ number_format($booking?->visa_price ?? 0, 2) }}
+                        @if($visaIncluded)
+                            SAR {{ number_format($booking?->visa_price ?? 0, 2) }}
+                        @else
+                            -
+                        @endif
                     </td>
-
                 </tr>
 
-
                 <tr>
-
+                    <td>Transport</td>
+                    <td>{{ $voucher->transport_type ?? ($transportIncluded ? 'Included' : '-') }}</td>
                     <td>
-                        Transport
-                    </td>
-
-                    <td>
-
                         @if($transportIncluded)
-                            <span class="included">
-                                Included
-                            </span>
+                            <span class="included">Included</span>
                         @else
-                            <span class="not-included">
-                                Not Included
-                            </span>
+                            <span class="not-included">Not Included</span>
                         @endif
-
                     </td>
-
                     <td>
-                        SAR
-                        {{ number_format($booking?->transport_price ?? 0, 2) }}
+                        @if($transportIncluded)
+                            SAR {{ number_format($booking?->transport_price ?? 0, 2) }}
+                        @else
+                            -
+                        @endif
                     </td>
-
                 </tr>
 
             </table>
@@ -1065,7 +1236,6 @@
         </div>
 
         <div class="section-body">
-
             <table class="price-table">
 
                 <tr>
@@ -1177,14 +1347,14 @@
             {{ $agentName }}
         </strong>
 
-        <br>
+        <div style="margin-top:6px;">
+            This voucher is issued against booking
+            <strong>{{ $booking?->reference ?? '-' }}</strong>.
+        </div>
 
-        This voucher is issued against booking
-        <strong>{{ $booking?->reference ?? '-' }}</strong>.
-
-        <br>
-
-        Please verify all flight, passenger and travel details before departure.
+        <div style="margin-top:6px;">
+            Please verify all flight, passenger and travel details before departure.
+        </div>
 
     </div>
 
