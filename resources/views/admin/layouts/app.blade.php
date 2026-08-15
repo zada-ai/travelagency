@@ -47,10 +47,10 @@
                             <span class="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-slate-800 text-slate-300">D</span>
                             <span>Dashboard</span>
                         </a>
-                        <a href="{{ route('admin.user-management') }}" class="group flex items-center gap-3 rounded-2xl px-4 py-3 transition {{ $currentRoute === 'admin.user-management' ? 'bg-blue-600 text-white shadow-md' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}">
+                        {{-- <a href="{{ route('admin.user-management') }}" class="group flex items-center gap-3 rounded-2xl px-4 py-3 transition {{ $currentRoute === 'admin.user-management' ? 'bg-blue-600 text-white shadow-md' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}">
                             <span class="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-slate-800 text-slate-300">U</span>
                             <span>User Management</span>
-                        </a>
+                        </a> --}}
                         <a href="{{ route('admin.customer-management') }}" class="group flex items-center gap-3 rounded-2xl px-4 py-3 transition {{ $currentRoute === 'admin.customer-management' ? 'bg-blue-600 text-white shadow-md' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}">
                             <span class="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-slate-800 text-slate-300">C</span>
                             <span>Customer Management</span>
@@ -87,27 +87,27 @@
                             <span class="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-slate-800 text-slate-300">B</span>
                             <span>Package Bookings</span>
                         </a>
-                        <a href="{{ route('admin.dynamic-package-builder') }}" class="group flex items-center gap-3 rounded-2xl px-4 py-3 transition {{ $currentRoute === 'admin.dynamic-package-builder' ? 'bg-blue-600 text-white shadow-md' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}">
+                        {{-- <a href="{{ route('admin.dynamic-package-builder') }}" class="group flex items-center gap-3 rounded-2xl px-4 py-3 transition {{ $currentRoute === 'admin.dynamic-package-builder' ? 'bg-blue-600 text-white shadow-md' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}">
                             <span class="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-slate-800 text-slate-300">DP</span>
                             <span>Dynamic Builder</span>
-                        </a>
-                        <a href="{{ route('admin.dynamic-package-calculator') }}" class="group flex items-center gap-3 rounded-2xl px-4 py-3 transition {{ $currentRoute === 'admin.dynamic-package-calculator' ? 'bg-blue-600 text-white shadow-md' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}">
+                        </a> --}}
+                        {{-- <a href="{{ route('admin.dynamic-package-calculator') }}" class="group flex items-center gap-3 rounded-2xl px-4 py-3 transition {{ $currentRoute === 'admin.dynamic-package-calculator' ? 'bg-blue-600 text-white shadow-md' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}">
                             <span class="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-slate-800 text-slate-300">C</span>
                             <span>Package Calculator</span>
-                        </a>
-                        <a href="{{ route('admin.payment-management') }}" class="group flex items-center gap-3 rounded-2xl px-4 py-3 transition {{ $currentRoute === 'admin.payment-management' ? 'bg-blue-600 text-white shadow-md' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}">
+                        </a> --}}
+                        {{-- <a href="{{ route('admin.payment-management') }}" class="group flex items-center gap-3 rounded-2xl px-4 py-3 transition {{ $currentRoute === 'admin.payment-management' ? 'bg-blue-600 text-white shadow-md' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}">
                             <span class="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-slate-800 text-slate-300">$</span>
                             <span>Payments</span>
                         </a>
                         <a href="{{ route('admin.accounting') }}" class="group flex items-center gap-3 rounded-2xl px-4 py-3 transition {{ $currentRoute === 'admin.accounting' ? 'bg-blue-600 text-white shadow-md' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}">
                             <span class="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-slate-800 text-slate-300">A</span>
                             <span>Accounting</span>
-                        </a>
+                        </a> --}}
                     </div>
 
                     <div class="space-y-1 rounded-3xl border border-slate-800 bg-slate-900/80 p-3">
                         <p class="px-3 pb-2 text-xs uppercase tracking-[0.28em] text-slate-500">Insights</p>
-                        <a href="{{ route('admin.reports') }}" class="group flex items-center gap-3 rounded-2xl px-4 py-3 transition {{ $currentRoute === 'admin.reports' ? 'bg-blue-600 text-white shadow-md' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}">
+                        {{-- <a href="{{ route('admin.reports') }}" class="group flex items-center gap-3 rounded-2xl px-4 py-3 transition {{ $currentRoute === 'admin.reports' ? 'bg-blue-600 text-white shadow-md' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}">
                             <span class="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-slate-800 text-slate-300">R</span>
                             <span>Reports</span>
                         </a>
@@ -122,7 +122,7 @@
                         <a href="{{ route('admin.crm') }}" class="group flex items-center gap-3 rounded-2xl px-4 py-3 transition {{ $currentRoute === 'admin.crm' ? 'bg-blue-600 text-white shadow-md' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}">
                             <span class="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-slate-800 text-slate-300">CRM</span>
                             <span>CRM</span>
-                        </a>
+                        </a> --}}
                         <a href="{{ route('admin.voucher-management') }}" class="group flex items-center gap-3 rounded-2xl px-4 py-3 transition {{ $currentRoute === 'admin.voucher-management' ? 'bg-blue-600 text-white shadow-md' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}">
                             <span class="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-slate-800 text-slate-300">V</span>
                             <span>Vouchers</span>
@@ -131,10 +131,10 @@
                             <span class="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-slate-800 text-slate-300">NV</span>
                             <span>New Vouchers</span>
                         </a>
-                        <a href="{{ route('admin.transport-management') }}" class="group flex items-center gap-3 rounded-2xl px-4 py-3 transition {{ $currentRoute === 'admin.transport-management' ? 'bg-blue-600 text-white shadow-md' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}">
+                        {{-- <a href="{{ route('admin.transport-management') }}" class="group flex items-center gap-3 rounded-2xl px-4 py-3 transition {{ $currentRoute === 'admin.transport-management' ? 'bg-blue-600 text-white shadow-md' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}">
                             <span class="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-slate-800 text-slate-300">T</span>
                             <span>Transport</span>
-                        </a>
+                        </a> --}}
                         <a href="{{ route('admin.visa-management') }}" class="group flex items-center gap-3 rounded-2xl px-4 py-3 transition {{ $currentRoute === 'admin.visa-management' ? 'bg-blue-600 text-white shadow-md' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}">
                             <span class="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-slate-800 text-slate-300">V</span>
                             <span>Visa Management</span>
@@ -144,7 +144,7 @@
 
                 <div class="mt-8 rounded-[2rem] bg-slate-900 p-5 shadow-lg ring-1 ring-slate-800/70">
                     <p class="text-xs uppercase tracking-[0.3em] text-slate-500">Quick Actions</p>
-                    <div class="mt-4 grid gap-3">
+                    {{-- <div class="mt-4 grid gap-3">
                         <a href="{{ route('admin.hotels.create') }}" class="block rounded-3xl bg-blue-600 px-4 py-3 text-sm font-semibold text-white transition hover:bg-blue-500">Add Hotel</a>
                         <a href="{{ route('admin.hotel-meal-plans.index') }}" class="block rounded-3xl bg-slate-800 px-4 py-3 text-sm font-semibold text-slate-100 transition hover:bg-slate-700">Hotel Meal Plans</a>
                         <a href="{{ route('admin.hotel-room-inventory.index') }}" class="block rounded-3xl bg-slate-800 px-4 py-3 text-sm font-semibold text-slate-100 transition hover:bg-slate-700">Room Inventory</a>
@@ -152,7 +152,7 @@
                         <a href="{{ route('admin.hotel-facilities.index') }}" class="block rounded-3xl bg-slate-800 px-4 py-3 text-sm font-semibold text-slate-100 transition hover:bg-slate-700">Facilities</a>
                         <a href="{{ route('admin.hotel-room-types.index') }}" class="block rounded-3xl bg-slate-800 px-4 py-3 text-sm font-semibold text-slate-100 transition hover:bg-slate-700">Room Types</a>
                         <a href="{{ route('admin.bookings.index') }}" class="block rounded-3xl bg-slate-800 px-4 py-3 text-sm font-semibold text-slate-100 transition hover:bg-slate-700">Room Bookings</a>
-                    </div>
+                    </div> --}}
                     <div class="mt-6 rounded-[2rem] border border-slate-800 bg-slate-900 p-4 shadow-lg">
                         <p class="text-xs uppercase tracking-[0.28em] text-slate-500">Session</p>
                         <form action="{{ route('logout') }}" method="POST" class="mt-4">

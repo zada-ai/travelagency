@@ -2,6 +2,7 @@
 
 @section('title', 'New Meal Plan')
 
+
 @section('content')
 <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -16,7 +17,7 @@
         <form method="POST" action="{{ route('admin.hotel-meal-plans.store') }}" class="grid gap-6">
             @csrf
 
-            <div class="grid gap-4 sm:grid-cols-2">
+            <div class="grid gap-4 sm:grid-cols-2 text-black">
                 <div>
                     <label class="block text-sm font-medium text-slate-700">Hotel</label>
                     <select name="hotel_id" class="mt-1 block w-full rounded-md border-slate-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-slate-500 focus:outline-none focus:ring-1 focus:ring-slate-500">
@@ -34,25 +35,25 @@
                 </div>
             </div>
 
-            <div>
+            <div class="text-black">
                 <label class="block text-sm font-medium text-slate-700">Meal plan name</label>
                 <input type="text" name="meal_plan_name" value="{{ old('meal_plan_name') }}" class="mt-1 block w-full rounded-md border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-slate-500 focus:outline-none focus:ring-1 focus:ring-slate-500" placeholder="Breakfast + Dinner" />
                 @error('meal_plan_name')<p class="mt-1 text-sm text-rose-600">{{ $message }}</p>@enderror
             </div>
 
-            <div>
+            <div class="text-black">
                 <label class="block text-sm font-medium text-slate-700">Description</label>
                 <textarea name="description" rows="3" class="mt-1 block w-full rounded-md border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-slate-500 focus:outline-none focus:ring-1 focus:ring-slate-500" placeholder="Details about what is included">{{ old('description') }}</textarea>
                 @error('description')<p class="mt-1 text-sm text-rose-600">{{ $message }}</p>@enderror
             </div>
 
-            <div class="grid gap-4 sm:grid-cols-2">
+            <div class="grid gap-4 sm:grid-cols-2 text-black ">
                 <div>
                     <label class="block text-sm font-medium text-slate-700">Price per person</label>
                     <input type="number" step="0.01" name="price_per_person" value="{{ old('price_per_person') }}" class="mt-1 block w-full rounded-md border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-slate-500 focus:outline-none focus:ring-1 focus:ring-slate-500" placeholder="0.00" />
                     @error('price_per_person')<p class="mt-1 text-sm text-rose-600">{{ $message }}</p>@enderror
                 </div>
-                <div>
+                <div class="text-black">
                     <label class="block text-sm font-medium text-slate-700">Status</label>
                     <select name="status" class="mt-1 block w-full rounded-md border-slate-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-slate-500 focus:outline-none focus:ring-1 focus:ring-slate-500">
                         <option value="Active" {{ old('status') === 'Active' ? 'selected' : '' }}>Active</option>

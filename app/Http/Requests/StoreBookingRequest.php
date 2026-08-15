@@ -37,12 +37,21 @@ class StoreBookingRequest extends FormRequest
             'contact_phone' => ['required', 'string', 'max:40'],
             'passengers' => ['required', 'array'],
             'passengers.*.passenger_type' => ['required', Rule::in(['Adult', 'Child', 'Infant'])],
-            'passengers.*.first_name' => ['required', 'string', 'max:255'],
-            'passengers.*.last_name' => ['required', 'string', 'max:255'],
+            'passengers.*.full_name' => ['required', 'string', 'max:255'],
             'passengers.*.date_of_birth' => ['required', 'date', 'before:today'],
-            'passengers.*.passport_number' => ['required', 'string', 'max:100', 'distinct'],
-            'passengers.*.passport_expiry' => ['required', 'date', 'after_or_equal:today'],
-            'passengers.*.nationality' => ['required', 'string', 'max:255'],
+           'passengers.*.passport_document' => [
+    $this->isReviewRequest() ? 'required' : 'nullable',
+    'file',
+    'max:5120',
+    'mimes:pdf,png,jpg,jpeg,gif',
+],
+
+'passengers.*.cnic_document' => [
+    $this->isReviewRequest() ? 'required' : 'nullable',
+    'file',
+    'max:5120',
+    'mimes:pdf,png,jpg,jpeg,gif',
+],
         ];
     }
 
@@ -147,15 +156,18 @@ class StoreBookingRequest extends FormRequest
             'passengers.array' => 'Passenger details must be provided in the correct format.',
             'passengers.*.passenger_type.required' => 'Each passenger must select a passenger type.',
             'passengers.*.passenger_type.in' => 'Each passenger type must be Adult, Child, or Infant.',
-            'passengers.*.first_name.required' => 'Each passenger must have a first name.',
-            'passengers.*.last_name.required' => 'Each passenger must have a last name.',
+            'passengers.*.full_name.required' => 'Each passenger must have a full name.',
+            'passengers.*.full_name.string' => 'Full name must be a valid text string.',
             'passengers.*.date_of_birth.required' => 'Each passenger must have a date of birth.',
             'passengers.*.date_of_birth.before' => 'Date of birth must be before today.',
-            'passengers.*.passport_number.required' => 'Each passenger must have a passport number.',
-            'passengers.*.passport_number.distinct' => 'Each passenger passport number must be unique within this booking.',
-            'passengers.*.passport_expiry.required' => 'Each passenger must have a passport expiry date.',
-            'passengers.*.passport_expiry.after_or_equal' => 'Passport expiry date cannot be in the past.',
-            'passengers.*.nationality.required' => 'Each passenger must have a nationality.',
+            'passengers.*.passport_document.required' => 'Each passenger must upload a passport document.',
+            'passengers.*.passport_document.file' => 'Passport document must be a valid file.',
+            'passengers.*.passport_document.max' => 'Passport document must not exceed 5MB.',
+            'passengers.*.passport_document.mimes' => 'Passport document must be a PDF, PNG, JPG, JPEG, or GIF file.',
+            'passengers.*.cnic_document.required' => 'Each passenger must upload a CNIC/ID card document.',
+            'passengers.*.cnic_document.file' => 'CNIC/ID card document must be a valid file.',
+            'passengers.*.cnic_document.max' => 'CNIC/ID card document must not exceed 5MB.',
+            'passengers.*.cnic_document.mimes' => 'CNIC/ID card document must be a PDF, PNG, JPG, JPEG, or GIF file.',
             'check_out.after' => 'Check-out must be after check-in.',
         ];
     }
@@ -196,4 +208,10 @@ class StoreBookingRequest extends FormRequest
             'include_transport' => $this->boolean('include_transport'),
         ]);
     }
+    private function isReviewRequest(): bool
+{
+    return $this->isMethod('POST')
+        && $this->routeIs('hotels.book.review');
 }
+}
+

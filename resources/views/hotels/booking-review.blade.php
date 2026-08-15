@@ -46,15 +46,15 @@
                     <div class="mt-4 grid gap-4 sm:grid-cols-2 text-sm text-slate-600">
                         <div>
                             <p class="font-semibold text-slate-900">Contact name</p>
-                            <p>{{ $request->contact_name }}</p>
+                            <p>{{ $contactName ?? ($request->input('contact_name') ?? 'N/A') }}</p>
                         </div>
                         <div>
                             <p class="font-semibold text-slate-900">Email</p>
-                            <p>{{ $request->contact_email }}</p>
+                            <p>{{ $contactEmail ?? ($request->input('contact_email') ?? 'N/A') }}</p>
                         </div>
                         <div>
                             <p class="font-semibold text-slate-900">Phone</p>
-                            <p>{{ $request->contact_phone }}</p>
+                            <p>{{ $contactPhone ?? ($request->input('contact_phone') ?? 'N/A') }}</p>
                         </div>
                     </div>
                 </div>
@@ -62,28 +62,46 @@
                 <div class="rounded-[1.5rem] border border-slate-200 bg-white p-6">
                     <p class="text-xs uppercase tracking-[0.24em] text-slate-400">Passenger Breakdown</p>
                     <div class="mt-4 space-y-4 text-sm text-slate-600">
-                        @foreach($request->input('passengers', []) as $index => $passenger)
+                        @foreach($passengers as $index => $passenger)
                             <div class="rounded-3xl bg-slate-50 border border-slate-200 p-4">
                                 <div class="flex justify-between items-center mb-2">
                                     <span class="font-semibold text-slate-900">{{ $passenger['passenger_type'] ?? 'Passenger' }} {{ $index + 1 }}</span>
-                                    <span class="text-xs text-slate-500">{{ $passenger['nationality'] ?? 'N/A' }}</span>
                                 </div>
                                 <div class="grid gap-3 sm:grid-cols-2 text-sm text-slate-600">
                                     <div>
-                                        <p class="text-xs uppercase tracking-[0.24em] text-slate-400">Name</p>
-                                        <p>{{ $passenger['first_name'] ?? '' }} {{ $passenger['last_name'] ?? '' }}</p>
+                                        <p class="text-xs uppercase tracking-[0.24em] text-slate-400">Full name</p>
+                                        <p class="font-medium text-slate-900">{{ $passenger['full_name'] ?? 'N/A' }}</p>
                                     </div>
                                     <div>
                                         <p class="text-xs uppercase tracking-[0.24em] text-slate-400">Date of birth</p>
                                         <p>{{ $passenger['date_of_birth'] ?? 'N/A' }}</p>
+                                        @if(!empty($passenger['passport_expiry']))
+                                            <p class="text-xs text-slate-500 mt-1">Expiry: {{ $passenger['passport_expiry'] }}</p>
+                                        @endif
                                     </div>
                                     <div>
-                                        <p class="text-xs uppercase tracking-[0.24em] text-slate-400">Passport</p>
-                                        <p>{{ $passenger['passport_number'] ?? 'N/A' }}</p>
+                                        <p class="text-xs uppercase tracking-[0.24em] text-slate-400">Passport Document</p>
+                                        @if(isset($passengerFiles[$index]['passport_document']['name']))
+                                            <p class="text-blue-600">✓ {{ $passengerFiles[$index]['passport_document']['name'] }}</p>
+                                        @elseif(!empty($passengerTempPaths[$index]['passport_temp_path']))
+                                            <p class="text-blue-600">✓ {{ basename($passengerTempPaths[$index]['passport_temp_path']) }}</p>
+                                        @elseif(!empty($passenger['passport_document_name']))
+                                            <p class="text-blue-600">✓ {{ $passenger['passport_document_name'] }}</p>
+                                        @else
+                                            <p>N/A</p>
+                                        @endif
                                     </div>
                                     <div>
-                                        <p class="text-xs uppercase tracking-[0.24em] text-slate-400">Expiry</p>
-                                        <p>{{ $passenger['passport_expiry'] ?? 'N/A' }}</p>
+                                        <p class="text-xs uppercase tracking-[0.24em] text-slate-400">CNIC Document</p>
+                                        @if(isset($passengerFiles[$index]['cnic_document']['name']))
+                                            <p class="text-blue-600">✓ {{ $passengerFiles[$index]['cnic_document']['name'] }}</p>
+                                        @elseif(!empty($passengerTempPaths[$index]['cnic_temp_path']))
+                                            <p class="text-blue-600">✓ {{ basename($passengerTempPaths[$index]['cnic_temp_path']) }}</p>
+                                        @elseif(!empty($passenger['cnic_document_name']))
+                                            <p class="text-blue-600">✓ {{ $passenger['cnic_document_name'] }}</p>
+                                        @else
+                                            <p>N/A</p>
+                                        @endif
                                     </div>
                                 </div>
                             </div>
@@ -112,19 +130,30 @@
                         <input type="hidden" name="meal_plan_id" value="{{ $mealPlan->id ?? '' }}">
                         <input type="hidden" name="check_in" value="{{ $checkIn->format('Y-m-d') }}">
                         <input type="hidden" name="check_out" value="{{ $checkOut->format('Y-m-d') }}">
-                        <input type="hidden" name="adults" value="{{ $request->adults }}">
-                        <input type="hidden" name="children" value="{{ $request->children }}">
-                        <input type="hidden" name="infants" value="{{ $request->infants }}">
+                        <input type="hidden" name="adults" value="{{ $request->input('adults', 0) }}">
+                        <input type="hidden" name="children" value="{{ $request->input('children', 0) }}">
+                        <input type="hidden" name="infants" value="{{ $request->input('infants', 0) }}">
                         <input type="hidden" name="include_meal" value="{{ $request->boolean('include_meal') ? 1 : 0 }}">
                         <input type="hidden" name="include_visa" value="{{ $request->boolean('include_visa') ? 1 : 0 }}">
                         <input type="hidden" name="include_transport" value="{{ $request->boolean('include_transport') ? 1 : 0 }}">
-                        <input type="hidden" name="contact_name" value="{{ $request->contact_name }}">
-                        <input type="hidden" name="contact_email" value="{{ $request->contact_email }}">
-                        <input type="hidden" name="contact_phone" value="{{ $request->contact_phone }}">
-                        @foreach($request->input('passengers', []) as $index => $passenger)
+                        <input type="hidden" name="contact_name" value="{{ $contactName ?? $request->input('contact_name', '') }}">
+                        <input type="hidden" name="contact_email" value="{{ $contactEmail ?? $request->input('contact_email', '') }}">
+                        <input type="hidden" name="contact_phone" value="{{ $contactPhone ?? $request->input('contact_phone', '') }}">
+                        @foreach($passengers as $index => $passenger)
                             @foreach($passenger as $field => $value)
-                                <input type="hidden" name="passengers[{{ $index }}][{{ $field }}]" value="{{ $value }}">
+                                @if(in_array($field, ['passport_temp_path', 'cnic_temp_path', 'passport_document_name', 'cnic_document_name'], true))
+                                    <input type="hidden" name="passengers[{{ $index }}][{{ $field }}]" value="{{ $value }}">
+                                @endif
+                                @if(!in_array($field, ['passport_document', 'cnic_document'], true))
+                                    <input type="hidden" name="passengers[{{ $index }}][{{ $field }}]" value="{{ $value }}">
+                                @endif
                             @endforeach
+                            @if(!empty($passengerTempPaths[$index]['passport_temp_path']))
+                                <input type="hidden" name="passengers[{{ $index }}][passport_temp_path]" value="{{ $passengerTempPaths[$index]['passport_temp_path'] }}">
+                            @endif
+                            @if(!empty($passengerTempPaths[$index]['cnic_temp_path']))
+                                <input type="hidden" name="passengers[{{ $index }}][cnic_temp_path]" value="{{ $passengerTempPaths[$index]['cnic_temp_path'] }}">
+                            @endif
                         @endforeach
                         <button type="submit" class="w-full rounded-3xl border border-slate-200 bg-white py-3 text-sm font-semibold text-slate-900 hover:bg-slate-50 transition">Back to Edit</button>
                     </form>
@@ -136,19 +165,30 @@
                         <input type="hidden" name="meal_plan_id" value="{{ $mealPlan->id ?? '' }}">
                         <input type="hidden" name="check_in" value="{{ $checkIn->format('Y-m-d') }}">
                         <input type="hidden" name="check_out" value="{{ $checkOut->format('Y-m-d') }}">
-                        <input type="hidden" name="adults" value="{{ $request->adults }}">
-                        <input type="hidden" name="children" value="{{ $request->children }}">
-                        <input type="hidden" name="infants" value="{{ $request->infants }}">
+                        <input type="hidden" name="adults" value="{{ $request->input('adults', 0) }}">
+                        <input type="hidden" name="children" value="{{ $request->input('children', 0) }}">
+                        <input type="hidden" name="infants" value="{{ $request->input('infants', 0) }}">
                         <input type="hidden" name="include_meal" value="{{ $request->boolean('include_meal') ? 1 : 0 }}">
                         <input type="hidden" name="include_visa" value="{{ $request->boolean('include_visa') ? 1 : 0 }}">
                         <input type="hidden" name="include_transport" value="{{ $request->boolean('include_transport') ? 1 : 0 }}">
-                        <input type="hidden" name="contact_name" value="{{ $request->contact_name }}">
-                        <input type="hidden" name="contact_email" value="{{ $request->contact_email }}">
-                        <input type="hidden" name="contact_phone" value="{{ $request->contact_phone }}">
-                        @foreach($request->input('passengers', []) as $index => $passenger)
+                        <input type="hidden" name="contact_name" value="{{ $contactName ?? $request->input('contact_name', '') }}">
+                        <input type="hidden" name="contact_email" value="{{ $contactEmail ?? $request->input('contact_email', '') }}">
+                        <input type="hidden" name="contact_phone" value="{{ $contactPhone ?? $request->input('contact_phone', '') }}">
+                        @foreach($passengers as $index => $passenger)
                             @foreach($passenger as $field => $value)
-                                <input type="hidden" name="passengers[{{ $index }}][{{ $field }}]" value="{{ $value }}">
+                                @if(in_array($field, ['passport_temp_path', 'cnic_temp_path', 'passport_document_name', 'cnic_document_name'], true))
+                                    <input type="hidden" name="passengers[{{ $index }}][{{ $field }}]" value="{{ $value }}">
+                                @endif
+                                @if(!in_array($field, ['passport_document', 'cnic_document'], true))
+                                    <input type="hidden" name="passengers[{{ $index }}][{{ $field }}]" value="{{ $value }}">
+                                @endif
                             @endforeach
+                            @if(!empty($passengerTempPaths[$index]['passport_temp_path']))
+                                <input type="hidden" name="passengers[{{ $index }}][passport_temp_path]" value="{{ $passengerTempPaths[$index]['passport_temp_path'] }}">
+                            @endif
+                            @if(!empty($passengerTempPaths[$index]['cnic_temp_path']))
+                                <input type="hidden" name="passengers[{{ $index }}][cnic_temp_path]" value="{{ $passengerTempPaths[$index]['cnic_temp_path'] }}">
+                            @endif
                         @endforeach
                         <button type="submit" class="w-full rounded-3xl bg-emerald-500 py-3 text-sm font-semibold text-slate-950 hover:bg-emerald-400 transition">Confirm Booking</button>
                     </form>

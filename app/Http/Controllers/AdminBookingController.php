@@ -6,6 +6,8 @@ use App\Models\Booking;
 use App\Models\Hotel;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\StreamedResponse;
+use Illuminate\Support\Facades\Storage;
+use App\Models\BookingPassenger;
 
 class AdminBookingController extends Controller
 {
@@ -51,8 +53,12 @@ class AdminBookingController extends Controller
 
     public function show(Booking $booking)
     {
-        $booking->load(['hotel', 'roomType', 'mealPlan', 'passengers']);
-
+    $booking->load([
+    'hotel',
+    'roomType',
+    'mealPlan',
+    'passengers.details',
+]);
         return view('admin.bookings.show', compact('booking'));
     }
 
@@ -148,5 +154,50 @@ class AdminBookingController extends Controller
 
             fclose($handle);
         }, 200, $headers);
+    }
+
+    /**
+     * Download passenger passport document (Admin only)
+     */
+    public function downloadPassportDocument(Booking $booking, BookingPassenger $passenger)
+    {
+        // Verify passenger belongs to booking
+        if ($passenger->booking_id !== $booking->id) {
+            abort(403, 'Unauthorized');
+        }
+
+        // Check if document path exists
+        if (!$passenger->passport_document_path) {
+            abort(404, 'Passport document not found');
+        }
+
+        // Check if file exists
+        if (!Storage::disk('private')->exists($passenger->passport_document_path)) {
+            abort(404, 'Passport document file not found');
+        }
+
+        // Return the file download
+        return Storage::disk('private')->download($passenger->passport_document_path);
+    }
+
+    public function downloadCnicDocument(Booking $booking, BookingPassenger $passenger)
+    {
+        // Verify passenger belongs to booking
+        if ($passenger->booking_id !== $booking->id) {
+            abort(403, 'Unauthorized');
+        }
+
+        // Check if document path exists
+        if (!$passenger->cnic_document_path) {
+            abort(404, 'CNIC document not found');
+        }
+
+        // Check if file exists
+        if (!Storage::disk('private')->exists($passenger->cnic_document_path)) {
+            abort(404, 'CNIC document file not found');
+        }
+
+        // Return the file download
+        return Storage::disk('private')->download($passenger->cnic_document_path);
     }
 }

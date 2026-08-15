@@ -22,7 +22,8 @@ class HotelImageService
                 continue;
             }
 
-            $path = $file->store('hotels/' . $hotel->id . '/images', 'public');
+            $slug = Str::slug($hotel->hotel_name ?: (string) $hotel->id);
+            $path = $file->store('hotels/' . $slug . '/images', 'public');
             $uploaded[] = $hotel->allImages()->create([
                 'path' => $path,
                 'sort_order' => $nextOrder,
@@ -66,8 +67,9 @@ class HotelImageService
             }
 
             Storage::disk('public')->delete($image->path);
+            $slug = Str::slug($hotel->hotel_name ?: (string) $hotel->id);
             $image->update([
-                'path' => $file->store('hotels/' . $hotel->id . '/images', 'public'),
+                'path' => $file->store('hotels/' . $slug . '/images', 'public'),
             ]);
         }
 
@@ -117,7 +119,9 @@ class HotelImageService
 
         if (! empty($data['replace_image']) && $data['replace_image'] instanceof UploadedFile) {
             Storage::disk('public')->delete($image->path);
-            $updateData['path'] = $data['replace_image']->store('hotels/' . $newHotelId . '/images', 'public');
+            $targetHotel = Hotel::find($newHotelId);
+            $slug = $targetHotel ? Str::slug($targetHotel->hotel_name ?: (string) $newHotelId) : (string) $newHotelId;
+            $updateData['path'] = $data['replace_image']->store('hotels/' . $slug . '/images', 'public');
         }
 
         if ($updateData['is_cover']) {

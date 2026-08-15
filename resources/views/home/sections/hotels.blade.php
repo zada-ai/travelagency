@@ -14,7 +14,7 @@
                 <h2 class="mt-2 text-3xl font-black tracking-tight text-slate-900 sm:text-4xl">{{ $featuredHotelTitle }}</h2>
                 <p class="mt-3 max-w-2xl text-slate-600">{{ $featuredHotelSubtitle }}</p>
             </div>
-            <a href="{{ route('hotels.booking') }}" class="inline-flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-5 py-3 text-sm font-bold text-white shadow-lg shadow-blue-200 transition hover:bg-blue-700">
+            <a href="{{ route('login') }}" class="inline-flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-5 py-3 text-sm font-bold text-white shadow-lg shadow-blue-200 transition hover:bg-blue-700">
                 View All Hotels
                 <i class="bi bi-arrow-right"></i>
             </a>

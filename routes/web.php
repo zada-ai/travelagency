@@ -32,6 +32,7 @@ use App\Http\Controllers\PublicHotelBookingController;
 use App\Http\Controllers\PublicHotelController;
 use App\Http\Controllers\PublicTicketController;
 use App\Http\Controllers\TravelAgentAuthController;
+use App\Http\Controllers\HotelVoucherController;
 use App\Http\Controllers\TravelAgentBookingHistoryController;
 use App\Http\Controllers\TravelAgentCommissionController;
 use App\Http\Controllers\TravelAgentCustomerVisaController;
@@ -217,6 +218,7 @@ Route::get('/hotels/booking', [PublicHotelBookingController::class, 'index'])->n
 Route::get('/hotels/filter', [PublicHotelBookingController::class, 'filter'])->name('hotels.filter');
 Route::get('/hotels/availability', [PublicHotelBookingController::class, 'availability'])->name('hotels.availability');
 Route::get('/hotels/{hotel}/booking', [PublicHotelBookingController::class, 'create'])->name('hotels.booking.create');
+Route::get('/hotels/book/review', [PublicHotelBookingController::class, 'reviewShow'])->name('hotels.book.review.show');
 Route::post('/hotels/book/review', [PublicHotelBookingController::class, 'review'])->name('hotels.book.review');
 Route::post('/hotels/book/review/edit', [PublicHotelBookingController::class, 'reviewEdit'])->name('hotels.book.review.edit');
 Route::post('/hotels/book', [PublicHotelBookingController::class, 'store'])->name('hotels.book');
@@ -376,6 +378,8 @@ Route::middleware(['auth'])->group(function () use ($adminPages) {
     Route::get('/admin/bookings/{booking}', [AdminBookingController::class, 'show'])->name('admin.bookings.show');
     Route::post('/admin/bookings/{booking}/reserve', [AdminBookingController::class, 'reserve'])->name('admin.bookings.reserve');
     Route::post('/admin/bookings/{booking}/cancel', [AdminBookingController::class, 'cancel'])->name('admin.bookings.cancel');
+    Route::get('/admin/bookings/{booking}/passport/{passenger}', [AdminBookingController::class, 'downloadPassportDocument'])->name('admin.bookings.passport.download');
+    Route::get('/admin/bookings/{booking}/cnic/{passenger}', [AdminBookingController::class, 'downloadCnicDocument'])->name('admin.bookings.cnic.download');
 
     // Airline & Tickets Management
     Route::get('/admin/airline-ticket-management', [AdminTicketController::class, 'index'])->name('admin.airline-ticket-management');
@@ -417,6 +421,21 @@ Route::middleware(['auth'])->group(function () use ($adminPages) {
             [AdminVoucherSettingController::class, 'updateLogo']
         )->name('voucher-management.logo');
 
+        // Admin: Hotel Voucher routes (prepare -> passengers -> generate)
+        Route::post(
+            '/hotel-vouchers/{booking}/prepare',
+            [HotelVoucherController::class, 'prepare']
+        )->name('hotel-vouchers.prepare');
+
+        Route::post(
+            '/hotel-vouchers/{booking}/passengers',
+            [HotelVoucherController::class, 'savePassengers']
+        )->name('hotel-vouchers.passengers');
+
+        Route::get(
+            '/hotel-vouchers/generate/{booking}',
+            [HotelVoucherController::class, 'generate']
+        )->name('hotel-vouchers.generate');
     });
     //  Route::get(
     //     '/voucher-management',

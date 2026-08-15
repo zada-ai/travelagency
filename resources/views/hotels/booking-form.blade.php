@@ -44,7 +44,7 @@
 
             <div class="grid gap-8 lg:grid-cols-3">
                 <div class="lg:col-span-2 space-y-6">
-                    <form action="{{ route('hotels.book.review') }}" method="POST" class="space-y-6">
+                    <form action="{{ route('hotels.book.review') }}" method="POST" enctype="multipart/form-data" class="space-y-6">
                         @csrf
                         <input type="hidden" name="hotel_id" value="{{ $hotel->id }}">
 
@@ -541,29 +541,23 @@
                             <span class="text-xs text-slate-500">${type}</span>
                         </div>
                         <div class="grid gap-4 lg:grid-cols-2">
-                            <div>
-                                <label class="block text-xs uppercase tracking-[0.24em] text-slate-500 mb-2">First name</label>
-                                <input type="text" name="passengers[${index}][first_name]" class="form-control w-full rounded-3xl border-slate-200 bg-white text-sm p-3" required>
-                            </div>
-                            <div>
-                                <label class="block text-xs uppercase tracking-[0.24em] text-slate-500 mb-2">Last name</label>
-                                <input type="text" name="passengers[${index}][last_name]" class="form-control w-full rounded-3xl border-slate-200 bg-white text-sm p-3" required>
-                            </div>
-                            <div>
-                                <label class="block text-xs uppercase tracking-[0.24em] text-slate-500 mb-2">Nationality</label>
-                                <input type="text" name="passengers[${index}][nationality]" class="form-control w-full rounded-3xl border-slate-200 bg-white text-sm p-3" required>
+                            <div class="lg:col-span-2">
+                                <label class="block text-xs uppercase tracking-[0.24em] text-slate-500 mb-2">Full name</label>
+                                <input type="text" name="passengers[${index}][full_name]" class="form-control w-full rounded-3xl border-slate-200 bg-white text-sm p-3" placeholder="Enter full name" required>
                             </div>
                             <div>
                                 <label class="block text-xs uppercase tracking-[0.24em] text-slate-500 mb-2">Date of birth</label>
                                 <input type="text" name="passengers[${index}][date_of_birth]" class="form-control w-full rounded-3xl border-slate-200 bg-white text-sm p-3 passenger-dob" placeholder="YYYY-MM-DD" required readonly>
                             </div>
-                            <div>
-                                <label class="block text-xs uppercase tracking-[0.24em] text-slate-500 mb-2">Passport number</label>
-                                <input type="text" name="passengers[${index}][passport_number]" class="form-control w-full rounded-3xl border-slate-200 bg-white text-sm p-3" required>
+                            <div class="lg:col-span-2">
+                                <label class="block text-xs uppercase tracking-[0.24em] text-slate-500 mb-2">Passport / Document <span class="text-rose-500">*</span> (PDF, PNG, JPG)</label>
+                                <input type="file" name="passengers[${index}][passport_document]" class="form-control w-full rounded-3xl border-slate-200 bg-white text-sm p-3" accept=".pdf,.png,.jpg,.jpeg,.gif" required>
+                                <p class="text-xs text-slate-400 mt-1">Supported formats: PDF, PNG, JPG, JPEG, GIF (Max 5MB)</p>
                             </div>
-                            <div>
-                                <label class="block text-xs uppercase tracking-[0.24em] text-slate-500 mb-2">Passport expiry</label>
-                                <input type="text" name="passengers[${index}][passport_expiry]" class="form-control w-full rounded-3xl border-slate-200 bg-white text-sm p-3 passenger-expiry" placeholder="YYYY-MM-DD" required readonly>
+                            <div class="lg:col-span-2">
+                                <label class="block text-xs uppercase tracking-[0.24em] text-slate-500 mb-2">CNIC / ID Card <span class="text-rose-500">*</span> (PDF, PNG, JPG)</label>
+                                <input type="file" name="passengers[${index}][cnic_document]" class="form-control w-full rounded-3xl border-slate-200 bg-white text-sm p-3" accept=".pdf,.png,.jpg,.jpeg,.gif" required>
+                                <p class="text-xs text-slate-400 mt-1">Supported formats: PDF, PNG, JPG, JPEG, GIF (Max 5MB)</p>
                             </div>
                         </div>
                         <input type="hidden" name="passengers[${index}][passenger_type]" value="${type}">
@@ -599,11 +593,6 @@
                 document.querySelectorAll('.passenger-dob').forEach((element) => {
                     if (!element._flatpickr) {
                         flatpickr(element, { dateFormat: 'Y-m-d', maxDate: 'today' });
-                    }
-                });
-                document.querySelectorAll('.passenger-expiry').forEach((element) => {
-                    if (!element._flatpickr) {
-                        flatpickr(element, { dateFormat: 'Y-m-d', minDate: 'today' });
                     }
                 });
             }

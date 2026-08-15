@@ -76,7 +76,7 @@
                             <th class="px-4 py-4 font-semibold">Actions</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-slate-200 bg-white">
+                    <tbody class="divide-y divide-slate-200 bg-white text-black">
                         @forelse($hotels as $hotel)
                             <tr>
                                 <td class="px-4 py-4">{{ $hotel->hotel_name }}</td>

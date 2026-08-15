@@ -61,8 +61,7 @@ public function voucher($id)
 
   public function update(Request $request, $id)
 {
-    $booking = PackageBooking::with('passengers')->findOrFail($id);
-
+    $booking = Booking::with('passengers.details')->findOrFail($id);
     $request->validate([
         'status' => 'required|in:Pending,Approved,Cancelled,Completed',
         'passengers' => 'nullable|array',
