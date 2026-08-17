@@ -7,6 +7,11 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @stack('styles')
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        body.sidebar-open {
+            overflow: hidden;
+        }
+    </style>
 </head>
 <body class="min-h-screen bg-slate-950 text-slate-100">
     @php
@@ -14,31 +19,35 @@
         $adminUserName = auth()->user()->name ?? 'Admin User';
     @endphp
 
-    <div class="min-h-screen">
-        <div class="min-h-screen">
-            <div id="sidebarBackdrop" class="fixed inset-0 z-10 hidden bg-slate-950/60 lg:hidden"></div>
-            <aside id="sidebar" class="fixed inset-y-0 left-0 z-20 w-72 -translate-x-full overflow-y-auto border-r border-slate-200 bg-slate-950 px-4 py-6 text-slate-100 transition duration-300 lg:translate-x-0">
-                <div class="flex items-center justify-between lg:hidden">
-                    <div>
-                        <p class="text-sm font-semibold uppercase tracking-[0.28em] text-slate-500">Menu</p>
-                    </div>
-                    <button id="sidebarClose" class="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-slate-900 text-slate-300 transition hover:bg-slate-800" aria-label="Close sidebar">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
-                        </svg>
-                    </button>
-                </div>
+    {{-- Layout wrapper: flex container for sidebar + main --}}
+    <div class="flex min-h-screen overflow-hidden">
+        {{-- Sidebar backdrop overlay (mobile only) --}}
+        <div id="sidebarBackdrop" class="fixed inset-0 z-30 hidden bg-slate-950/60 backdrop-blur-sm lg:hidden"></div>
 
-                <div class="mt-6 rounded-[2rem] bg-slate-900 p-4 shadow-lg ring-1 ring-slate-800/60">
-                    <div class="flex items-center gap-3">
-                        <div class="inline-flex h-14 w-14 items-center justify-center rounded-3xl bg-blue-500 text-xl font-semibold text-white">A</div>
-                        <div>
-                            <p class="text-xs uppercase tracking-[0.28em] text-slate-500">Administrator</p>
-                            <p class="mt-1 text-base font-semibold text-white">{{ $adminUserName }}</p>
-                        </div>
+        {{-- Sidebar navigation --}}
+        <aside id="sidebar" class="fixed inset-y-0 left-0 z-40 w-64 -translate-x-full transform overflow-y-auto border-r border-slate-800 bg-slate-950 px-4 py-6 text-slate-100 transition-transform duration-300 ease-in-out lg:static lg:z-auto lg:translate-x-0 lg:w-64 lg:transform-none">
+            {{-- Sidebar close button (mobile only) --}}
+            <div class="mb-6 flex items-center justify-between lg:hidden">
+                <span class="text-xs font-semibold uppercase tracking-widest text-slate-500">Menu</span>
+                <button id="sidebarClose" type="button" class="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-slate-900 text-slate-300 hover:bg-slate-800 hover:text-white">
+                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+
+            {{-- Sidebar user profile card --}}
+            <div class="mb-6 rounded-xl border border-slate-800 bg-slate-900 p-4">
+                <div class="flex items-center gap-3">
+                    <div class="inline-flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-blue-600 text-base font-semibold text-white">
+                        {{ strtoupper(substr($adminUserName, 0, 1)) }}
                     </div>
-                    <p class="mt-4 text-sm leading-6 text-slate-400">Unified controls for bookings, flights, hotels, agents, and reports.</p>
+                    <div class="min-w-0 flex-1">
+                        <p class="text-xs uppercase tracking-widest text-slate-500">Administrator</p>
+                        <p class="mt-0.5 truncate text-sm font-semibold text-white">{{ $adminUserName }}</p>
+                    </div>
                 </div>
+            </div>
 
                 <nav class="mt-10 space-y-4 text-sm">
                     <div class="space-y-1 rounded-3xl border border-slate-800 bg-slate-900/80 p-3">
@@ -163,8 +172,9 @@
                 </div>
             </aside>
 
-            <main class="min-h-screen w-full px-4 py-6 lg:ml-72 xl:px-8">
-                <div class="flex flex-col gap-4 lg:hidden">
+            <main class="min-h-screen w-full overflow-x-hidden bg-slate-950 py-6 lg:ml-72">
+                {{-- Mobile Menu Toggle --}}
+                <div class="flex flex-col gap-4 px-4 sm:px-6 lg:hidden">
                     <button id="sidebarToggle" class="inline-flex items-center gap-2 rounded-2xl bg-slate-800 px-4 py-3 text-sm font-semibold text-white transition hover:bg-slate-700">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                             <path fill-rule="evenodd" d="M3 5h14a1 1 0 010 2H3a1 1 0 010-2zm0 4h14a1 1 0 010 2H3a1 1 0 010-2zm0 4h14a1 1 0 010 2H3a1 1 0 010-2z" clip-rule="evenodd" />
@@ -172,18 +182,25 @@
                         Open menu
                     </button>
                 </div>
-                <div class="flex flex-col gap-6 xl:flex-row xl:items-end xl:justify-between">
-                    <div class="flex items-center gap-4">
-                        <img src="{{ asset('Hujaj-Umrah.png') }}" alt="Hujaj Umrah" class="h-16 w-auto object-contain" />
-                        <div>
-                            <h1 class="text-3xl font-semibold text-white">@yield('page-heading', 'Dashboard')</h1>
-                            <p class="mt-2 text-sm text-slate-400">@yield('page-description', 'Manage operations, bookings, and reports from a centralized ERP experience.')</p>
+
+                {{-- Page Header --}}
+                <header class="border-b border-slate-800 px-4 sm:px-6 lg:px-8">
+                    <div class="flex flex-col gap-4 py-6 sm:flex-row sm:items-center sm:justify-between">
+                        <div class="flex items-center gap-3 sm:gap-4">
+                            <img src="{{ asset('Hujaj-Umrah.png') }}" alt="Hujaj Umrah" class="h-12 sm:h-16 w-auto object-contain" />
+                            <div class="flex-1">
+                                <h1 class="text-2xl sm:text-3xl font-bold text-white">@yield('page-heading', 'Dashboard')</h1>
+                                <p class="mt-1 text-xs sm:text-sm text-slate-400">@yield('page-description', 'Manage operations, bookings, and reports from a centralized ERP experience.')</p>
+                            </div>
                         </div>
                     </div>
-                </div>
+                </header>
 
-                <div class="space-y-6">
-                    @yield('content')
+                {{-- Main Content --}}
+                <div class="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
+                    <div class="space-y-8 py-8">
+                        @yield('content')
+                    </div>
                 </div>
             </main>
         </div>

@@ -305,4 +305,70 @@ class HotelVoucherController extends Controller
             )
         );
     }
+
+    /**
+     * Show voucher to booking owner (customer) or related travel agent.
+     */
+    public function showForOwner(Booking $booking)
+    {
+        // Load relations used in voucher view
+        $booking->load([
+            'hotel',
+            'roomType',
+            'room',
+            'mealPlan',
+            'passengers',
+            'travelAgent',
+        ]);
+
+        $user = auth()->guard('web')->user();
+        $agent = auth()->guard('travel_agent')->user();
+
+        $isOwner = false;
+
+        if ($user) {
+            if (!empty($user->email) && $user->email === $booking->contact_email) {
+                $isOwner = true;
+            }
+
+            if (! $isOwner && !empty($user->phone) && $user->phone === $booking->contact_phone) {
+                $isOwner = true;
+            }
+
+            // If booking has user_id column and matches
+            if (! $isOwner && isset($booking->user_id) && $booking->user_id === $user->id) {
+                $isOwner = true;
+            }
+        }
+
+        if ($agent && !$isOwner) {
+            if (isset($booking->travel_agent_id) && $booking->travel_agent_id === $agent->id) {
+                $isOwner = true;
+            }
+        }
+
+        abort_unless($isOwner, 403);
+
+        $voucherSetting = VoucherSetting::first();
+
+        $voucherRoomNumber =
+            $booking->room?->room_number
+            ?? session('voucher_room_number')
+            ?? 'Pending';
+
+        $voucherPaymentStatus =
+            $booking->payment_status
+            ?? session('voucher_payment_status')
+            ?? 'Pending';
+
+        return view(
+            'admin.hotel-vouchers.show',
+            compact(
+                'booking',
+                'voucherSetting',
+                'voucherRoomNumber',
+                'voucherPaymentStatus'
+            )
+        );
+    }
 }

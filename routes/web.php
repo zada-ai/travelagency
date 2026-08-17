@@ -242,8 +242,12 @@ Route::middleware('auth:web,travel_agent')->group(function () {
     Route::get('/bookings/confirmation/{flightBooking}', [AdminFlightBookingController::class, 'confirmation'])->name('bookings.confirmation');
     Route::post('/bookings/cancel-review', [AdminFlightBookingController::class, 'cancelReview'])->name('bookings.cancel-review');
     Route::get('/customer/bookings', [AdminFlightBookingController::class, 'customerBookings'])->name('customer.bookings');
+    // Customer/Agent access to hotel voucher (owner-only)
+    Route::get('/customer/bookings/{booking}/hotel-voucher', [HotelVoucherController::class, 'showForOwner'])
+        ->name('customer.bookings.hotel.voucher');
 });
-
+Route::get('/hotels/booking', [PublicHotelBookingController::class, 'index'])
+    ->name('hotels.booking');
     Route::middleware('auth:web')->group(function () {
         Route::get('/packages/{package}/book', [PackageBookingController::class, 'create'])->name('packages.book');
         Route::post('/packages/{package}/book', [PackageBookingController::class, 'store'])->name('packages.store');

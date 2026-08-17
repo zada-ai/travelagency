@@ -108,7 +108,7 @@
                             <a href="{{ route('hotels.details', $hotel) }}" class="flex items-center justify-center rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-xs sm:text-sm font-bold text-slate-700 hover:bg-slate-100 transition active:scale-[0.98]">
                                 View Details
                             </a>
-                            <a href="{{ route('hotels.details', $hotel) }}" class="inline-flex items-center justify-center rounded-xl bg-blue-600 hover:bg-blue-700 active:scale-[0.98] px-5 py-3 text-xs sm:text-sm font-bold text-white shadow-lg shadow-blue-500/20 transition">
+                            <a href="{{ route('hotels.booking.create', $hotel) }}" class="inline-flex items-center justify-center rounded-xl bg-blue-600 hover:bg-blue-700 active:scale-[0.98] px-5 py-3 text-xs sm:text-sm font-bold text-white shadow-lg shadow-blue-500/20 transition">
                                 Book Now
                             </a>
                         </div>

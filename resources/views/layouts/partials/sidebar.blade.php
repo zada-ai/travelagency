@@ -7,7 +7,7 @@
     | web guard. Do NOT use auth()->guard('customer') because that guard
     | is not configured in config/auth.php.
     */
-    $authUser = auth()->user();
+    $authUser = auth()->guard('travel_agent')->user() ?? auth()->user();
 
     $currentUser = $authUser;
 

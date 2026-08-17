@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Booking;
 use App\Models\FlightBooking;
+use App\Models\PackageBooking;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -23,6 +25,19 @@ class TravelAgentBookingHistoryController extends Controller
             ->where('travel_agent_id', $agent->id)
             ->with(['ticket', 'agent']);
 
+        // Get package bookings
+        $packageBookingsQuery = PackageBooking::query()
+            ->with(['package', 'user', 'passengers']);
+
+        // Some installations may not have travel_agent_id on package_bookings.
+        // Guard the filter with a schema check to avoid SQL errors.
+        if (Schema::hasColumn('package_bookings', 'travel_agent_id')) {
+            $packageBookingsQuery->where('travel_agent_id', $agent->id);
+        } else {
+            // Fallback: no travel agent column available — return empty result set
+            $packageBookingsQuery->whereRaw('0 = 1');
+        }
+
         // Apply filters
         if ($request->filled('booking_id')) {
             $hotelBookingsQuery->where('id', 'like', '%' . $request->booking_id . '%');
@@ -37,6 +52,7 @@ class TravelAgentBookingHistoryController extends Controller
         if ($request->filled('status')) {
             $hotelBookingsQuery->where('status', $request->status);
             $flightBookingsQuery->where('status', $request->status);
+            $packageBookingsQuery->where('status', $request->status);
         }
 
         if ($request->filled('from_date') && $request->filled('to_date')) {
@@ -46,11 +62,13 @@ class TravelAgentBookingHistoryController extends Controller
 
         $hotelBookings = $hotelBookingsQuery->orderByDesc('created_at')->paginate(10);
         $flightBookings = $flightBookingsQuery->orderByDesc('created_at')->paginate(10);
+        $packageBookings = $packageBookingsQuery->orderByDesc('created_at')->paginate(10);
 
         return view('travel_agents.booking-history.index', compact(
             'agent',
             'hotelBookings',
-            'flightBookings'
+            'flightBookings',
+            'packageBookings'
         ));
     }
 

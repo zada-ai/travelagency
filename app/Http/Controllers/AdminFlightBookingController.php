@@ -11,6 +11,8 @@ use App\Models\VisaType;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\PackageBooking;
+use Illuminate\Support\Facades\Schema;
+use App\Models\Booking as HotelBooking;
 
 class AdminFlightBookingController extends Controller
 {
@@ -288,64 +290,87 @@ class AdminFlightBookingController extends Controller
         return redirect()->route('bookings.confirmation', ['flightBooking' => $flightBooking->id])->with('success', 'Booking created successfully.');
     }
 
-    public function customerBookings()
-{
-    $user = Auth::user();
-
-    // Flight bookings
-    $bookings = FlightBooking::with('ticket')
-        ->where('user_id', $user->id)
-        ->orderByDesc('created_at')
-        ->get();
-
-    // Umrah Package bookings
-    $packageBookings = PackageBooking::with(['package', 'passengers'])
-        ->where('user_id', $user->id)
-        ->orderByDesc('created_at')
-        ->get();
-
-    return view('customer.bookings.index', compact(
-        'user',
-        'bookings',
-        'packageBookings'
-    ));
-}
-
     public function confirmation(FlightBooking $flightBooking)
     {
+        $flightBooking->load(['ticket', 'agent', 'passengers']);
+
         if (Auth::guard('travel_agent')->check()) {
-            abort_unless($flightBooking->travel_agent_id === Auth::guard('travel_agent')->id(), 403);
-        } elseif (Auth::check()) {
-            abort_unless($flightBooking->user_id === Auth::id(), 403);
-        } else {
-            abort(403);
+            return view('travel_agents.bookings.confirmation', compact('flightBooking'));
         }
 
-        return view('flight_bookings.confirmation', [
-            'booking' => $flightBooking,
-        ]);
+        return view('bookings.confirmation', compact('flightBooking'));
     }
 
-    public function cancelReview(Request $request)
+    public function customerBookings()
     {
-        session()->forget('flight_booking_review');
+        // Ensure this page is viewed by a customer (web) user
+        $user = Auth::guard('web')->user();
 
-        if (Auth::guard('travel_agent')->check()) {
-            return redirect()->route('travel-agents.tickets')->with('info', 'Booking review cancelled.');
+        if (! $user) {
+            return redirect()->route('tickets.index')->withErrors(['auth' => 'Please login as a customer to view your bookings.']);
         }
 
-        return redirect()->route('tickets.index')->with('info', 'Booking review cancelled.');
+        // Flight bookings
+        $bookings = FlightBooking::with('ticket')
+            ->where('user_id', $user->id)
+            ->orderByDesc('created_at')
+            ->get();
+
+        // Umrah Package bookings
+        $packageBookings = PackageBooking::with(['package', 'passengers'])
+            ->where('user_id', $user->id)
+            ->orderByDesc('created_at')
+            ->get();
+
+        // Hotel bookings: match by contact email or phone (hotel bookings don't have user_id)
+        $hotelQuery = \App\Models\Booking::with(['hotel', 'roomType', 'passengers'])
+            ->orderByDesc('created_at');
+
+        if (! empty($user->email)) {
+            $hotelQuery->where('contact_email', $user->email);
+        }
+
+        if (! empty($user->phone)) {
+            $hotelQuery->orWhere('contact_phone', $user->phone);
+        }
+
+        $hotelBookings = $hotelQuery->get();
+
+        return view('customer.bookings.index', compact(
+            'user',
+            'bookings',
+            'packageBookings',
+            'hotelBookings'
+        ));
     }
 
     public function agentBookings()
     {
         $agent = Auth::guard('travel_agent')->user();
-        $bookings = FlightBooking::with(['ticket', 'voucher'])
+
+        if (! $agent) {
+            return redirect()->route('travel-agents.login')->withErrors(['auth' => 'Please login to view your bookings.']);
+        }
+
+        $flightBookings = FlightBooking::with('ticket')
             ->where('travel_agent_id', $agent->id)
             ->orderByDesc('created_at')
-            ->get();
+            ->paginate(15);
 
-        return view('travel_agents.bookings.index', compact('agent', 'bookings'));
+        $packageQuery = PackageBooking::with(['package', 'passengers'])->orderByDesc('created_at');
+        if (Schema::hasColumn('package_bookings', 'travel_agent_id')) {
+            $packageQuery->where('travel_agent_id', $agent->id);
+        } else {
+            $packageQuery->whereRaw('0 = 1');
+        }
+        $packageBookings = $packageQuery->paginate(15);
+
+        $hotelBookings = HotelBooking::with(['hotel', 'roomType', 'passengers'])
+            ->where('travel_agent_id', $agent->id)
+            ->orderByDesc('created_at')
+            ->paginate(15);
+
+        return view('travel_agents.booking-history.index', compact('agent', 'flightBookings', 'packageBookings', 'hotelBookings'));
     }
 
     public function index(Request $request)

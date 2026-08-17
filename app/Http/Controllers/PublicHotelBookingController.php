@@ -735,6 +735,42 @@ class PublicHotelBookingController extends Controller
 
         /*
         |--------------------------------------------------------------------------
+        | Booking Owner
+        |--------------------------------------------------------------------------
+        |
+        | Agent:
+        | travel_agent_id = logged-in travel agent ID
+        |
+        | Customer:
+        | user_id = logged-in web user ID
+        |
+        */
+
+        $travelAgentId = null;
+        $userId = null;
+
+        if (
+            auth()
+                ->guard('travel_agent')
+                ->check()
+        ) {
+            $travelAgentId =
+                auth()
+                    ->guard('travel_agent')
+                    ->id();
+        } elseif (
+            auth()
+                ->guard('web')
+                ->check()
+        ) {
+            $userId =
+                auth()
+                    ->guard('web')
+                    ->id();
+        }
+
+        /*
+        |--------------------------------------------------------------------------
         | Create Booking
         |--------------------------------------------------------------------------
         */
@@ -747,6 +783,7 @@ class PublicHotelBookingController extends Controller
             $checkOut,
             $dateRange,
             $availableRoom,
+            $mealPlan,
             $mealPriceTotal,
             $visaPrice,
             $transportPrice,
@@ -755,7 +792,9 @@ class PublicHotelBookingController extends Controller
             $infants,
             $totalGuests,
             $nights,
-            $sessionReview
+            $sessionReview,
+            $travelAgentId,
+            $userId
         ) {
 
             /*
@@ -858,6 +897,18 @@ class PublicHotelBookingController extends Controller
                 'contact_phone' =>
                     $request->contact_phone,
 
+                /*
+                |--------------------------------------------------------------------------
+                | OWNER
+                |--------------------------------------------------------------------------
+                */
+
+                'travel_agent_id' =>
+                    $travelAgentId,
+
+                'user_id' =>
+                    $userId,
+
                 'payment_status' =>
                     'Pending',
 
@@ -898,12 +949,6 @@ class PublicHotelBookingController extends Controller
                     $storedPaths[$index][
                         'cnic_document_path'
                     ] ?? null;
-
-                /*
-                |--------------------------------------------------------------------------
-                | Passenger
-                |--------------------------------------------------------------------------
-                */
 
                 $bookingPassenger =
                     $booking->passengers()->create([
@@ -1965,8 +2010,7 @@ class PublicHotelBookingController extends Controller
                     ->where(
                         'status',
                         'Active'
-                    )
-                as $roomType
+                    ) as $roomType
             ) {
 
                 $roomTypeAvailabilities[

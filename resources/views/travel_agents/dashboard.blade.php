@@ -294,7 +294,7 @@ THIS IS THE ACTIVE DASHBOARD VIEW
                                 Payment History
                             </a> --}}
 
-<a href="#profile" class="group flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold text-slate-600 hover:bg-blue-50/50 hover:text-blue-600 transition duration-200">
+<a href="{{ route('travel-agents.booking-history.index') }}" class="group flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold text-slate-600 hover:bg-blue-50/50 hover:text-blue-600 transition duration-200">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" class="h-5 w-5 text-slate-400 group-hover:text-blue-500 transition-colors">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
                                 </svg>
@@ -816,7 +816,7 @@ THIS IS THE ACTIVE DASHBOARD VIEW
                                 </a>
 
                                 <!-- Group Ticket Card -->
-                                <a href="{{ route('travel-agents.group-booking') }}" class="group block rounded-[24px] bg-white border border-slate-200 p-6 transition-all duration-250 hover:-translate-y-1 hover:border-blue-500/20 hover:shadow-lg shadow-sm">
+                                {{-- <a href="{{ route('travel-agents.group-booking') }}" class="group block rounded-[24px] bg-white border border-slate-200 p-6 transition-all duration-250 hover:-translate-y-1 hover:border-blue-500/20 hover:shadow-lg shadow-sm">
                                     <div class="flex items-center justify-between gap-4 border-b border-slate-100 pb-4 mb-4">
                                         <div>
                                             <span class="text-[10px] font-extrabold text-indigo-600 uppercase tracking-widest">Group Ticket</span>
@@ -828,7 +828,7 @@ THIS IS THE ACTIVE DASHBOARD VIEW
                                     </div>
                                     <p class="text-xs text-slate-500 leading-relaxed font-medium">Create and process group flight booking requests and manage block packages instantly.</p>
                                     <div class="mt-5 inline-flex items-center gap-2 text-xs font-bold text-indigo-600 group-hover:text-blue-600 transition">Click To Book Now <span aria-hidden="true" class="group-hover:translate-x-1.5 transition-transform duration-200">→</span></div>
-                                </a>
+                                </a> --}}
                             </div>
                         </section>
 
@@ -844,7 +844,7 @@ THIS IS THE ACTIVE DASHBOARD VIEW
                                 </a>
                             </div>
 
-                            @if($subAgents->isEmpty())
+                            @if(empty($subAgents) || $subAgents->isEmpty())
                                 <div class="text-sm text-slate-500">You have not created any sub-agents yet.</div>
                             @else
                                 <div class="overflow-x-auto">
@@ -859,7 +859,7 @@ THIS IS THE ACTIVE DASHBOARD VIEW
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            @foreach($subAgents as $subAgent)
+                                            @foreach($subAgents ?? [] as $subAgent)
                                                 <tr class="border-t border-slate-200 hover:bg-slate-50 transition">
                                                     <td class="px-3 py-3">{{ $subAgent->first_name ?? $subAgent->company_name ?? 'N/A' }} {{ $subAgent->last_name ?? '' }}</td>
                                                     <td class="px-3 py-3">{{ $subAgent->email ?? 'N/A' }}</td>

@@ -86,12 +86,12 @@
                             <td class="px-4 py-4 text-slate-600">&mdash;</td>
                         </tr>
 
-                        @if($subAgents->isEmpty())
+                        @if(empty($subAgents) || $subAgents->isEmpty())
                             <tr class="child-row hidden bg-slate-50">
                                 <td colspan="5" class="px-4 py-10 text-center text-sm text-slate-500">You have not created any sub-agents yet.</td>
                             </tr>
                         @else
-                            @foreach($subAgents as $subAgent)
+                            @foreach($subAgents ?? [] as $subAgent)
                                 <tr class="child-row hidden border-t border-slate-200 bg-white">
                                     <td class="px-4 py-4 pl-10 font-semibold text-slate-800">{{ $subAgent->first_name ?? $subAgent->company_name ?? 'N/A' }} {{ $subAgent->last_name ?? '' }}</td>
                                     <td class="px-4 py-4 text-slate-600">{{ $subAgent->email ?? 'N/A' }}</td>
