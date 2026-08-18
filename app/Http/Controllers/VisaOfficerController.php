@@ -91,7 +91,7 @@ class VisaOfficerController extends Controller
         $recentlyIssuedVisas = (clone $query)->where('status', 'Issued')->orderByDesc('updated_at')->limit(10)->get();
         $recentNotifications = Notification::where('user_id', $user->id)->latest()->limit(10)->get();
 
-        return view('visa_officer.dashboard', array_merge(
+        return view('dashboard.visa-officer', array_merge(
             [
                 'agent' => $user,
             ],

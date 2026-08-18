@@ -1,9 +1,25 @@
-@extends('layouts.app')
-@vite(['resources/css/app.css', 'resources/js/app.js'])
+@php
+    $currentUser = auth()->user() ?? auth()->guard('travel_agent')->user();
+    $agent = auth()->guard('travel_agent')->user() ?? $currentUser;
+    $hasWebUser = auth()->check();
+    $hasTravelAgentUser = auth()->guard('travel_agent')->check();
+    $isCustomer = (bool) ($hasWebUser && ! $hasTravelAgentUser);
+    $isVisaOfficer = false;
+    $userRole = $hasTravelAgentUser ? 'travel_agent' : 'customer';
+
+    if (! $isCustomer && ! $hasTravelAgentUser && ! $hasWebUser) {
+        $isCustomer = true;
+        $userRole = 'customer';
+    }
+
+    $portalLabel = $isCustomer ? 'Customer Portal' : 'Agent Portal';
+    $portalSystemLabel = $isCustomer ? 'Customer Portal System' : 'Agent Portal System';
+@endphp
+
+@extends('layouts.dashboard')
 @section('content')
 
-
-<div class="min-h-screen bg-slate-50 py-6 sm:py-8">
+<div class="space-y-8">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
         {{-- Header --}}

@@ -54,7 +54,7 @@ class CustomerDashboardController extends Controller
             ->limit(10)
             ->get();
 
-        return view('travel_agents.dashboard', compact(
+        return view('dashboard.customer', compact(
             'user',
             'customer',
             'visaApplications',

@@ -185,7 +185,7 @@ class TravelAgentAuthController extends Controller
             $subAgents = $agent->subAgents()->orderByDesc('created_at')->get();
         }
 
-        return view('travel_agents.dashboard', compact(
+        return view('dashboard.travel-agent', compact(
             'agent',
             'viewAgent',
             'userRole',

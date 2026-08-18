@@ -1,6 +1,3 @@
-<h1 style="background:red;color:white;padding:10px;text-align:center;font-weight:bold;z-index:9999;position:relative;">
-THIS IS THE ACTIVE DASHBOARD VIEW
-</h1>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -123,7 +120,19 @@ THIS IS THE ACTIVE DASHBOARD VIEW
                     </div>
 
                     <!-- User Profile Quick Info -->
-                    @if($isVisaOfficer)
+                    @if($isCustomer)
+                        <div class="rounded-2xl border border-slate-100 bg-slate-50 p-4 shadow-inner">
+                            <div class="flex items-center gap-3">
+                                <div class="h-10 w-10 rounded-full bg-emerald-600 flex items-center justify-center text-white font-semibold uppercase">
+                                    {{ strtoupper(substr($currentUser->name ?? ($agent->name ?? 'C'), 0, 1)) }}
+                                </div>
+                                <div class="overflow-hidden">
+                                    <p class="text-xs uppercase tracking-wider text-slate-400 font-medium">Customer</p>
+                                    <p class="font-bold text-slate-800 truncate text-sm mt-0.5">{{ $currentUser->name ?? ($agent->name ?? 'Customer User') }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    @elseif($isVisaOfficer)
                         <div class="rounded-2xl border border-slate-100 bg-slate-50 p-4 shadow-inner">
                             <div class="flex items-center gap-3">
                                 <div class="h-10 w-10 rounded-full bg-blue-600 flex items-center justify-center text-white font-semibold uppercase">
@@ -217,82 +226,9 @@ THIS IS THE ACTIVE DASHBOARD VIEW
 
     </div>
 </div>
-                            {{-- <a href="#quotes" class="group flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold text-slate-600 hover:bg-blue-50/50 hover:text-blue-600 transition duration-200">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" class="h-5 w-5 text-slate-400 group-hover:text-blue-500 transition-colors">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                                </svg>
-                                My Quotes
-                            </a> --}}
-{{-- 
-                            <a href="#bookings" class="group flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold text-slate-600 hover:bg-blue-50/50 hover:text-blue-600 transition duration-200">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" class="h-5 w-5 text-slate-400 group-hover:text-blue-500 transition-colors">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                </svg>
-                                My Bookings
-                            </a> --}}
-
-                            {{-- <div class="px-4 py-2">
-                                <div class="text-[11px] font-bold uppercase tracking-[0.25em] text-slate-400">Documents</div>
-                                <div class="mt-2 space-y-1 text-sm text-slate-600">
-                                    <div class="rounded-lg bg-slate-50 px-3 py-2">Upload Passport</div>
-                                    <div class="rounded-lg bg-slate-50 px-3 py-2">Upload Documents</div>
-                                </div>
-                            </div> --}}
-
-                            {{-- <a href="#visa-status" class="group flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold text-slate-600 hover:bg-blue-50/50 hover:text-blue-600 transition duration-200">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" class="h-5 w-5 text-slate-400 group-hover:text-blue-500 transition-colors">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 9h3.75M15 12h3.75M15 15h3.75M4.5 19.5h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15A2.25 2.25 0 002.25 6.75v10.5A2.25 2.25 0 004.5 19.5z" />
-                                </svg>
-                                Visa Status
-                            </a> --}}
-
-                            {{-- <a href="{{ route('customer.visa.index') }}" class="group flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold text-slate-600 hover:bg-blue-50/50 hover:text-blue-600 transition duration-200">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" class="h-5 w-5 text-slate-400 group-hover:text-blue-500 transition-colors">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 8.25a4.5 4.5 0 110 9 4.5 4.5 0 010-9zm0 0v-3m0 12v-3m4.5-4.5h3m-12 0h3" />
-                                </svg>
-                                Visa Applications
-                            </a> --}}
-                            {{-- <a href="{{ route('customer.visa.create') }}" class="group flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold text-slate-600 hover:bg-blue-50/50 hover:text-blue-600 transition duration-200">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" class="h-5 w-5 text-slate-400 group-hover:text-blue-500 transition-colors">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-                                </svg>
-                                Apply Visa
-                            </a>
-
-                            <a href="#tickets" class="group flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold text-slate-600 hover:bg-blue-50/50 hover:text-blue-600 transition duration-200">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" class="h-5 w-5 text-slate-400 group-hover:text-blue-500 transition-colors">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 6v.75m0 3v.75m0 3v.75m0 3V18m-9-12h5.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125H7.5a1.125 1.125 0 01-1.125-1.125V7.125C6.375 6.504 6.879 6 7.5 6z" />
-                                </svg>
-                                My Tickets
-                            </a> --}}
-
-                            <a href="#vouchers" class="group flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold text-slate-600 hover:bg-blue-50/50 hover:text-blue-600 transition duration-200">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" class="h-5 w-5 text-slate-400 group-hover:text-blue-500 transition-colors">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                </svg>
-                                Vouchers
-                            </a>
-
-                            <a href="#invoices" class="group flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold text-slate-600 hover:bg-blue-50/50 hover:text-blue-600 transition duration-200">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" class="h-5 w-5 text-slate-400 group-hover:text-blue-500 transition-colors">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
-                                </svg>
-                                Invoices
-                            </a>
-
-                            {{-- <a href="{{ route('travel-agents.sub-agents.create') }}" class="group flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold text-slate-600 hover:bg-blue-50/50 hover:text-blue-600 transition duration-200">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" class="h-5 w-5 text-slate-400 group-hover:text-blue-500 transition-colors">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5a4.5 4.5 0 110 9 4.5 4.5 0 010-9zm-7.5 13.5a7.5 7.5 0 0115 0v1.125a1.125 1.125 0 01-1.125 1.125H6.375A1.125 1.125 0 015.25 19.5V18zm14.25-3.75a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z" />
-                                </svg>
-                                Create Sub-Agent
-                            </a> --}}
-
-                            {{-- <a href="#payments" class="group flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold text-slate-600 hover:bg-blue-50/50 hover:text-blue-600 transition duration-200">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" class="h-5 w-5 text-slate-400 group-hover:text-blue-500 transition-colors">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 8.25h19.5M6.75 3.75h10.5a2.25 2.25 0 012.25 2.25v12.75a2.25 2.25 0 01-2.25 2.25H6.75A2.25 2.25 0 014.5 18.75V6a2.25 2.25 0 012.25-2.25z" />
-                                </svg>
-                                Payment History
-                            </a> --}}
+                         
+                          11C होती है, तो वो आपकी website को rank करा सकता है, तो ऐसा नहीं है कि वो Keyword अगर हम stuff करेंगे तभी होगा, ठीक है? Keyword density के ऊपर बहुत ज्यादा ध्यान देंगे। कितनी जगह पर हमने keyword Bank होगी, ऐसा नहीं है। hummingbird ये make sure करता है कि जो content है, जो content है और इस content में जो keywords आपने use किए, उनके साथ-साथ भी आपने दूसरा क्या content Use किया हुआ है, ठीक है, और जो user की query थी, उसकी intent के हिसाब से ये content के exam में आप pass हो जाएंगे और आपकी जो ranking है, उसके improve होने के chances होंगे। अब guys, ऐसा नहीं है कि hummingbird का ही केवल आपने ध्यान रखा, बाकी चीज़ों का ध्यान नहीं रखा, ठीक है? तो ये सारी ही चीज़ें Google का जो core algorithm है, इसका एक बहुत ही important part है। तो हमें हर चीज़ का ध्यान रखना होगा, ठीक है? और यही
+                           
 
 <a href="{{ route('travel-agents.booking-history.index') }}" class="group flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold text-slate-600 hover:bg-blue-50/50 hover:text-blue-600 transition duration-200">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" class="h-5 w-5 text-slate-400 group-hover:text-blue-500 transition-colors">
@@ -376,12 +312,12 @@ THIS IS THE ACTIVE DASHBOARD VIEW
                                 </svg>
                                 UMMRAH PACKAGES
                             </a>
-                            <a href="{{ route('travel-agents.visa-applications') }}" class="group flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold text-slate-600 hover:bg-blue-50/50 hover:text-blue-600 transition duration-200">
+                            {{-- <a href="{{ route('travel-agents.visa-applications') }}" class="group flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold text-slate-600 hover:bg-blue-50/50 hover:text-blue-600 transition duration-200">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" class="h-5 w-5 text-slate-400 group-hover:text-blue-500 transition-colors">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
                                 </svg>
                                 Visa Applications
-                            </a>
+                            </a> --}}
                             <a href="{{ route('travel-agents.customer-visa.index') }}" class="group flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold text-slate-600 hover:bg-blue-50/50 hover:text-blue-600 transition duration-200">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" class="h-5 w-5 text-slate-400 group-hover:text-blue-500 transition-colors">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" />
@@ -491,24 +427,7 @@ THIS IS THE ACTIVE DASHBOARD VIEW
                                 <div class="rounded-2xl bg-emerald-50 border border-emerald-100 px-5 py-3.5 text-xs text-emerald-800 font-bold self-start md:self-auto shadow-xs">Customer Dashboard</div>
                             </div>
 
-                            {{-- <div class="mt-8 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-                                <div class="rounded-2xl bg-slate-50 border border-slate-100 p-5">
-                                    <span class="text-[10px] text-slate-400 uppercase tracking-wider font-bold">Active Bookings</span>
-                                    <span class="mt-2 block text-2xl font-extrabold text-slate-900">3</span>
-                                </div>
-                                <div class="rounded-2xl bg-slate-50 border border-slate-100 p-5">
-                                    <span class="text-[10px] text-slate-400 uppercase tracking-wider font-bold">Remaining Balance</span>
-                                    <span class="mt-2 block text-2xl font-extrabold text-amber-600">PKR 48,500</span>
-                                </div>
-                                <div class="rounded-2xl bg-slate-50 border border-slate-100 p-5">
-                                    <span class="text-[10px] text-slate-400 uppercase tracking-wider font-bold">Visa Status</span>
-                                    <span class="mt-2 block text-2xl font-extrabold text-blue-600">In Process</span>
-                                </div>
-                                <div class="rounded-2xl bg-slate-50 border border-slate-100 p-5">
-                                    <span class="text-[10px] text-slate-400 uppercase tracking-wider font-bold">Next Departure</span>
-                                    <span class="mt-2 block text-2xl font-extrabold text-slate-900">12 Aug 2026</span>
-                                </div>
-                            </div> --}}
+                           
                         </section>
 
                         <section id="build-package" class="glass-panel rounded-3xl p-6 md:p-8 shadow-xs">
@@ -524,46 +443,8 @@ THIS IS THE ACTIVE DASHBOARD VIEW
                             </div>
                         </section>
 
-                        {{-- <section id="bookings" class="glass-panel rounded-3xl p-6 md:p-8 shadow-xs">
-                            <div class="d-flex justify-content-between align-items-center mb-4">
-                                <div>
-                                    <h2 class="text-xl font-bold">Recent Bookings</h2>
-                                    <p class="text-sm text-slate-500">Your latest package activity and booking status.</p>
-                                </div>
-                            </div>
-                            <div class="table-responsive">
-                                <table class="table table-hover align-middle mb-0">
-                                    <thead>
-                                        <tr>
-                                            <th>Package</th>
-                                            <th>Date</th>
-                                            <th>Status</th>
-                                            <th>Amount</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td>Premium Umrah Package</td>
-                                            <td>12 Jul 2026</td>
-                                            <td><span class="badge bg-warning text-dark">Pending Payment</span></td>
-                                            <td>PKR 280,000</td>
-                                        </tr>
-                                        <tr>
-                                            <td>Family Visa + Hotel</td>
-                                            <td>05 Jul 2026</td>
-                                            <td><span class="badge bg-success">Confirmed</span></td>
-                                            <td>PKR 195,000</td>
-                                        </tr>
-                                        <tr>
-                                            <td>Economy Ticket Bundle</td>
-                                            <td>01 Jul 2026</td>
-                                            <td><span class="badge bg-secondary">Draft</span></td>
-                                            <td>PKR 95,000</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </section> --}}
+                      
+                      
                     @elseif($isVisaOfficer)
                         <!-- Visa Officer: Overview Banner -->
                         <section id="overview" class="glass-panel rounded-3xl p-6 md:p-8 shadow-xs relative overflow-hidden">
@@ -815,20 +696,7 @@ THIS IS THE ACTIVE DASHBOARD VIEW
                                     <div class="mt-5 inline-flex items-center gap-2 text-xs font-bold text-blue-600 group-hover:text-indigo-600 transition">Click To Book Now <span aria-hidden="true" class="group-hover:translate-x-1.5 transition-transform duration-200">→</span></div>
                                 </a>
 
-                                <!-- Group Ticket Card -->
-                                {{-- <a href="{{ route('travel-agents.group-booking') }}" class="group block rounded-[24px] bg-white border border-slate-200 p-6 transition-all duration-250 hover:-translate-y-1 hover:border-blue-500/20 hover:shadow-lg shadow-sm">
-                                    <div class="flex items-center justify-between gap-4 border-b border-slate-100 pb-4 mb-4">
-                                        <div>
-                                            <span class="text-[10px] font-extrabold text-indigo-600 uppercase tracking-widest">Group Ticket</span>
-                                            <h3 class="mt-1 text-xl font-bold text-slate-900">Book Group Packages</h3>
-                                        </div>
-                                        <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-indigo-50 text-indigo-600 shadow-xs group-hover:bg-indigo-600 group-hover:text-white transition duration-200">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 3.13a4 4 0 010 7.75"/><path d="M12 7h.01"/><path d="M12 12c0-2.21 1.79-4 4-4h4"/><path d="M2 20v-2a4 4 0 014-4h8a4 4 0 014 4v2"/></svg>
-                                        </div>
-                                    </div>
-                                    <p class="text-xs text-slate-500 leading-relaxed font-medium">Create and process group flight booking requests and manage block packages instantly.</p>
-                                    <div class="mt-5 inline-flex items-center gap-2 text-xs font-bold text-indigo-600 group-hover:text-blue-600 transition">Click To Book Now <span aria-hidden="true" class="group-hover:translate-x-1.5 transition-transform duration-200">→</span></div>
-                                </a> --}}
+                              
                             </div>
                         </section>
 

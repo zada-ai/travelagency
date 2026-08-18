@@ -157,7 +157,7 @@
         <span class="text-xs uppercase tracking-widest text-slate-500">Special Programs</span>
     </div>
     <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        <a href="{{ route('admin.visa-management') }}" class="group rounded-2xl border border-slate-800 bg-gradient-to-br from-slate-900 to-slate-950 p-5 shadow-lg transition hover:border-fuchsia-500 hover:shadow-fuchsia-500/10">
+        {{-- <a href="{{ route('admin.visa-management') }}" class="group rounded-2xl border border-slate-800 bg-gradient-to-br from-slate-900 to-slate-950 p-5 shadow-lg transition hover:border-fuchsia-500 hover:shadow-fuchsia-500/10">
             <div class="flex items-start justify-between">
                 <div>
                     <p class="text-xs font-semibold uppercase tracking-widest text-fuchsia-400">Services</p>
@@ -168,7 +168,7 @@
                     <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                 </span>
             </div>
-        </a>
+        </a> --}}
 
         <a href="{{ route('admin.voucher-management') }}" class="group rounded-2xl border border-slate-800 bg-gradient-to-br from-slate-900 to-slate-950 p-5 shadow-lg transition hover:border-lime-500 hover:shadow-lime-500/10">
             <div class="flex items-start justify-between">

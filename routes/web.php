@@ -316,6 +316,15 @@ Route::middleware(['auth'])->group(function () use ($adminPages) {
         ->middleware('auth')
         ->name('customer.dashboard');
 
+    Route::post('/customer/logout', function () {
+        auth()->logout();
+
+        request()->session()->invalidate();
+        request()->session()->regenerateToken();
+
+        return redirect()->route('home');
+    })->name('customer.logout');
+
     // Customer Visa Application Routes
     Route::prefix('customer/visa')->name('customer.visa.')->middleware('auth')->group(function () {
         Route::get('/', [CustomerVisaController::class, 'index'])->name('index');
@@ -360,6 +369,14 @@ Route::middleware(['auth'])->group(function () use ($adminPages) {
         Route::post('/notifications/{notification}/mark-read', [VisaOfficerController::class, 'markNotificationRead'])->name('notifications.mark-read');
         Route::post('/notifications/mark-all-read', [VisaOfficerController::class, 'markAllNotificationsRead'])->name('notifications.mark-all-read');
         Route::get('/profile', [VisaOfficerController::class, 'profile'])->name('profile');
+        Route::post('/logout', function () {
+            auth()->logout();
+
+            request()->session()->invalidate();
+            request()->session()->regenerateToken();
+
+            return redirect()->route('home');
+        })->name('logout');
         Route::get('/applications/{visaApplication}', [VisaOfficerController::class, 'show'])->name('applications.show');
         Route::post('/applications/{visaApplication}/status', [VisaOfficerController::class, 'updateStatus'])->name('applications.status.update');
         Route::get('/applications/{visaApplication}/print', [VisaOfficerController::class, 'print'])->name('applications.print');

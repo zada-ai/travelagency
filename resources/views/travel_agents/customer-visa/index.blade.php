@@ -1,22 +1,22 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Customer Visa Applications | Umrah ERP</title>
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
-    <style>
-        body {
-            font-family: 'Plus Jakarta Sans', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background: #f4f7fc;
-        }
-        .table-container {
-            overflow-x: auto;
-        }
-    </style>
-</head>
-<body class="min-h-screen text-slate-700 antialiased">
-    <div class="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
+@php
+    $currentUser = auth()->user() ?? auth()->guard('travel_agent')->user();
+    $agent = auth()->guard('travel_agent')->user() ?? $currentUser;
+    $hasWebUser = auth()->check();
+    $hasTravelAgentUser = auth()->guard('travel_agent')->check();
+    $isCustomer = (bool) ($hasWebUser && ! $hasTravelAgentUser);
+    $isVisaOfficer = false;
+    $userRole = $hasTravelAgentUser ? 'travel_agent' : 'customer';
+
+    if (! $isCustomer && ! $hasTravelAgentUser && ! $hasWebUser) {
+        $isCustomer = true;
+        $userRole = 'customer';
+    }
+@endphp
+
+@extends('layouts.dashboard')
+
+@section('content')
+    <div class="max-w-7xl mx-auto px-4 py-2 sm:px-6 lg:px-8">
         <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
                 <h1 class="text-3xl font-extrabold text-slate-900">Customer Visa Applications</h1>
@@ -89,5 +89,4 @@
             </div>
         </div>
     </div>
-</body>
-</html>
+@endsection
