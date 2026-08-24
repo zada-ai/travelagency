@@ -228,7 +228,7 @@
                                         }
                                     @endphp
 
-                                    @if($canViewVoucher)
+                                    @if($canViewVoucher && in_array($booking->status, \App\Models\Booking::BOOKED_STATUSES, true))
                                         <a href="{{ route('customer.bookings.hotel.voucher', ['booking' => $booking->id]) }}" class="inline-flex items-center justify-center gap-2 px-4 py-2 bg-amber-600 text-white rounded-lg text-sm font-semibold hover:bg-amber-700 transition">
                                             View Voucher
                                         </a>

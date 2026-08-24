@@ -334,10 +334,14 @@
                                     }
                                 @endphp
 
-                                @if($canViewVoucher)
+                                @if($canViewVoucher && in_array($h->status, \App\Models\Booking::BOOKED_STATUSES, true))
                                     <a href="{{ route('customer.bookings.hotel.voucher', ['booking' => $h->id]) }}" class="inline-flex items-center justify-center gap-2 px-4 py-2 bg-amber-600 text-white rounded-lg text-sm font-semibold hover:bg-amber-700 transition">
                                         View Voucher
                                     </a>
+                                @elseif(strtolower((string) $h->status) === 'pending')
+                                    <span class="inline-flex items-center justify-center gap-2 px-4 py-2 bg-amber-50 text-amber-700 rounded-lg text-sm font-semibold">
+                                        Payment Pending
+                                    </span>
                                 @else
                                     <a href="{{ route('hotels.booking.confirmation', ['booking' => $h->id]) }}" class="inline-flex items-center justify-center gap-2 px-4 py-2 bg-slate-900 text-white rounded-lg text-sm font-semibold hover:bg-slate-700 transition">
                                         View Details

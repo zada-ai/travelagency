@@ -273,6 +273,12 @@ class HotelVoucherController extends Controller
     public function generate(
         Booking $booking
     ) {
+        abort_unless(
+            in_array($booking->status, Booking::BOOKED_STATUSES, true),
+            403,
+            'Voucher is only available for reserved bookings.'
+        );
+
         $booking->load([
             'hotel',
             'roomType',
@@ -311,6 +317,12 @@ class HotelVoucherController extends Controller
      */
     public function showForOwner(Booking $booking)
     {
+        abort_unless(
+            in_array($booking->status, Booking::BOOKED_STATUSES, true),
+            403,
+            'Voucher is only available for reserved bookings.'
+        );
+
         // Load relations used in voucher view
         $booking->load([
             'hotel',

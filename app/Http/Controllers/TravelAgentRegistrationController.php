@@ -7,6 +7,7 @@ use App\Http\Requests\UpdateTravelAgentRequest;
 use App\Models\TravelAgent;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use App\Models\AgentCompany;
 
 class TravelAgentRegistrationController extends Controller
 {
@@ -37,7 +38,10 @@ class TravelAgentRegistrationController extends Controller
         $requestData['status'] = 'Pending';
         $requestData['created_by'] = null;
         $requestData['parent_agent_id'] = null;
-
+AgentCompany::firstOrCreate(
+    ['name' => trim($requestData['company_name'])],
+    ['status' => true]
+);
         TravelAgent::create($requestData);
 
         return redirect()->route('travel-agents.register.success');

@@ -1309,13 +1309,15 @@
                     </button>
 
 
-                    <a
-                        href="{{ route('admin.hotel-vouchers.generate', $booking) }}"
-                        target="_blank"
-                        class="rounded-2xl bg-indigo-600 px-6 py-3 text-sm font-semibold text-white transition hover:bg-indigo-700"
-                    >
-                        Generate Voucher
-                    </a>
+                    @if(in_array($booking->status, \App\Models\Booking::BOOKED_STATUSES, true))
+                        <a
+                            href="{{ route('admin.hotel-vouchers.generate', $booking) }}"
+                            target="_blank"
+                            class="rounded-2xl bg-indigo-600 px-6 py-3 text-sm font-semibold text-white transition hover:bg-indigo-700"
+                        >
+                            Generate Voucher
+                        </a>
+                    @endif
 
                 </div>
 

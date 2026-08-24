@@ -203,6 +203,10 @@ class AdminCustomerVoucherController extends Controller
             'packageBooking.passengers',
         ]);
 
+        $this->assertBookingEligibleForVoucher(
+            $voucher->flightBooking ?? $voucher->packageBooking
+        );
+
         return view(
             'admin.vouchers.show',
             compact('voucher')
@@ -233,7 +237,7 @@ class AdminCustomerVoucherController extends Controller
         $booking = $voucher->flightBooking
             ?? $voucher->packageBooking;
 
-        abort_unless($booking, 404);
+        $this->assertBookingEligibleForVoucher($booking);
 
         $setting = VoucherSetting::first();
 
@@ -270,6 +274,16 @@ class AdminCustomerVoucherController extends Controller
                 )
             ),
             403
+        );
+    }
+
+    protected function assertBookingEligibleForVoucher($booking): void
+    {
+        abort_unless($booking, 404);
+        abort_unless(
+            $booking->status === 'Approved',
+            403,
+            'Voucher is only available for approved bookings.'
         );
     }
 

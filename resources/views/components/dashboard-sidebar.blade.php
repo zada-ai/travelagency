@@ -70,14 +70,14 @@
                         </div>
                     </div>
 
-                    <a href="#" class="group flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white">
+                    {{-- <a href="#" class="group flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white">
                         <span class="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-slate-800 text-emerald-300">✓</span>
                         Vouchers
                     </a>
                     <a href="#" class="group flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white">
                         <span class="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-slate-800 text-amber-300">▣</span>
                         Invoices
-                    </a>
+                    </a> --}}
                     <a href="{{ route('customer.bookings') }}" class="group flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium {{ $isActive('customer.bookings') ? 'bg-sky-500/15 text-sky-200 border border-sky-500/30' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}">
                         <span class="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-slate-800 text-cyan-300">🧳</span>
                         My Bookings
@@ -142,10 +142,24 @@
                         <span class="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-slate-800 text-amber-300 group-hover:bg-slate-700">✦</span>
                         Umrah Packages
                     </a>
-                    {{-- <a href="{{ route('travel-agents.visa-applications') }}" class="group flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium {{ $isActive('travel-agents.visa-applications') ? 'bg-sky-500/15 text-sky-200 border border-sky-500/30' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}">
-                        <span class="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-slate-800 text-cyan-300 group-hover:bg-slate-700">✓</span>
-                        Visa Applications
-                    </a> --}}
+                                      <a href="{{ route('travel-agents.vouchers.create') }}"
+   class="group flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold
+          text-slate-600 hover:bg-blue-50/50 hover:text-blue-600 transition duration-200">
+
+    <svg xmlns="http://www.w3.org/2000/svg"
+         fill="none"
+         viewBox="0 0 24 24"
+         stroke-width="1.8"
+         stroke="currentColor"
+         class="h-5 w-5 text-slate-400 group-hover:text-blue-500 transition-colors">
+        <path stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+    </svg>
+
+    <span>Vouchers Generate</span>
+</a>
+        
                     <a href="{{ route('travel-agents.customer-visa.index') }}" class="group flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium {{ $isActive('travel-agents.customer-visa.index') ? 'bg-sky-500/15 text-sky-200 border border-sky-500/30' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}">
                         <span class="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-slate-800 text-rose-300 group-hover:bg-slate-700">◎</span>
                         Customers

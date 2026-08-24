@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AdminAirlineController;
 // Controllers Import
+
 use App\Http\Controllers\AdminAirlineFlightController;
 use App\Http\Controllers\AdminAirportController;
 use App\Http\Controllers\AdminBookingController;
@@ -47,6 +48,20 @@ use App\Models\Hotel;
 use App\Models\Package;
 use App\Models\Ticket;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\TravelAgent\VoucherController;
+
+Route::middleware(['auth:travel_agent'])->prefix('travel-agents')->name('travel-agents.')->group(function () {
+    Route::post(
+        '/vouchers/customers',
+        [VoucherController::class, 'storeCustomer']
+    )->name('vouchers.customers.store');
+
+    Route::get('/vouchers/create', [VoucherController::class, 'create'])
+        ->name('vouchers.create');
+
+    Route::post('/vouchers', [VoucherController::class, 'store'])
+        ->name('vouchers.store');
+});
 
 $adminPages = [
     'user-management' => 'User Management',
@@ -596,5 +611,9 @@ Route::middleware(['auth'])->group(function () use ($adminPages) {
     }
 });
 Route::get('/custom-package', function () {
-    return view('custom.package');
+    $destination = auth()->guard('travel_agent')->check()
+        ? 'travel-agents.packages.index'
+        : 'customer.packages.create';
+
+    return redirect()->route($destination);
 })->name('custom.package');
