@@ -1,7 +1,7 @@
 @extends('admin.layouts.app')
-@section('title', 'Admin Dashboard')
-@section('page-heading', 'Enterprise Dashboard')
-@section('page-description', 'A premium travel ERP overview for hotel, flight, booking, and agent operations.')
+@section('title', 'Enterprise Overview')
+@section('page-heading', 'Enterprise Overview')
+@section('page-description', 'Real-time overview of hotel stays, flight bookings, revenue velocity, and agency operations.')
 
 @php
     use App\Models\Booking;
@@ -47,261 +47,197 @@
 @endphp
 
 @section('content')
-    <div class="space-y-6">
+    <div class="space-y-8">
+        {{-- Banner & Quick Metrics --}}
         <section class="grid gap-6 lg:grid-cols-[1.3fr_0.7fr]">
             <div class="space-y-6">
-                <div class="rounded-[28px] border border-slate-800/90 bg-slate-900/90 p-6 shadow-2xl shadow-slate-950/20 ring-1 ring-white/5">
+                <div class="rounded-3xl border border-slate-200/90 bg-white p-6 sm:p-8 shadow-sm">
                     <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
                         <div>
-                            <p class="text-sm uppercase tracking-[0.28em] text-slate-500">Enterprise overview</p>
-                            <h2 class="mt-2 text-3xl font-semibold text-white">Premium Travel ERP Dashboard</h2>
-                            <p class="mt-3 max-w-2xl text-sm leading-6 text-slate-400">Monitor hotel performance, bookings, agents and revenue from a single control center.</p>
+                            <span class="inline-block text-[11px] font-bold uppercase tracking-wider text-blue-600 bg-blue-50 px-2.5 py-1 rounded-md border border-blue-100 mb-2">Executive Overview</span>
+                            <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">Umrah ERP Performance</h2>
+                            <p class="mt-1 text-xs sm:text-sm text-slate-500 max-w-xl">Live financial velocity, daily reservations, and operational activity across agency portals.</p>
                         </div>
-                        <div class="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
-                            <a href="{{ route('admin.hotels.index') }}" class="inline-flex items-center justify-center gap-2 rounded-3xl bg-blue-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-blue-500">View Hotels</a>
-                            <a href="{{ route('admin.bookings.index') }}" class="inline-flex items-center justify-center gap-2 rounded-3xl border border-slate-800 bg-slate-950 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800">Open Bookings</a>
+                        <div class="flex flex-wrap gap-2 sm:gap-3">
+                            <a href="{{ route('admin.hotels.index') }}" class="inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-blue-600 to-emerald-600 px-4 py-2.5 text-xs font-bold text-white shadow-md shadow-blue-500/20 hover:opacity-95 transition">
+                                <i class="bi bi-building"></i>
+                                <span>View Hotels</span>
+                            </a>
+                            <a href="{{ route('admin.bookings.index') }}" class="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-100 transition">
+                                <i class="bi bi-journal-text text-emerald-600"></i>
+                                <span>All Bookings</span>
+                            </a>
                         </div>
                     </div>
-                    <div class="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-                        <div class="rounded-3xl bg-slate-950 p-5 shadow-xl ring-1 ring-white/5">
-                            <p class="text-xs uppercase tracking-[0.32em] text-slate-500">Total Revenue</p>
-                            <p class="mt-3 text-3xl font-semibold text-white">AED {{ number_format($totalRevenue, 0) }}</p>
-                            <p class="mt-2 text-sm text-slate-400">Reflects hotel and flight sales</p>
+                    
+                    {{-- 4 Stat Metric Cards --}}
+                    <div class="mt-6 grid gap-4 grid-cols-2 xl:grid-cols-4">
+                        <div class="rounded-2xl bg-gradient-to-br from-blue-50/60 to-white border border-blue-100 p-4">
+                            <p class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Total Revenue</p>
+                            <p class="mt-2 text-xl sm:text-2xl font-extrabold text-slate-900">AED {{ number_format($totalRevenue, 0) }}</p>
+                            <p class="mt-1 text-[11px] font-semibold text-blue-600">Hotels &amp; Flights</p>
                         </div>
-                        <div class="rounded-3xl bg-slate-950 p-5 shadow-xl ring-1 ring-white/5">
-                            <p class="text-xs uppercase tracking-[0.32em] text-slate-500">Bookings Today</p>
-                            <p class="mt-3 text-3xl font-semibold text-white">{{ number_format($bookingsToday) }}</p>
-                            <p class="mt-2 text-sm text-slate-400">Live booking arrivals</p>
+                        <div class="rounded-2xl bg-gradient-to-br from-emerald-50/60 to-white border border-emerald-100 p-4">
+                            <p class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Bookings Today</p>
+                            <p class="mt-2 text-xl sm:text-2xl font-extrabold text-slate-900">{{ number_format($bookingsToday) }}</p>
+                            <p class="mt-1 text-[11px] font-semibold text-emerald-600">New arrivals</p>
                         </div>
-                        <div class="rounded-3xl bg-slate-950 p-5 shadow-xl ring-1 ring-white/5">
-                            <p class="text-xs uppercase tracking-[0.32em] text-slate-500">Hotels</p>
-                            <p class="mt-3 text-3xl font-semibold text-white">{{ number_format($hotelsCount) }}</p>
-                            <p class="mt-2 text-sm text-slate-400">Active properties</p>
+                        <div class="rounded-2xl bg-gradient-to-br from-teal-50/60 to-white border border-teal-100 p-4">
+                            <p class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Hotels</p>
+                            <p class="mt-2 text-xl sm:text-2xl font-extrabold text-slate-900">{{ number_format($hotelsCount) }}</p>
+                            <p class="mt-1 text-[11px] font-semibold text-teal-600">Active properties</p>
                         </div>
-                        <div class="rounded-3xl bg-slate-950 p-5 shadow-xl ring-1 ring-white/5">
-                            <p class="text-xs uppercase tracking-[0.32em] text-slate-500">Flights</p>
-                            <p class="mt-3 text-3xl font-semibold text-white">{{ number_format($flightsCount) }}</p>
-                            <p class="mt-2 text-sm text-slate-400">Ticket inventory</p>
+                        <div class="rounded-2xl bg-gradient-to-br from-sky-50/60 to-white border border-sky-100 p-4">
+                            <p class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Flights</p>
+                            <p class="mt-2 text-xl sm:text-2xl font-extrabold text-slate-900">{{ number_format($flightsCount) }}</p>
+                            <p class="mt-1 text-[11px] font-semibold text-sky-600">Available tickets</p>
                         </div>
                     </div>
                 </div>
 
+                {{-- Charts Section --}}
                 <div class="grid gap-6 lg:grid-cols-[1.4fr_1fr]">
-                    <div class="rounded-[28px] border border-slate-800/90 bg-slate-900/90 p-6 shadow-2xl shadow-slate-950/20 ring-1 ring-white/5">
+                    <div class="rounded-3xl border border-slate-200/90 bg-white p-6 shadow-sm">
                         <div class="flex items-center justify-between gap-4">
                             <div>
-                                <p class="text-xs uppercase tracking-[0.32em] text-slate-500">Revenue Overview</p>
-                                <h3 class="mt-2 text-2xl font-semibold text-white">Last 6 months</h3>
+                                <p class="text-[11px] font-bold uppercase tracking-wider text-blue-600">Financial Trend</p>
+                                <h3 class="mt-1 text-lg font-bold text-slate-900">Revenue Velocity</h3>
                             </div>
-                            <span class="rounded-3xl bg-slate-800 px-4 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-slate-300">Live</span>
+                            <span class="rounded-full bg-blue-50 border border-blue-100 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-blue-700">Last 6 Mos</span>
                         </div>
-                        <div class="mt-6">
-                            <canvas id="revenueChart" height="180"></canvas>
+                        <div class="mt-6 h-[200px]">
+                            <canvas id="revenueChart"></canvas>
                         </div>
                     </div>
+
                     <div class="space-y-6">
-                        <div class="rounded-[28px] border border-slate-800/90 bg-slate-900/90 p-6 shadow-2xl shadow-slate-950/20 ring-1 ring-white/5">
+                        <div class="rounded-3xl border border-slate-200/90 bg-white p-6 shadow-sm">
                             <div class="flex items-center justify-between gap-4">
                                 <div>
-                                    <p class="text-xs uppercase tracking-[0.32em] text-slate-500">Booking Velocity</p>
-                                    <h3 class="mt-2 text-2xl font-semibold text-white">Monthly trends</h3>
+                                    <p class="text-[11px] font-bold uppercase tracking-wider text-emerald-600">Orders</p>
+                                    <h3 class="mt-1 text-lg font-bold text-slate-900">Booking Volume</h3>
                                 </div>
-                                <span class="rounded-3xl bg-emerald-500/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-emerald-300">Growth</span>
+                                <span class="rounded-full bg-emerald-50 border border-emerald-100 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-emerald-700">Growth</span>
                             </div>
-                            <div class="mt-6">
-                                <canvas id="bookingsChart" height="180"></canvas>
-                            </div>
-                        </div>
-                        <div class="rounded-[28px] border border-slate-800/90 bg-slate-900/90 p-6 shadow-2xl shadow-slate-950/20 ring-1 ring-white/5">
-                            <div class="flex items-center justify-between gap-4">
-                                <div>
-                                    <p class="text-xs uppercase tracking-[0.32em] text-slate-500">Top Destinations</p>
-                                    <h3 class="mt-2 text-2xl font-semibold text-white">Most active cities</h3>
-                                </div>
-                            </div>
-                            <div class="mt-6 space-y-3">
-                                @foreach($topDestinations as $destination)
-                                    <div class="rounded-3xl bg-slate-950/90 px-4 py-3 text-sm text-slate-200">
-                                        <div class="flex items-center justify-between gap-4">
-                                            <span>{{ $destination->city }}</span>
-                                            <span class="font-semibold text-white">{{ $destination->total }}</span>
-                                        </div>
-                                    </div>
-                                @endforeach
+                            <div class="mt-6 h-[200px]">
+                                <canvas id="bookingsChart"></canvas>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
+
+            {{-- Aside Quick Insight Cards --}}
             <aside class="space-y-6">
-                <div class="rounded-[28px] border border-slate-800/90 bg-slate-900/90 p-6 shadow-2xl shadow-slate-950/20 ring-1 ring-white/5">
+                <div class="rounded-3xl border border-slate-200/90 bg-white p-6 shadow-sm">
                     <div class="flex items-center justify-between gap-4">
                         <div>
-                            <p class="text-xs uppercase tracking-[0.32em] text-slate-500">Insight cards</p>
-                            <h3 class="mt-2 text-2xl font-semibold text-white">Operations pulse</h3>
+                            <p class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Activity Pulse</p>
+                            <h3 class="mt-1 text-lg font-bold text-slate-900">Operations Status</h3>
                         </div>
                     </div>
-                    <div class="mt-6 grid gap-4">
-                        <div class="rounded-3xl bg-slate-950/90 p-5">
-                            <p class="text-xs uppercase tracking-[0.3em] text-slate-500">Customers</p>
-                            <p class="mt-2 text-3xl font-semibold text-white">{{ number_format($customersCount) }}</p>
+                    <div class="mt-4 grid grid-cols-2 gap-3">
+                        <div class="rounded-2xl bg-blue-50/50 border border-blue-100 p-3.5">
+                            <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Customers</p>
+                            <p class="mt-1 text-xl font-extrabold text-slate-800">{{ number_format($customersCount) }}</p>
                         </div>
-                        <div class="rounded-3xl bg-slate-950/90 p-5">
-                            <p class="text-xs uppercase tracking-[0.3em] text-slate-500">Agents</p>
-                            <p class="mt-2 text-3xl font-semibold text-white">{{ number_format($agentsCount) }}</p>
+                        <div class="rounded-2xl bg-emerald-50/50 border border-emerald-100 p-3.5">
+                            <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Agents</p>
+                            <p class="mt-1 text-xl font-extrabold text-slate-800">{{ number_format($agentsCount) }}</p>
                         </div>
-                        <div class="rounded-3xl bg-slate-950/90 p-5">
-                            <p class="text-xs uppercase tracking-[0.3em] text-slate-500">Pending Payments</p>
-                            <p class="mt-2 text-3xl font-semibold text-amber-300">{{ number_format($pendingPayments) }}</p>
+                        <div class="rounded-2xl bg-amber-50/50 border border-amber-100 p-3.5">
+                            <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Pending Pay</p>
+                            <p class="mt-1 text-xl font-extrabold text-amber-600">{{ number_format($pendingPayments) }}</p>
                         </div>
-                        <div class="rounded-3xl bg-slate-950/90 p-5">
-                            <p class="text-xs uppercase tracking-[0.3em] text-slate-500">Pending Bookings</p>
-                            <p class="mt-2 text-3xl font-semibold text-rose-300">{{ number_format($pendingBookings) }}</p>
+                        <div class="rounded-2xl bg-rose-50/50 border border-rose-100 p-3.5">
+                            <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Pending Book</p>
+                            <p class="mt-1 text-xl font-extrabold text-rose-600">{{ number_format($pendingBookings) }}</p>
                         </div>
                     </div>
                 </div>
-                <div class="rounded-[28px] border border-slate-800/90 bg-slate-900/90 p-6 shadow-2xl shadow-slate-950/20 ring-1 ring-white/5">
-                    <p class="text-xs uppercase tracking-[0.32em] text-slate-500">Quick Actions</p>
-                    <h3 class="mt-2 text-2xl font-semibold text-white">Launch tasks</h3>
-                    <div class="mt-6 grid gap-3">
-                        <a href="{{ route('admin.bookings.index') }}" class="block rounded-3xl bg-blue-600 px-4 py-4 text-sm font-semibold text-white transition hover:bg-blue-500">Manage Bookings</a>
-                        <a href="{{ route('admin.hotels.create') }}" class="block rounded-3xl bg-slate-950/90 px-4 py-4 text-sm font-semibold text-white transition hover:bg-slate-800">Add Hotel</a>
-                        <a href="{{ route('admin.airline-flights.create') }}" class="block rounded-3xl bg-slate-950/90 px-4 py-4 text-sm font-semibold text-white transition hover:bg-slate-800">Add Flight</a>
-                        <a href="{{ route('admin.package-builder') }}" class="block rounded-3xl bg-slate-950/90 px-4 py-4 text-sm font-semibold text-white transition hover:bg-slate-800">Add Package</a>
-                        <a href="{{ route('admin.customer-management') }}" class="block rounded-3xl bg-slate-950/90 px-4 py-4 text-sm font-semibold text-white transition hover:bg-slate-800">Customer CRM</a>
-                        <a href="{{ route('admin.agent-management') }}" class="block rounded-3xl bg-slate-950/90 px-4 py-4 text-sm font-semibold text-white transition hover:bg-slate-800">Agent Panel</a>
+
+                <div class="rounded-3xl border border-slate-200/90 bg-white p-6 shadow-sm">
+                    <p class="text-[11px] font-bold uppercase tracking-wider text-blue-600">Quick Shortcuts</p>
+                    <h3 class="mt-1 text-lg font-bold text-slate-900">Direct Actions</h3>
+                    <div class="mt-4 grid gap-2.5">
+                        <a href="{{ route('travel-agents.vouchers.create') }}" class="flex items-center justify-between rounded-xl bg-gradient-to-r from-blue-600 to-emerald-600 px-4 py-3 text-xs font-bold text-white shadow-md shadow-blue-500/15 hover:opacity-95 transition">
+                            <span>Create New Voucher</span>
+                            <i class="bi bi-arrow-right"></i>
+                        </a>
+                        <a href="{{ route('admin.bookings.index') }}" class="flex items-center justify-between rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-xs font-bold text-slate-700 hover:bg-blue-50 hover:text-blue-700 hover:border-blue-200 transition">
+                            <span>Manage Bookings</span>
+                            <i class="bi bi-arrow-right"></i>
+                        </a>
+                        <a href="{{ route('admin.packages.index') }}" class="flex items-center justify-between rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-xs font-bold text-slate-700 hover:bg-emerald-50 hover:text-emerald-700 hover:border-emerald-200 transition">
+                            <span>Package Builder</span>
+                            <i class="bi bi-arrow-right"></i>
+                        </a>
+                        <a href="{{ route('admin.agent-management') }}" class="flex items-center justify-between rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-xs font-bold text-slate-700 hover:bg-blue-50 hover:text-blue-700 hover:border-blue-200 transition">
+                            <span>Agent Approvals</span>
+                            <i class="bi bi-arrow-right"></i>
+                        </a>
                     </div>
                 </div>
             </aside>
         </section>
 
-        <section class="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
-            <div class="rounded-[28px] border border-slate-800/90 bg-slate-900/90 p-6 shadow-2xl shadow-slate-950/20 ring-1 ring-white/5">
-                <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                    <div>
-                        <p class="text-xs uppercase tracking-[0.32em] text-slate-500">Recent Activity</p>
-                        <h3 class="mt-2 text-2xl font-semibold text-white">Live timeline</h3>
-                    </div>
-                    <span class="rounded-3xl bg-slate-800 px-4 py-2 text-xs uppercase tracking-[0.28em] text-slate-400">Latest</span>
-                </div>
-                <div class="mt-6 space-y-4">
-                    @foreach($notifications as $notification)
-                        <div class="rounded-3xl bg-slate-950/90 p-4 ring-1 ring-white/5">
-                            <div class="flex items-center justify-between gap-4">
-                                <div>
-                                    <p class="text-sm font-semibold text-white">{{ $notification['title'] }}</p>
-                                    <p class="mt-1 text-sm text-slate-400">Real-time dashboard alert.</p>
-                                </div>
-                                <span class="rounded-full px-3 py-1 text-xs font-semibold {{ $notification['type'] === 'success' ? 'bg-emerald-500/15 text-emerald-300' : ($notification['type'] === 'danger' ? 'bg-rose-500/15 text-rose-300' : 'bg-amber-500/15 text-amber-300') }}">{{ $notification['count'] }}</span>
-                            </div>
-                        </div>
-                    @endforeach
-                </div>
-            </div>
-
-            <div class="rounded-[28px] border border-slate-800/90 bg-slate-900/90 p-6 shadow-2xl shadow-slate-950/20 ring-1 ring-white/5">
-                <div class="flex items-center justify-between gap-4">
-                    <div>
-                        <p class="text-xs uppercase tracking-[0.32em] text-slate-500">Upcoming Events</p>
-                        <h3 class="mt-2 text-2xl font-semibold text-white">Booking calendar</h3>
-                    </div>
-                    <span class="rounded-3xl bg-slate-800 px-4 py-2 text-xs uppercase tracking-[0.28em] text-slate-400">Next 5</span>
-                </div>
-                <div class="mt-6 space-y-3">
-                    @foreach($upcomingEvents as $event)
-                        <div class="rounded-3xl bg-slate-950/90 p-4 ring-1 ring-white/5">
-                            <div class="flex items-center justify-between gap-3">
-                                <div>
-                                    <p class="text-sm font-semibold text-white">Check-in: {{ $event->hotel->hotel_name ?? 'Hotel booking' }}</p>
-                                    <p class="mt-1 text-sm text-slate-400">Guest: {{ $event->contact_name }}</p>
-                                </div>
-                                <span class="rounded-2xl bg-blue-500/10 px-3 py-2 text-xs uppercase tracking-[0.24em] text-blue-300">{{ $event->check_in->format('d M') }}</span>
-                            </div>
-                        </div>
-                    @endforeach
-                </div>
-            </div>
-        </section>
-
-        <section class="rounded-[28px] border border-slate-800/90 bg-slate-900/90 p-6 shadow-2xl shadow-slate-950/20 ring-1 ring-white/5">
+        {{-- Recent Bookings Table Section --}}
+        <section class="rounded-3xl border border-slate-200/90 bg-white p-6 sm:p-8 shadow-sm">
             <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <div>
-                    <p class="text-xs uppercase tracking-[0.32em] text-slate-500">Booking performance</p>
-                    <h3 class="mt-2 text-2xl font-semibold text-white">Latest hotel bookings</h3>
+                    <span class="inline-block text-[11px] font-bold uppercase tracking-wider text-emerald-600 bg-emerald-50 px-2.5 py-0.5 rounded-md border border-emerald-100 mb-1">Live Feed</span>
+                    <h3 class="text-xl font-bold text-slate-900">Recent Customer Bookings</h3>
                 </div>
-                <a href="{{ route('admin.bookings.index') }}" class="inline-flex items-center rounded-full bg-blue-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-blue-500">View all bookings</a>
+                <a href="{{ route('admin.bookings.index') }}" class="inline-flex items-center gap-2 rounded-xl bg-slate-100 hover:bg-blue-50 text-slate-700 hover:text-blue-700 border border-slate-200 px-4 py-2 text-xs font-bold transition">
+                    <span>View all bookings</span>
+                    <i class="bi bi-arrow-right"></i>
+                </a>
             </div>
-            <div class="mt-6 overflow-x-auto rounded-[28px] border border-slate-800 bg-slate-950/80">
-                <table class="min-w-full divide-y divide-slate-800 text-left text-sm text-slate-300">
-                    <thead class="bg-slate-950/90 text-slate-400">
+
+            <div class="mt-6 overflow-x-auto rounded-2xl border border-slate-200/80">
+                <table class="min-w-full divide-y divide-slate-200 text-left text-sm text-slate-700">
+                    <thead class="bg-slate-50 text-slate-500 font-bold text-xs">
                         <tr>
-                            <th class="px-6 py-4 font-semibold uppercase tracking-[0.24em]">Booking ID</th>
-                            <th class="px-6 py-4 font-semibold uppercase tracking-[0.24em]">Customer</th>
-                            <th class="px-6 py-4 font-semibold uppercase tracking-[0.24em]">Hotel</th>
-                            <th class="px-6 py-4 font-semibold uppercase tracking-[0.24em]">Status</th>
-                            <th class="px-6 py-4 font-semibold uppercase tracking-[0.24em]">Payment</th>
-                            <th class="px-6 py-4 font-semibold uppercase tracking-[0.24em]">Amount</th>
-                            <th class="px-6 py-4 font-semibold uppercase tracking-[0.24em]">Date</th>
-                            <th class="px-6 py-4 font-semibold uppercase tracking-[0.24em]">Actions</th>
+                            <th class="px-5 py-3.5 uppercase tracking-wider">Reference</th>
+                            <th class="px-5 py-3.5 uppercase tracking-wider">Customer</th>
+                            <th class="px-5 py-3.5 uppercase tracking-wider">Hotel</th>
+                            <th class="px-5 py-3.5 uppercase tracking-wider">Status</th>
+                            <th class="px-5 py-3.5 uppercase tracking-wider">Payment</th>
+                            <th class="px-5 py-3.5 uppercase tracking-wider">Amount</th>
+                            <th class="px-5 py-3.5 uppercase tracking-wider">Date</th>
+                            <th class="px-5 py-3.5 uppercase tracking-wider text-right">Actions</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-slate-800 bg-slate-950/80">
+                    <tbody class="divide-y divide-slate-100 bg-white">
                         @forelse($recentBookings as $booking)
-                            <tr>
-                                <td class="px-6 py-4 font-semibold text-white">{{ $booking->reference_number }}</td>
-                                <td class="px-6 py-4">{{ $booking->contact_name }}</td>
-                                <td class="px-6 py-4">{{ $booking->hotel->hotel_name ?? '-' }}</td>
-                                <td class="px-6 py-4">
-                                    <span class="inline-flex rounded-full px-3 py-1 text-[11px] font-semibold {{ $booking->status === 'Reserved' ? 'bg-emerald-500/15 text-emerald-300' : ($booking->status === 'Cancelled' ? 'bg-rose-500/15 text-rose-300' : 'bg-amber-500/15 text-amber-300') }}">{{ $booking->status }}</span>
+                            <tr class="hover:bg-blue-50/40 transition">
+                                <td class="px-5 py-3.5 font-bold text-slate-900 font-mono">{{ $booking->reference_number }}</td>
+                                <td class="px-5 py-3.5 font-semibold text-slate-800">{{ $booking->contact_name }}</td>
+                                <td class="px-5 py-3.5 text-slate-600">{{ $booking->hotel->hotel_name ?? '-' }}</td>
+                                <td class="px-5 py-3.5">
+                                    <span class="inline-flex rounded-full px-2.5 py-0.5 text-[11px] font-bold {{ $booking->status === 'Reserved' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : ($booking->status === 'Cancelled' ? 'bg-rose-50 text-rose-700 border border-rose-200' : 'bg-amber-50 text-amber-700 border border-amber-200') }}">
+                                        {{ $booking->status }}
+                                    </span>
                                 </td>
-                                <td class="px-6 py-4">{{ $booking->payment_status }}</td>
-                                <td class="px-6 py-4">AED {{ number_format($booking->grand_total, 2) }}</td>
-                                <td class="px-6 py-4">{{ $booking->created_at->format('d M Y') }}</td>
-                                <td class="px-6 py-4">
-                                    <a href="{{ route('admin.bookings.show', $booking) }}" class="rounded-full bg-blue-500/10 px-3 py-1 text-xs font-semibold text-blue-200 hover:bg-blue-500/20">View</a>
+                                <td class="px-5 py-3.5">
+                                    <span class="text-xs font-semibold {{ $booking->payment_status === 'Paid' ? 'text-emerald-600' : 'text-amber-600' }}">{{ $booking->payment_status }}</span>
+                                </td>
+                                <td class="px-5 py-3.5 font-bold text-slate-900">AED {{ number_format($booking->grand_total, 2) }}</td>
+                                <td class="px-5 py-3.5 text-slate-500 text-xs">{{ $booking->created_at->format('d M Y') }}</td>
+                                <td class="px-5 py-3.5 text-right">
+                                    <a href="{{ route('admin.bookings.show', $booking) }}" class="inline-flex items-center gap-1 rounded-lg bg-blue-50 hover:bg-blue-600 text-blue-700 hover:text-white px-3 py-1.5 text-xs font-bold transition">
+                                        <span>View</span>
+                                        <i class="bi bi-chevron-right text-[10px]"></i>
+                                    </a>
                                 </td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="8" class="px-6 py-12 text-center text-slate-500">No recent bookings found.</td>
+                                <td colspan="8" class="px-5 py-10 text-center text-slate-400 font-medium">No recent bookings recorded in the system.</td>
                             </tr>
                         @endforelse
                     </tbody>
                 </table>
-            </div>
-        </section>
-
-        <section class="grid gap-6 lg:grid-cols-[0.7fr_1.3fr]">
-            <div class="rounded-[28px] border border-slate-800/90 bg-slate-900/90 p-6 shadow-2xl shadow-slate-950/20 ring-1 ring-white/5">
-                <p class="text-xs uppercase tracking-[0.32em] text-slate-500">Top agents</p>
-                <h3 class="mt-2 text-2xl font-semibold text-white">Rising performers</h3>
-                <div class="mt-6 space-y-4">
-                    @foreach($topAgents as $agent)
-                        <div class="rounded-3xl bg-slate-950/90 p-4 ring-1 ring-white/5">
-                            <div class="flex items-center justify-between gap-4">
-                                <div>
-                                    <p class="font-semibold text-white">{{ $agent->company_name ?? trim($agent->first_name . ' ' . $agent->last_name) }}</p>
-                                    <p class="mt-1 text-sm text-slate-400">{{ $agent->country ?? 'Unknown region' }}</p>
-                                </div>
-                                <span class="rounded-2xl bg-blue-500/10 px-3 py-1 text-xs uppercase tracking-[0.24em] text-blue-300">New</span>
-                            </div>
-                        </div>
-                    @endforeach
-                </div>
-            </div>
-            <div class="rounded-[28px] border border-slate-800/90 bg-slate-900/90 p-6 shadow-2xl shadow-slate-950/20 ring-1 ring-white/5">
-                <p class="text-xs uppercase tracking-[0.32em] text-slate-500">Top customers</p>
-                <h3 class="mt-2 text-2xl font-semibold text-white">High-value accounts</h3>
-                <div class="mt-6 grid gap-4 sm:grid-cols-2">
-                    <div class="rounded-3xl bg-slate-950/90 p-5 ring-1 ring-white/5">
-                        <p class="text-sm text-slate-400">Customers</p>
-                        <p class="mt-3 text-3xl font-semibold text-white">{{ number_format($customersCount) }}</p>
-                    </div>
-                    <div class="rounded-3xl bg-slate-950/90 p-5 ring-1 ring-white/5">
-                        <p class="text-sm text-slate-400">Active Agents</p>
-                        <p class="mt-3 text-3xl font-semibold text-white">{{ number_format($agentsCount) }}</p>
-                    </div>
-                </div>
             </div>
         </section>
     </div>
@@ -318,15 +254,15 @@
             data: {
                 labels: @json($monthlyLabels),
                 datasets: [{
-                    label: 'Revenue',
+                    label: 'Revenue (AED)',
                     data: @json($monthlyRevenue),
-                    backgroundColor: 'rgba(56, 189, 248, 0.16)',
-                    borderColor: 'rgba(56, 189, 248, 1)',
-                    borderWidth: 2,
+                    backgroundColor: 'rgba(37, 99, 235, 0.08)',
+                    borderColor: '#2563eb',
+                    borderWidth: 2.5,
                     fill: true,
-                    tension: 0.35,
+                    tension: 0.4,
                     pointRadius: 4,
-                    pointBackgroundColor: '#38bdf8',
+                    pointBackgroundColor: '#2563eb',
                 }]
             },
             options: {
@@ -337,8 +273,8 @@
                     tooltip: { mode: 'index', intersect: false }
                 },
                 scales: {
-                    x: { grid: { display: false }, ticks: { color: '#94a3b8' } },
-                    y: { grid: { color: 'rgba(148, 163, 184, 0.15)' }, ticks: { color: '#94a3b8' } }
+                    x: { grid: { display: false }, ticks: { color: '#64748b', font: { size: 11 } } },
+                    y: { grid: { color: '#f1f5f9' }, ticks: { color: '#64748b', font: { size: 11 } } }
                 }
             }
         });
@@ -352,8 +288,8 @@
                 datasets: [{
                     label: 'Bookings',
                     data: @json($monthlyBookings),
-                    backgroundColor: 'rgba(16, 185, 129, 0.85)',
-                    borderRadius: 12,
+                    backgroundColor: '#059669',
+                    borderRadius: 8,
                     borderSkipped: false,
                 }]
             },
@@ -362,8 +298,8 @@
                 maintainAspectRatio: false,
                 plugins: { legend: { display: false } },
                 scales: {
-                    x: { grid: { display: false }, ticks: { color: '#94a3b8' } },
-                    y: { grid: { color: 'rgba(148, 163, 184, 0.15)' }, ticks: { color: '#94a3b8', precision: 0 } }
+                    x: { grid: { display: false }, ticks: { color: '#64748b', font: { size: 11 } } },
+                    y: { grid: { color: '#f1f5f9' }, ticks: { color: '#64748b', precision: 0, font: { size: 11 } } }
                 }
             }
         });

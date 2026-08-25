@@ -22,4 +22,19 @@ class VoucherCustomer extends Model
     {
         return $this->belongsTo(TravelAgent::class);
     }
+
+    public function getAgeAttribute(): ?int
+    {
+        return $this->date_of_birth ? (int) $this->date_of_birth->age : null;
+    }
+
+    public function getPassengerTypeAttribute(): string
+    {
+        $age = $this->age;
+        if ($age === null) return 'N/A';
+        if ($age > 10) return 'Adult';
+        if ($age >= 5) return 'Child (5-10)';
+        if ($age >= 2) return 'Child (2-5)';
+        return 'Infant (0-2)';
+    }
 }

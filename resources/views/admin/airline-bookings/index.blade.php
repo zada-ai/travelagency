@@ -1,173 +1,197 @@
-@extends('admin.layouts.airline')
+@extends('admin.layouts.app')
 
 @section('title', 'Airline Bookings')
-@section('page-heading', 'Airline Booking Management')
-@section('page-description', 'Review flight bookings, update statuses, and manage seat availability.')
+@section('page-heading', 'Flight Booking Management')
+@section('page-description', 'Review travel agent airline reservations, confirm bookings, and generate flight vouchers.')
 
 @section('content')
-    <div class="space-y-6">
-        <div class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-            <h2 class="text-xl font-semibold text-slate-900">Flight Bookings</h2>
-            <p class="mt-2 text-sm text-slate-500">Bookings submitted by travel agents are listed below.</p>
-        </div>
 
-        <div class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm overflow-x-auto">
-            <table class="min-w-full border-collapse text-left text-sm">
-                <thead class="bg-slate-950 text-white">
-                    <tr>
-                        <th class="px-4 py-4">ID</th>
-                        <th class="px-4 py-4">Reference</th>
-                        <th class="px-4 py-4">Customer</th>
-                        <th class="px-4 py-4">Flight</th>
-                        <th class="px-4 py-4">Route</th>
-                        <th class="px-4 py-4">Travel Date</th>
-                        <th class="px-4 py-4">Amount</th>
-                        <th class="px-4 py-4">Status</th>
-                        <th class="px-4 py-4">Actions</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-slate-200 bg-white">
-                    @forelse($bookings as $booking)
-                        <tr>
-                            <td class="px-4 py-4 font-semibold text-slate-900">{{ $booking->id }}</td>
-                            <td class="px-4 py-4">{{ $booking->reference }}</td>
-                            <td class="px-4 py-4">{{ optional($booking->user)->name ?? $booking->contact_name ?? 'N/A' }}</td>
-                            <td class="px-4 py-4">{{ $booking->ticket->flight_number ?? 'N/A' }}</td>
-                            <td class="px-4 py-4">{{ $booking->ticket->route ?? 'N/A' }}</td>
-                            <td class="px-4 py-4">{{ optional($booking->ticket->departure_date)->format('d M Y') ?? 'N/A' }}</td>
-                            <td class="px-4 py-4">SAR {{ number_format($booking->grand_total, 2) }}</td>
-                            <td class="px-4 py-4"><span class="inline-flex rounded-full px-3 py-1 text-xs font-semibold bg-slate-100 text-slate-700">{{ $booking->status }}</span></td>
-                            <td class="px-4 py-4 space-x-2">
-                                <a href="{{ route('admin.airline-bookings.show', $booking) }}" class="rounded-2xl bg-slate-900 px-3 py-2 text-xs font-semibold text-white hover:bg-slate-800">View</a>
-                                @if($booking->status === 'Approved')
-                                    @if($booking->voucher)
-                                        <a href="{{ route('admin.vouchers.show', ['voucher' => $booking->voucher->id]) }}" class="rounded-2xl bg-blue-600 px-3 py-2 text-xs font-semibold text-white hover:bg-blue-500">View Voucher</a>
-                                    @else
-                                        @php
-                                            $voucherPassengers = $booking->passengers->map(function ($p) {
-                                                return [
-                                                    'id' => $p->id,
-                                                    'name' => trim(($p->first_name ?? '') . ' ' . ($p->last_name ?? '')),
-                                                    'passport_number' => $p->passport_number,
-                                                ];
-                                            });
-                                        @endphp
-                                        <button type="button"
-                                            data-action="{{ route('admin.vouchers.generate.flight', $booking) }}"
-                                            data-passengers='@json($voucherPassengers)'
-                                            onclick="openVoucherModal(this)"
-                                            class="rounded-2xl bg-indigo-600 px-3 py-2 text-xs font-semibold text-white hover:bg-indigo-500"
-                                        >Generate Voucher</button>
-                                    @endif
-                                @endif
-                                @if($booking->status !== 'Approved')
-                                    <a href="{{ route('admin.airline-bookings.confirm', $booking) }}" class="rounded-2xl bg-emerald-500 px-3 py-2 text-xs font-semibold text-slate-950 hover:bg-emerald-400">Approve</a>
-                                @endif
-                                @if(! in_array($booking->status, ['Cancelled', 'Rejected'], true))
-                                    <form action="{{ route('admin.airline-bookings.status.update', $booking) }}" method="POST" class="inline-block">
-                                        @csrf
-                                        @method('PUT')
-                                        <input type="hidden" name="status" value="Rejected" />
-                                        <button type="submit" class="rounded-2xl bg-rose-500 px-3 py-2 text-xs font-semibold text-white hover:bg-rose-600">Reject</button>
-                                    </form>
-                                @endif
-                                <form action="{{ route('admin.airline-bookings.destroy', $booking) }}" method="POST" class="inline-block" onsubmit="return confirm('Delete this booking?');">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="rounded-2xl bg-slate-700 px-3 py-2 text-xs font-semibold text-white hover:bg-slate-600">Delete</button>
-                                </form>
-                            </td>
-                        </tr>
-                    @empty
-                        <tr>
-                            <td colspan="8" class="px-4 py-8 text-center text-slate-500">No flight bookings found.</td>
-                        </tr>
-                    @endforelse
-                </tbody>
-            </table>
-        </div>
+@php
+    $totalFlightBookings = $bookings->total() ?? $bookings->count();
+    $approvedCount = $bookings->where('status', 'Approved')->count();
+    $pendingCount = $bookings->where('status', 'Pending')->count();
+    $rejectedCount = $bookings->whereIn('status', ['Rejected', 'Cancelled'])->count();
+@endphp
 
-        <div>{{ $bookings->links() }}</div>
-    </div>
+<div class="space-y-6">
+    
 
-    {{-- Generate Voucher Modal --}}
-    <div id="voucherModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-900/50 p-4">
-        <div class="w-full max-w-xl rounded-3xl bg-white shadow-xl">
-            <div class="flex items-center justify-between border-b px-6 py-4">
-                <h2 class="text-lg font-semibold">Generate Voucher</h2>
-                <button type="button" onclick="closeVoucherModal()" class="text-slate-500 hover:text-slate-800">Close</button>
+    {{-- Header Banner & Stats --}}
+    <div class="rounded-3xl border border-slate-200/90 bg-white p-6 sm:p-8 shadow-sm">
+        <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+            <div>
+                <div class="flex items-center gap-2">
+                    <span class="flex h-8 w-8 items-center justify-center rounded-xl bg-blue-50 text-blue-600 font-bold text-sm">
+                        <i class="bi bi-airplane-fill"></i>
+                    </span>
+                    <h2 class="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight">Airline Ticket Bookings</h2>
+                </div>
+                <p class="mt-1 text-xs sm:text-sm text-slate-500 font-medium">Manage and audit flight reservations submitted by registered travel agencies.</p>
             </div>
-            <form id="voucherGenerateForm" method="POST" enctype="multipart/form-data" class="space-y-4 px-6 py-6">
-                @csrf
-                <div>
-                    <label class="block text-sm font-semibold text-slate-700">Admin / Company Name</label>
-                    <input type="text" name="admin_company_name" class="mt-2 w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm" required>
-                </div>
-                <div>
-                    <label class="block text-sm font-semibold text-slate-700">Admin / Company Logo</label>
-                    <input type="file" name="admin_company_logo" accept=".jpg,.jpeg,.png,.webp" class="mt-2 w-full text-sm" required>
-                </div>
-                            <div>
-                                <label class="block text-sm font-semibold text-slate-700">Transport Type (optional)</label>
-                                <select name="transport_type" class="mt-2 w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm">
-                                    <option value="">None</option>
-                                    <option value="Camry">Camry</option>
-                                    <option value="Staria">Staria</option>
-                                    <option value="GMC">GMC</option>
-                                    <option value="Hiace">Hiace</option>
-                                    <option value="Coaster">Coaster</option>
-                                    <option value="Bus">Bus</option>
-                                </select>
-                            </div>
-                <div id="voucherPassengerFields" class="space-y-4"></div>
-                <div class="flex items-center justify-end gap-3 pt-4 border-t">
-                    <button type="button" onclick="closeVoucherModal()" class="rounded-2xl border border-slate-300 px-4 py-2 text-sm text-slate-700">Cancel</button>
-                    <button type="submit" class="rounded-2xl bg-indigo-600 px-4 py-2 text-sm font-semibold text-white">Create Voucher</button>
-                </div>
-            </form>
+            
+            <div class="flex flex-wrap items-center gap-3">
+                <a href="{{ route('admin.airline-ticket-management') }}" class="inline-flex items-center gap-2 rounded-xl bg-slate-100 border border-slate-200 px-4 py-2.5 text-xs font-bold text-slate-700 hover:bg-blue-50 hover:text-blue-700 hover:border-blue-200 transition">
+                    <i class="bi bi-ticket-detailed-fill text-sky-600"></i>
+                    <span>Ticket Inventory</span>
+                </a>
+                <a href="{{ route('dashboard') }}" class="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-blue-600 to-emerald-600 px-4 py-2.5 text-xs font-bold text-white shadow-md shadow-blue-500/20 hover:opacity-95 transition">
+                    <i class="bi bi-speedometer2"></i>
+                    <span>Admin Dashboard</span>
+                </a>
+            </div>
+        </div>
+
+        {{-- Top Summary Stats Pill Row --}}
+        <div class="mt-6 grid grid-cols-2 sm:grid-cols-4 gap-3.5 pt-6 border-t border-slate-100">
+            <div class="rounded-2xl bg-blue-50/50 border border-blue-100 p-4">
+                <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Total Bookings</p>
+                <p class="mt-1.5 text-2xl font-extrabold text-slate-900">{{ number_format($totalFlightBookings) }}</p>
+                <span class="text-[11px] font-semibold text-blue-600 flex items-center gap-1 mt-0.5">
+                    <i class="bi bi-airplane text-xs"></i> All Flights
+                </span>
+            </div>
+
+            <div class="rounded-2xl bg-emerald-50/50 border border-emerald-100 p-4">
+                <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Approved</p>
+                <p class="mt-1.5 text-2xl font-extrabold text-emerald-600">{{ number_format($approvedCount) }}</p>
+                <span class="text-[11px] font-semibold text-emerald-600 flex items-center gap-1 mt-0.5">
+                    <i class="bi bi-check-circle text-xs"></i> Confirmed Seats
+                </span>
+            </div>
+
+            <div class="rounded-2xl bg-amber-50/50 border border-amber-100 p-4">
+                <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Pending Review</p>
+                <p class="mt-1.5 text-2xl font-extrabold text-amber-600">{{ number_format($pendingCount) }}</p>
+                <span class="text-[11px] font-semibold text-amber-600 flex items-center gap-1 mt-0.5">
+                    <i class="bi bi-clock-history text-xs"></i> Awaiting Action
+                </span>
+            </div>
+
+            <div class="rounded-2xl bg-rose-50/50 border border-rose-100 p-4">
+                <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Rejected / Cancelled</p>
+                <p class="mt-1.5 text-2xl font-extrabold text-rose-600">{{ number_format($rejectedCount) }}</p>
+                <span class="text-[11px] font-semibold text-rose-600 flex items-center gap-1 mt-0.5">
+                    <i class="bi bi-x-circle text-xs"></i> Cancelled Seats
+                </span>
+            </div>
         </div>
     </div>
 
-    <script>
-        function openVoucherModal(button) {
-            const form = document.getElementById('voucherGenerateForm');
-            const passengers = JSON.parse(button.dataset.passengers || '[]');
-            form.action = button.dataset.action;
+    {{-- Main Bookings Card with Grid Layout --}}
+    <div class="rounded-3xl border border-slate-200/90 bg-white p-6 shadow-sm">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-5">
+            <div>
+                <h3 class="text-lg font-bold text-slate-900">Flight Booking Records</h3>
+                <p class="text-xs text-slate-500 mt-0.5">List of all incoming and processed ticket reservations.</p>
+            </div>
+        </div>
+        <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            @forelse($bookings as $booking)
+                @include('admin.airline-bookings._partial_booking_card', ['booking' => $booking])
+            @empty
+                <div class="col-span-full text-center text-slate-400 font-medium py-12">
+                    <i class="bi bi-airplane text-4xl text-slate-300 mb-2"></i>
+                    <p class="text-sm font-semibold text-slate-600">No flight bookings found.</p>
+                    <p class="text-xs text-slate-400 mt-0.5">Bookings created by travel agents will appear here.</p>
+                </div>
+            @endforelse
+        </div>
 
-            const container = document.getElementById('voucherPassengerFields');
-            container.innerHTML = '';
+        {{-- Pagination --}}
+        <div class="mt-5">
+            {{ $bookings->links() }}
+        </div>
+    </div>
+</div>
 
-            if (!passengers.length) {
-                const notice = document.createElement('div');
-                notice.className = 'rounded-2xl bg-yellow-50 border border-yellow-200 p-4 text-sm text-yellow-800';
-                notice.textContent = 'No passenger data available for this booking.';
-                container.appendChild(notice);
-            }
+{{-- Generate Voucher Modal (Redesigned with Blue & Green Theme) --}}
+<div id="voucherModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-900/50 backdrop-blur-xs p-4 overflow-y-auto">
+    <div class="w-full max-w-xl rounded-3xl bg-white shadow-2xl border border-slate-200 overflow-hidden my-8">
+        <div class="flex items-center justify-between border-b border-slate-100 bg-gradient-to-r from-blue-600 to-emerald-600 px-6 py-4 text-white">
+            <div class="flex items-center gap-2">
+                <i class="bi bi-receipt text-lg"></i>
+                <h2 class="text-base sm:text-lg font-bold">Generate Flight Voucher</h2>
+            </div>
+            <button type="button" onclick="closeVoucherModal()" class="rounded-lg p-1 text-white/80 hover:bg-white/10 hover:text-white transition">
+                <i class="bi bi-x-lg text-sm"></i>
+            </button>
+        </div>
 
-            passengers.forEach((passenger, index) => {
-                const passengerBlock = document.createElement('div');
-                passengerBlock.className = 'rounded-2xl bg-slate-50 border border-slate-200 p-4';
-                passengerBlock.innerHTML = `
-                    <div class="grid gap-3 sm:grid-cols-3">
-                        <div class="sm:col-span-2">
-                            <label class="block text-sm font-semibold text-slate-700">Passenger</label>
-                            <input type="text" value="${passenger.name || 'Passenger ' + (index + 1)}" class="mt-2 w-full rounded-2xl border border-slate-200 bg-slate-100 px-4 py-3 text-sm text-slate-900" readonly>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-semibold text-slate-700">Passport Number</label>
-                            <input type="text" name="passengers[${index}][passport_number]" value="${passenger.passport_number || ''}" class="mt-2 w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900" placeholder="Enter passport #" required>
-                        </div>
+        <form id="voucherGenerateForm" method="POST" enctype="multipart/form-data" class="space-y-4 p-6">
+            @csrf
+            <div>
+                <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">Admin / Company Name <span class="text-rose-500">*</span></label>
+                <input type="text" name="admin_company_name" class="w-full rounded-xl border border-slate-300 px-4 py-2.5 text-sm font-semibold text-slate-800 focus:border-blue-500 focus:ring-blue-500" placeholder="e.g. Hujaj Umrah Services" required>
+            </div>
+            <div>
+                <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">Admin / Company Logo <span class="text-rose-500">*</span></label>
+                <input type="file" name="admin_company_logo" accept=".jpg,.jpeg,.png,.webp" class="w-full rounded-xl border border-slate-200 bg-slate-50 p-2 text-xs font-medium text-slate-600 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:bg-blue-600 file:text-white file:text-xs file:font-bold hover:file:bg-blue-700" required>
+            </div>
+            <div>
+                <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">Transport Type (Optional)</label>
+                <select name="transport_type" class="w-full rounded-xl border border-slate-300 px-4 py-2.5 text-sm font-semibold text-slate-800 focus:border-blue-500 focus:ring-blue-500">
+                    <option value="">None / Self Arranged</option>
+                    <option value="Camry">Camry</option>
+                    <option value="Staria">Staria</option>
+                    <option value="GMC">GMC</option>
+                    <option value="Hiace">Hiace</option>
+                    <option value="Coaster">Coaster</option>
+                    <option value="Bus">Bus</option>
+                </select>
+            </div>
+            <div id="voucherPassengerFields" class="space-y-3"></div>
+            <div class="flex items-center justify-end gap-3 pt-4 border-t border-slate-100">
+                <button type="button" onclick="closeVoucherModal()" class="rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-50 transition">Cancel</button>
+                <button type="submit" class="rounded-xl bg-gradient-to-r from-blue-600 to-emerald-600 px-5 py-2.5 text-xs font-bold text-white shadow-md shadow-blue-500/20 hover:opacity-95 transition">Issue Voucher</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    function openVoucherModal(button) {
+        const form = document.getElementById('voucherGenerateForm');
+        const passengers = JSON.parse(button.dataset.passengers || '[]');
+        form.action = button.dataset.action;
+
+        const container = document.getElementById('voucherPassengerFields');
+        container.innerHTML = '';
+
+        if (!passengers.length) {
+            const notice = document.createElement('div');
+            notice.className = 'rounded-xl bg-amber-50 border border-amber-200 p-3.5 text-xs text-amber-800 font-semibold';
+            notice.textContent = 'No passenger data available for this booking.';
+            container.appendChild(notice);
+        }
+
+        passengers.forEach((passenger, index) => {
+            const passengerBlock = document.createElement('div');
+            passengerBlock.className = 'rounded-xl bg-slate-50 border border-slate-200 p-3.5';
+            passengerBlock.innerHTML = `
+                <div class="grid gap-3 sm:grid-cols-3">
+                    <div class="sm:col-span-2">
+                        <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-600 mb-1">Passenger Name</label>
+                        <input type="text" value="${passenger.name || 'Passenger ' + (index + 1)}" class="w-full rounded-lg border border-slate-200 bg-slate-100 px-3 py-2 text-xs font-semibold text-slate-800" readonly>
                     </div>
-                    <input type="hidden" name="passengers[${index}][id]" value="${passenger.id}" />
-                `;
-                container.appendChild(passengerBlock);
-            });
+                    <div>
+                        <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-600 mb-1">Passport No <span class="text-rose-500">*</span></label>
+                        <input type="text" name="passengers[${index}][passport_number]" value="${passenger.passport_number || ''}" class="w-full rounded-lg border border-slate-300 px-3 py-2 text-xs font-semibold text-slate-800" placeholder="Passport #" required>
+                    </div>
+                </div>
+                <input type="hidden" name="passengers[${index}][id]" value="${passenger.id}" />
+            `;
+            container.appendChild(passengerBlock);
+        });
 
-            document.getElementById('voucherModal').classList.remove('hidden');
-        }
+        const modal = document.getElementById('voucherModal');
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+    }
 
-        function closeVoucherModal() {
-            document.getElementById('voucherModal').classList.add('hidden');
-        }
-    </script>
+    function closeVoucherModal() {
+        const modal = document.getElementById('voucherModal');
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+    }
+</script>
 @endsection

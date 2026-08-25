@@ -1,4 +1,4 @@
-@extends('admin.layouts.airline')
+@extends('admin.layouts.app')
 
 @section('title', 'Flight Details')
 @section('page-heading', 'Flight Details')

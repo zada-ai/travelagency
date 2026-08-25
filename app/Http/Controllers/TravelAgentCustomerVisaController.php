@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\VisaApplication;
 use App\Models\VisaType;
+use App\Models\VoucherCustomer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -13,44 +14,72 @@ class TravelAgentCustomerVisaController extends Controller
     public function index(Request $request)
     {
         $agent = Auth::guard('travel_agent')->user();
-        
-        $query = VisaApplication::query()
-            ->where('travel_agent_id', $agent->id)
-            ->with(['visaType', 'visaOfficer', 'applicants', 'customer']);
 
-        // Filters
-        if ($request->filled('visa_type_id')) {
-            $query->where('visa_type_id', $request->visa_type_id);
-        }
-
-        if ($request->filled('status')) {
-            $query->where('status', $request->status);
-        }
+        $query = VoucherCustomer::query()
+            ->where('travel_agent_id', $agent->id);
 
         if ($request->filled('search')) {
-            $query->where(function ($subQuery) use ($request) {
-                $search = $request->search;
-
-                $subQuery->whereHas('customer', function ($q) use ($search) {
-                    $q->where('first_name', 'like', "%{$search}%")
-                        ->orWhere('last_name', 'like', "%{$search}%")
-                        ->orWhere('phone', 'like', "%{$search}%")
-                        ->orWhere('passport_no', 'like', "%{$search}%");
-                })
-                ->orWhereHas('applicants', function ($q) use ($search) {
-                    $q->where('passport_number', 'like', "%{$search}%");
-                });
+            $search = trim($request->search);
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                    ->orWhere('passport_no', 'like', "%{$search}%");
             });
         }
 
-        if ($request->filled('from_date') && $request->filled('to_date')) {
-            $query->whereBetween('created_at', [$request->from_date, $request->to_date]);
+        $customers = $query->orderByDesc('created_at')->paginate(15)->withQueryString();
+
+        $allCustomers = VoucherCustomer::where('travel_agent_id', $agent->id)->get();
+        $stats = [
+            'total' => $allCustomers->count(),
+            'adults' => $allCustomers->filter(fn ($c) => $c->passenger_type === 'Adult')->count(),
+            'children' => $allCustomers->filter(fn ($c) => str_starts_with($c->passenger_type, 'Child'))->count(),
+            'infants' => $allCustomers->filter(fn ($c) => str_starts_with($c->passenger_type, 'Infant'))->count(),
+        ];
+
+        return view('travel_agents.customer-visa.index', compact('agent', 'customers', 'stats'));
+    }
+
+    public function store(Request $request)
+    {
+        $agent = Auth::guard('travel_agent')->user();
+
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'passport_no' => ['required', 'string', 'max:50'],
+            'date_of_birth' => ['required', 'date'],
+        ]);
+
+        $passport = strtoupper(trim($validated['passport_no']));
+
+        $exists = VoucherCustomer::where('travel_agent_id', $agent->id)
+            ->where('passport_no', $passport)
+            ->exists();
+
+        if ($exists) {
+            return back()->withInput()->with('error', 'A customer with this passport number is already registered.');
         }
 
-        $visaApplications = $query->orderByDesc('created_at')->paginate(15);
-        $visaTypes = VisaType::all();
+        VoucherCustomer::create([
+            'travel_agent_id' => $agent->id,
+            'name' => trim($validated['name']),
+            'passport_no' => $passport,
+            'date_of_birth' => $validated['date_of_birth'],
+        ]);
 
-        return view('travel_agents.customer-visa.index', compact('agent', 'visaApplications', 'visaTypes'));
+        return back()->with('success', 'Customer added successfully.');
+    }
+
+    public function destroy($id)
+    {
+        $agent = Auth::guard('travel_agent')->user();
+
+        $customer = VoucherCustomer::where('id', $id)
+            ->where('travel_agent_id', $agent->id)
+            ->firstOrFail();
+
+        $customer->delete();
+
+        return back()->with('success', 'Customer deleted successfully.');
     }
 
     public function show($id)

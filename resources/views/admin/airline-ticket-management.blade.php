@@ -1,4 +1,4 @@
-﻿@extends('admin.layouts.app')
+@extends('admin.layouts.app')
 
 @section('title', 'Airline Ticket Management')
 @section('page-heading', 'Airline Ticket Management')
@@ -18,96 +18,162 @@
 @endphp
 
 @section('content')
-    <div class="space-y-6">
-        @if(session('success'))
-            <div class="rounded-[28px] border border-emerald-500/20 bg-emerald-500/10 p-4 text-sm text-emerald-200 shadow-sm ring-1 ring-emerald-500/10">
-                {{ session('success') }}
-            </div>
-        @endif
+<div class="space-y-6">
+    {{-- Alerts --}}
+    @if(session('success'))
+        <div class="flex items-center gap-3 rounded-2xl border border-emerald-200 bg-emerald-50 px-5 py-4 text-sm font-semibold text-emerald-800 shadow-sm">
+            <i class="bi bi-check-circle-fill text-lg text-emerald-600"></i>
+            <div>{{ session('success') }}</div>
+        </div>
+    @endif
 
-        @if($errors->any())
-            <div class="rounded-[28px] border border-rose-500/20 bg-rose-500/10 p-4 text-sm text-rose-200 shadow-sm ring-1 ring-rose-500/10">
-                <p class="font-semibold">Please fix the following errors:</p>
-                <ul class="mt-2 list-disc space-y-1 pl-5 text-slate-100">
-                    @foreach($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
+    @if($errors->any())
+        <div class="rounded-2xl border border-rose-200 bg-rose-50 p-5 text-sm text-rose-800 shadow-sm">
+            <div class="flex items-center gap-2 font-bold text-rose-900 mb-2">
+                <i class="bi bi-exclamation-triangle-fill text-rose-600"></i>
+                Please fix the following errors:
             </div>
-        @endif
+            <ul class="list-disc space-y-1 pl-6 text-xs text-rose-700">
+                @foreach($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
 
-        <div class="rounded-[28px] border border-slate-800/90 bg-slate-900/90 p-6 shadow-2xl shadow-slate-950/20 ring-1 ring-white/5">
-            <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-                <div>
-                    <p class="text-xs uppercase tracking-[0.32em] text-slate-500">Airline Ticket Management</p>
-                    <h2 class="mt-2 text-3xl font-semibold text-white">Airline Ticket Management</h2>
-                    <p class="mt-3 max-w-2xl text-sm leading-6 text-slate-400">Manage airline tickets, flights, bookings and seat inventory.</p>
+    {{-- Executive Header Banner --}}
+    <div class="relative overflow-hidden rounded-3xl border border-slate-200/90 bg-white p-6 sm:p-8 shadow-sm">
+        <div class="relative z-10 flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+            <div>
+                <div class="flex items-center gap-2 mb-2">
+                    <span class="inline-flex items-center gap-1.5 rounded-full bg-blue-50 px-3 py-1 text-xs font-bold text-blue-700 border border-blue-100">
+                        <span class="h-2 w-2 rounded-full bg-blue-600 animate-pulse"></span>
+                        Flight Operations Control
+                    </span>
+                    <span class="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2.5 py-0.5 text-xs font-semibold text-emerald-700 border border-emerald-100">
+                        Live System
+                    </span>
                 </div>
-                <div class="flex flex-wrap gap-3">
-                    <a href="#upload-ticket" class="inline-flex items-center justify-center gap-2 rounded-3xl bg-blue-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-blue-500">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z"/></svg>
-                        Upload Ticket
-                    </a>
-                    <a href="{{ route('admin.airline-flights.index') }}" class="inline-flex items-center justify-center gap-2 rounded-3xl border border-slate-800 bg-slate-950 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path d="M10 3a1 1 0 00-.894.553L7.382 6H4a1 1 0 000 2h2.618l-1.724 2.447A1 1 0 004 11h3a1 1 0 00.894-.553L9.618 8H14a1 1 0 000-2H9.618l1.488-2.447A1 1 0 0010 3z"/></svg>
-                        Flight Management
-                    </a>
-                    <a href="{{ route('admin.airlines.index') }}" class="inline-flex items-center justify-center gap-2 rounded-3xl border border-slate-800 bg-slate-950 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path d="M3 5a2 2 0 012-2h10a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2V5zm2 0h10v2H5V5zm0 4h10v2H5V9zm0 4h7v2H5v-2z"/></svg>
-                        Airlines
-                    </a>
-                    <a href="{{ route('admin.airline-bookings.index') }}" class="inline-flex items-center justify-center gap-2 rounded-3xl border border-slate-800 bg-slate-950 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path d="M4 4a2 2 0 00-2 2v8a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2H4zm2 3h8a1 1 0 010 2H6a1 1 0 010-2zm0 4h5a1 1 0 110 2H6a1 1 0 110-2z"/></svg>
-                        View Bookings
-                    </a>
-                </div>
+                <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900">
+                    Airline Ticket Management
+                </h1>
+                <p class="mt-1 text-sm text-slate-500 max-w-2xl font-medium">
+                    Centralized hub to schedule flight inventory, manage airline/airport hubs, allocate cabin seats, and supervise booking requests.
+                </p>
+            </div>
+            <div class="flex flex-wrap items-center gap-2.5">
+                <button type="button" onclick="switchTab('upload-ticket')" class="inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-blue-600 to-blue-700 px-5 py-2.5 text-sm font-bold text-white shadow-md shadow-blue-500/20 hover:from-blue-700 hover:to-blue-800 transition cursor-pointer">
+                    <i class="bi bi-cloud-arrow-up-fill"></i>
+                    Upload New Ticket
+                </button>
+                <a href="{{ route('admin.airline-bookings.index') }}" class="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-bold text-slate-700 shadow-xs hover:bg-slate-50 hover:border-slate-300 transition">
+                    <i class="bi bi-ticket-perforated-fill text-blue-600"></i>
+                    View Bookings
+                </a>
             </div>
         </div>
+    </div>
 
-        @include('admin.airline-ticket-management-settings', ['airlines' => $airlines, 'airports' => $airports])
-
-        <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-            <div class="rounded-3xl bg-slate-950 p-5 shadow-xl ring-1 ring-white/5">
-                <p class="text-xs uppercase tracking-[0.32em] text-slate-500">Total Flights</p>
-                <p class="mt-3 text-3xl font-semibold text-white">{{ number_format($totalFlights) }}</p>
-                <p class="mt-2 text-sm text-slate-400">Total scheduled flights in the system.</p>
+    {{-- Metrics Summary Grid --}}
+    <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+        <div class="rounded-3xl border border-slate-200/90 bg-white p-5 shadow-xs transition hover:shadow-md">
+            <div class="flex items-center justify-between">
+                <p class="text-xs font-bold uppercase tracking-wider text-slate-400">Total Flights</p>
+                <span class="inline-flex h-8 w-8 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
+                    <i class="bi bi-airplane-engines text-sm"></i>
+                </span>
             </div>
-            <div class="rounded-3xl bg-slate-950 p-5 shadow-xl ring-1 ring-white/5">
-                <p class="text-xs uppercase tracking-[0.32em] text-slate-500">Active Flights</p>
-                <p class="mt-3 text-3xl font-semibold text-white">{{ number_format($activeFlights) }}</p>
-                <p class="mt-2 text-sm text-slate-400">Flights currently approved or processing.</p>
-            </div>
-            <div class="rounded-3xl bg-slate-950 p-5 shadow-xl ring-1 ring-white/5">
-                <p class="text-xs uppercase tracking-[0.32em] text-slate-500">Available Seats</p>
-                <p class="mt-3 text-3xl font-semibold text-white">{{ number_format($availableSeats) }}</p>
-                <p class="mt-2 text-sm text-slate-400">Seats ready to book across all flights.</p>
-            </div>
-            <div class="rounded-3xl bg-slate-950 p-5 shadow-xl ring-1 ring-white/5">
-                <p class="text-xs uppercase tracking-[0.32em] text-slate-500">Booked Seats</p>
-                <p class="mt-3 text-3xl font-semibold text-white">{{ number_format($bookedSeats) }}</p>
-                <p class="mt-2 text-sm text-slate-400">Seats already reserved by agents.</p>
-            </div>
-            <div class="rounded-3xl bg-slate-950 p-5 shadow-xl ring-1 ring-white/5">
-                <p class="text-xs uppercase tracking-[0.32em] text-slate-500">Pending Bookings</p>
-                <p class="mt-3 text-3xl font-semibold text-amber-300">{{ number_format($pendingBookingsCount) }}</p>
-                <p class="mt-2 text-sm text-slate-400">Bookings awaiting confirmation.</p>
-            </div>
-            <div class="rounded-3xl bg-slate-950 p-5 shadow-xl ring-1 ring-white/5">
-                <p class="text-xs uppercase tracking-[0.32em] text-slate-500">Confirmed Bookings</p>
-                <p class="mt-3 text-3xl font-semibold text-emerald-300">{{ number_format($confirmedBookingsCount) }}</p>
-                <p class="mt-2 text-sm text-slate-400">Bookings that are confirmed.</p>
-            </div>
+            <p class="mt-2 text-2xl font-extrabold text-slate-900">{{ number_format($totalFlights) }}</p>
+            <p class="mt-0.5 text-[11px] font-medium text-slate-400">Scheduled flights</p>
         </div>
 
-        <div class="rounded-[28px] border border-slate-800/90 bg-slate-900/90 p-6 shadow-2xl shadow-slate-950/20 ring-1 ring-white/5">
-            <form method="GET" class="grid gap-4 xl:grid-cols-[1.6fr_1fr_1fr_1fr]">
+        <div class="rounded-3xl border border-slate-200/90 bg-white p-5 shadow-xs transition hover:shadow-md">
+            <div class="flex items-center justify-between">
+                <p class="text-xs font-bold uppercase tracking-wider text-slate-400">Active Flights</p>
+                <span class="inline-flex h-8 w-8 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600">
+                    <i class="bi bi-check2-circle text-sm"></i>
+                </span>
+            </div>
+            <p class="mt-2 text-2xl font-extrabold text-emerald-600">{{ number_format($activeFlights) }}</p>
+            <p class="mt-0.5 text-[11px] font-medium text-slate-400">Approved / Processing</p>
+        </div>
+
+        <div class="rounded-3xl border border-slate-200/90 bg-white p-5 shadow-xs transition hover:shadow-md">
+            <div class="flex items-center justify-between">
+                <p class="text-xs font-bold uppercase tracking-wider text-slate-400">Available Seats</p>
+                <span class="inline-flex h-8 w-8 items-center justify-center rounded-xl bg-cyan-50 text-cyan-600">
+                    <i class="bi bi-person-check text-sm"></i>
+                </span>
+            </div>
+            <p class="mt-2 text-2xl font-extrabold text-cyan-700">{{ number_format($availableSeats) }}</p>
+            <p class="mt-0.5 text-[11px] font-medium text-slate-400">Ready for booking</p>
+        </div>
+
+        <div class="rounded-3xl border border-slate-200/90 bg-white p-5 shadow-xs transition hover:shadow-md">
+            <div class="flex items-center justify-between">
+                <p class="text-xs font-bold uppercase tracking-wider text-slate-400">Booked Seats</p>
+                <span class="inline-flex h-8 w-8 items-center justify-center rounded-xl bg-indigo-50 text-indigo-600">
+                    <i class="bi bi-people-fill text-sm"></i>
+                </span>
+            </div>
+            <p class="mt-2 text-2xl font-extrabold text-indigo-700">{{ number_format($bookedSeats) }}</p>
+            <p class="mt-0.5 text-[11px] font-medium text-slate-400">Reserved by agents</p>
+        </div>
+
+        <div class="rounded-3xl border border-slate-200/90 bg-white p-5 shadow-xs transition hover:shadow-md">
+            <div class="flex items-center justify-between">
+                <p class="text-xs font-bold uppercase tracking-wider text-slate-400">Pending</p>
+                <span class="inline-flex h-8 w-8 items-center justify-center rounded-xl bg-amber-50 text-amber-600">
+                    <i class="bi bi-clock-history text-sm"></i>
+                </span>
+            </div>
+            <p class="mt-2 text-2xl font-extrabold text-amber-600">{{ number_format($pendingBookingsCount) }}</p>
+            <p class="mt-0.5 text-[11px] font-medium text-slate-400">Awaiting confirmation</p>
+        </div>
+
+        <div class="rounded-3xl border border-slate-200/90 bg-white p-5 shadow-xs transition hover:shadow-md">
+            <div class="flex items-center justify-between">
+                <p class="text-xs font-bold uppercase tracking-wider text-slate-400">Confirmed</p>
+                <span class="inline-flex h-8 w-8 items-center justify-center rounded-xl bg-teal-50 text-teal-600">
+                    <i class="bi bi-shield-check text-sm"></i>
+                </span>
+            </div>
+            <p class="mt-2 text-2xl font-extrabold text-teal-700">{{ number_format($confirmedBookingsCount) }}</p>
+            <p class="mt-0.5 text-[11px] font-medium text-slate-400">Active reservations</p>
+        </div>
+    </div>
+
+    {{-- Clean Segmented Tab Bar --}}
+    <div class="flex flex-wrap items-center gap-2 border-b border-slate-200 pb-2">
+        <button type="button" onclick="switchTab('inventory')" id="tab-btn-inventory" class="tab-btn inline-flex items-center gap-2 rounded-2xl px-5 py-2.5 text-xs sm:text-sm font-bold transition shadow-xs">
+            <i class="bi bi-list-columns-reverse"></i>
+            Flight Inventory & Tickets
+        </button>
+        <button type="button" onclick="switchTab('upload-ticket')" id="tab-btn-upload-ticket" class="tab-btn inline-flex items-center gap-2 rounded-2xl px-5 py-2.5 text-xs sm:text-sm font-bold transition text-slate-600 hover:bg-slate-100">
+            <i class="bi bi-plus-circle"></i>
+            Add / Upload Flight Ticket
+        </button>
+        <button type="button" onclick="switchTab('settings')" id="tab-btn-settings" class="tab-btn inline-flex items-center gap-2 rounded-2xl px-5 py-2.5 text-xs sm:text-sm font-bold transition text-slate-600 hover:bg-slate-100">
+            <i class="bi bi-buildings"></i>
+            Airlines & Airports Master
+        </button>
+    </div>
+
+    {{-- TAB 1: Flight Inventory & Tickets --}}
+    <div id="tab-pane-inventory" class="tab-pane space-y-6">
+        {{-- Search & Filter Toolbar --}}
+        <div class="rounded-3xl border border-slate-200/90 bg-white p-5 shadow-sm">
+            <form method="GET" class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
                 <div>
-                    <label for="search" class="block text-sm font-semibold text-slate-300 mb-2">Search</label>
-                    <input id="search" name="search" type="search" value="{{ request('search') }}" placeholder="Search tickets, routes, references" class="w-full rounded-[24px] border border-slate-800 bg-slate-950 px-4 py-3 text-slate-100 outline-none transition focus:border-blue-500 focus:ring-blue-500/20" />
+                    <label for="search" class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">Search Flights</label>
+                    <div class="relative">
+                        <i class="bi bi-search absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                        <input id="search" name="search" type="search" value="{{ request('search') }}" placeholder="Route, flight no, reference..." class="w-full rounded-xl border border-slate-200 bg-slate-50/50 pl-9 pr-4 py-2.5 text-xs font-semibold text-slate-800 focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20" />
+                    </div>
                 </div>
                 <div>
-                    <label for="airline" class="block text-sm font-semibold text-slate-300 mb-2">Airline</label>
-                    <select id="airline" name="airline" class="w-full rounded-[24px] border border-slate-800 bg-slate-950 px-4 py-3 text-slate-100 outline-none transition focus:border-blue-500 focus:ring-blue-500/20">
+                    <label for="airline" class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">Airline Filter</label>
+                    <select id="airline" name="airline" class="w-full rounded-xl border border-slate-200 bg-slate-50/50 px-4 py-2.5 text-xs font-semibold text-slate-800 focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20">
                         <option value="">All Airlines</option>
                         @foreach($airlineNames as $airline)
                             <option value="{{ $airline }}" {{ request('airline') === $airline ? 'selected' : '' }}>{{ $airline }}</option>
@@ -115,8 +181,8 @@
                     </select>
                 </div>
                 <div>
-                    <label for="status" class="block text-sm font-semibold text-slate-300 mb-2">Status</label>
-                    <select id="status" name="status" class="w-full rounded-[24px] border border-slate-800 bg-slate-950 px-4 py-3 text-slate-100 outline-none transition focus:border-blue-500 focus:ring-blue-500/20">
+                    <label for="status" class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">Status Filter</label>
+                    <select id="status" name="status" class="w-full rounded-xl border border-slate-200 bg-slate-50/50 px-4 py-2.5 text-xs font-semibold text-slate-800 focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20">
                         <option value="">All Statuses</option>
                         <option value="Pending"{{ request('status') === 'Pending' ? ' selected' : '' }}>Pending</option>
                         <option value="Approved"{{ request('status') === 'Approved' ? ' selected' : '' }}>Approved</option>
@@ -125,363 +191,468 @@
                     </select>
                 </div>
                 <div>
-                    <label for="departure_date" class="block text-sm font-semibold text-slate-300 mb-2">Departure Date</label>
-                    <input id="departure_date" name="departure_date" type="date" value="{{ request('departure_date') }}" class="w-full rounded-[24px] border border-slate-800 bg-slate-950 px-4 py-3 text-slate-100 outline-none transition focus:border-blue-500 focus:ring-blue-500/20" />
+                    <label for="departure_date" class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">Departure Date</label>
+                    <div class="flex items-center gap-2">
+                        <input id="departure_date" name="departure_date" type="date" value="{{ request('departure_date') }}" class="w-full rounded-xl border border-slate-200 bg-slate-50/50 px-4 py-2.5 text-xs font-semibold text-slate-800 focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20" />
+                        <button type="submit" class="inline-flex items-center justify-center rounded-xl bg-blue-600 px-4 py-2.5 text-xs font-bold text-white shadow-xs hover:bg-blue-700 transition">
+                            <i class="bi bi-funnel"></i>
+                        </button>
+                    </div>
                 </div>
             </form>
         </div>
 
-        <div class="grid grid-cols-1 gap-6 lg:grid-cols-12">
-            <section id="upload-ticket" class="col-span-1 w-full min-w-0 lg:col-span-5 rounded-[28px] border border-slate-800/90 bg-slate-900/90 p-6 shadow-2xl shadow-slate-950/20 ring-1 ring-white/5">
-                <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                    <div>
-                        <p class="text-xs uppercase tracking-[0.32em] text-slate-500">Upload new ticket</p>
-                        <h3 class="mt-2 text-2xl font-semibold text-white">Add a flight inventory entry</h3>
-                    </div>
+        {{-- Flights Table Card --}}
+        <div class="rounded-3xl border border-slate-200/90 bg-white p-6 shadow-sm">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-5">
+                <div>
+                    <h3 class="text-lg font-bold text-slate-900">Current Flight Inventory</h3>
+                    <p class="text-xs text-slate-500 mt-0.5">Showing scheduled flights, seat occupancy and booking status.</p>
                 </div>
-
-                <form action="{{ route('admin.airline-ticket-management.store') }}" method="POST" class="mt-6 grid gap-4 sm:grid-cols-2">
-                    @csrf
-
-                    <label class="block">
-                        <span class="text-xs uppercase tracking-[0.24em] text-slate-500">Airline</span>
-                        <select name="airline_id" class="mt-2 w-full rounded-[24px] border border-slate-800 bg-slate-950 px-4 py-3 text-slate-100 outline-none focus:border-blue-500 focus:ring-blue-500/20">
-                            <option value="">Select airline</option>
-                            @foreach($airlines as $airline)
-                                <option value="{{ $airline->id }}" {{ old('airline_id') == $airline->id ? 'selected' : '' }}>{{ $airline->name }} ({{ $airline->code }})</option>
-                            @endforeach
-                        </select>
-                        <p class="mt-2 text-xs text-slate-500">Choose a registered airline or enter a custom airline name below.</p>
-                        @error('airline_id')<p class="mt-1 text-xs text-rose-400">{{ $message }}</p>@enderror
-                        <input type="text" name="airline" value="{{ old('airline') }}" placeholder="Custom airline name" class="mt-2 w-full rounded-[24px] border border-slate-800 bg-slate-950 px-4 py-3 text-slate-100 outline-none focus:border-blue-500 focus:ring-blue-500/20" />
-                        @error('airline')<p class="mt-1 text-xs text-rose-400">{{ $message }}</p>@enderror
-                    </label>
-
-                    <label class="block">
-                        <span class="text-xs uppercase tracking-[0.24em] text-slate-500">Route</span>
-                        <input type="text" name="route" value="{{ old('route') }}" class="mt-2 w-full rounded-[24px] border border-slate-800 bg-slate-950 px-4 py-3 text-slate-100 outline-none focus:border-blue-500 focus:ring-blue-500/20" />
-                        <p class="mt-2 text-xs text-slate-500">Enter the outbound route, for example <span class="font-semibold">Islamabad - Jeddah</span>. Use the optional return date for the return leg.</p>
-                        @error('route')<p class="mt-1 text-xs text-rose-400">{{ $message }}</p>@enderror
-                    </label>
-
-                    <label class="block">
-                        <span class="text-xs uppercase tracking-[0.24em] text-slate-500">Flight Number</span>
-                        <input type="text" name="flight_number" value="{{ old('flight_number') }}" class="mt-2 w-full rounded-[24px] border border-slate-800 bg-slate-950 px-4 py-3 text-slate-100 outline-none focus:border-blue-500 focus:ring-blue-500/20" />
-                        @error('flight_number')<p class="mt-1 text-xs text-rose-400">{{ $message }}</p>@enderror
-                    </label>
-
-                    <label class="block">
-                        <span class="text-xs uppercase tracking-[0.24em] text-slate-500">Ticket Type</span>
-                        <select name="ticket_type" class="mt-2 w-full rounded-[24px] border border-slate-800 bg-slate-950 px-4 py-3 text-slate-100 outline-none focus:border-blue-500 focus:ring-blue-500/20">
-                            <option value="One-way"{{ old('ticket_type') === 'One-way' ? ' selected' : '' }}>One-way</option>
-                            <option value="Round-trip"{{ old('ticket_type') === 'Round-trip' ? ' selected' : '' }}>Round-trip</option>
-                            <option value="Multi-city"{{ old('ticket_type') === 'Multi-city' ? ' selected' : '' }}>Multi-city</option>
-                        </select>
-                        @error('ticket_type')<p class="mt-1 text-xs text-rose-400">{{ $message }}</p>@enderror
-                    </label>
-
-                    <label class="block">
-                        <span class="text-xs uppercase tracking-[0.24em] text-slate-500">Reference</span>
-                        <input type="text" name="reference" value="{{ old('reference') }}" class="mt-2 w-full rounded-[24px] border border-slate-800 bg-slate-950 px-4 py-3 text-slate-100 outline-none focus:border-blue-500 focus:ring-blue-500/20" />
-                        @error('reference')<p class="mt-1 text-xs text-rose-400">{{ $message }}</p>@enderror
-                    </label>
-
-                    <label class="block">
-                        <span class="text-xs uppercase tracking-[0.24em] text-slate-500">Flight Visibility</span>
-                        <select name="visibility" class="mt-2 w-full rounded-[24px] border border-slate-800 bg-slate-950 px-4 py-3 text-slate-100 outline-none focus:border-blue-500 focus:ring-blue-500/20">
-                            <option value="Both"{{ old('visibility', 'Both') === 'Both' ? ' selected' : '' }}>Both (Agent + Customer)</option>
-                            <option value="Agent Only"{{ old('visibility') === 'Agent Only' ? ' selected' : '' }}>Agent Only</option>
-                            <option value="Customer Only"{{ old('visibility') === 'Customer Only' ? ' selected' : '' }}>Customer Only</option>
-                        </select>
-                        @error('visibility')<p class="mt-1 text-xs text-rose-400">{{ $message }}</p>@enderror
-                    </label>
-
-                    <label class="block">
-                        <span class="text-xs uppercase tracking-[0.24em] text-slate-500">Departure Airport</span>
-                        <select id="departure_airport_id" name="departure_airport_id" class="mt-2 w-full rounded-[24px] border border-slate-800 bg-slate-950 px-4 py-3 text-slate-100 outline-none focus:border-blue-500 focus:ring-blue-500/20">
-                            <option value="">Select departure airport</option>
-                            @foreach($airports as $airport)
-                                <option value="{{ $airport->id }}" {{ old('departure_airport_id') == $airport->id ? 'selected' : '' }}>{{ $airport->code }} — {{ $airport->city }} ({{ $airport->name }})</option>
-                            @endforeach
-                        </select>
-                        @error('departure_airport_id')<p class="mt-1 text-xs text-rose-400">{{ $message }}</p>@enderror
-                        <button type="button" id="copy-return-airport" class="mt-3 inline-flex items-center justify-center rounded-full bg-slate-800 px-4 py-2 text-xs font-semibold text-slate-100 transition hover:bg-slate-700">
-                            Copy departure airport to return fields
-                        </button>
-                    </label>
-
-                    <label class="block">
-                        <span class="text-xs uppercase tracking-[0.24em] text-slate-500">Departure Date</span>
-                        <input type="date" name="departure_date" value="{{ old('departure_date') }}" class="mt-2 w-full rounded-[24px] border border-slate-800 bg-slate-950 px-4 py-3 text-slate-100 outline-none focus:border-blue-500 focus:ring-blue-500/20" />
-                        @error('departure_date')<p class="mt-1 text-xs text-rose-400">{{ $message }}</p>@enderror
-                    </label>
-
-                    <label class="block">
-                        <span class="text-xs uppercase tracking-[0.24em] text-slate-500">Departure Time</span>
-                        <input type="text" name="departure_time" value="{{ old('departure_time') }}" placeholder="23:10" class="mt-2 w-full rounded-[24px] border border-slate-800 bg-slate-950 px-4 py-3 text-slate-100 outline-none focus:border-blue-500 focus:ring-blue-500/20" />
-                        @error('departure_time')<p class="mt-1 text-xs text-rose-400">{{ $message }}</p>@enderror
-                    </label>
-
-                    <label class="block">
-                        <span class="text-xs uppercase tracking-[0.24em] text-slate-500">Arrival Airport</span>
-                        <select id="arrival_airport_id" name="arrival_airport_id" class="mt-2 w-full rounded-[24px] border border-slate-800 bg-slate-950 px-4 py-3 text-slate-100 outline-none focus:border-blue-500 focus:ring-blue-500/20">
-                            <option value="">Select arrival airport</option>
-                            @foreach($airports as $airport)
-                                <option value="{{ $airport->id }}" {{ old('arrival_airport_id') == $airport->id ? 'selected' : '' }}>{{ $airport->code }} — {{ $airport->city }} ({{ $airport->name }})</option>
-                            @endforeach
-                        </select>
-                        @error('arrival_airport_id')<p class="mt-1 text-xs text-rose-400">{{ $message }}</p>@enderror
-                    </label>
-
-                    <label class="block">
-                        <span class="text-xs uppercase tracking-[0.24em] text-slate-500">Arrival Time</span>
-                        <input type="text" name="arrival_time" value="{{ old('arrival_time') }}" placeholder="04:25" class="mt-2 w-full rounded-[24px] border border-slate-800 bg-slate-950 px-4 py-3 text-slate-100 outline-none focus:border-blue-500 focus:ring-blue-500/20" />
-                        @error('arrival_time')<p class="mt-1 text-xs text-rose-400">{{ $message }}</p>@enderror
-                    </label>
-
-                    <label class="block">
-                        <span class="text-xs uppercase tracking-[0.24em] text-slate-500">Return Departure Airport</span>
-                        <select id="return_departure_airport_id" name="return_departure_airport_id" class="mt-2 w-full rounded-[24px] border border-slate-800 bg-slate-950 px-4 py-3 text-slate-100 outline-none focus:border-blue-500 focus:ring-blue-500/20">
-                            <option value="">Select return departure airport</option>
-                            @foreach($airports as $airport)
-                                <option value="{{ $airport->id }}" {{ old('return_departure_airport_id') == $airport->id ? 'selected' : '' }}>{{ $airport->code }} — {{ $airport->city }} ({{ $airport->name }})</option>
-                            @endforeach
-                        </select>
-                        @error('return_departure_airport_id')<p class="mt-1 text-xs text-rose-400">{{ $message }}</p>@enderror
-                    </label>
-
-                    <label class="block">
-                        <span class="text-xs uppercase tracking-[0.24em] text-slate-500">Return Date</span>
-                        <input type="date" name="return_date" value="{{ old('return_date') }}" class="mt-2 w-full rounded-[24px] border border-slate-800 bg-slate-950 px-4 py-3 text-slate-100 outline-none focus:border-blue-500 focus:ring-blue-500/20" />
-                        <p class="mt-2 text-xs text-slate-500">Optional return date for a reverse or return leg.</p>
-                        @error('return_date')<p class="mt-1 text-xs text-rose-400">{{ $message }}</p>@enderror
-                    </label>
-
-                    <label class="block">
-                        <span class="text-xs uppercase tracking-[0.24em] text-slate-500">Return Arrival Airport</span>
-                        <select id="return_arrival_airport_id" name="return_arrival_airport_id" class="mt-2 w-full rounded-[24px] border border-slate-800 bg-slate-950 px-4 py-3 text-slate-100 outline-none focus:border-blue-500 focus:ring-blue-500/20">
-                            <option value="">Select return arrival airport</option>
-                            @foreach($airports as $airport)
-                                <option value="{{ $airport->id }}" {{ old('return_arrival_airport_id') == $airport->id ? 'selected' : '' }}>{{ $airport->code }} — {{ $airport->city }} ({{ $airport->name }})</option>
-                            @endforeach
-                        </select>
-                        @error('return_arrival_airport_id')<p class="mt-1 text-xs text-rose-400">{{ $message }}</p>@enderror
-                    </label>
-
-                    <label class="block">
-                        <span class="text-xs uppercase tracking-[0.24em] text-slate-500">Baggage</span>
-                        <input type="text" name="baggage" value="{{ old('baggage') }}" placeholder="30KG" class="mt-2 w-full rounded-[24px] border border-slate-800 bg-slate-950 px-4 py-3 text-slate-100 outline-none focus:border-blue-500 focus:ring-blue-500/20" />
-                        @error('baggage')<p class="mt-1 text-xs text-rose-400">{{ $message }}</p>@enderror
-                    </label>
-
-                    <label class="block">
-                        <span class="text-xs uppercase tracking-[0.24em] text-slate-500">Meal</span>
-                        <input type="text" name="meal" value="{{ old('meal') }}" placeholder="Meal Included" class="mt-2 w-full rounded-[24px] border border-slate-800 bg-slate-950 px-4 py-3 text-slate-100 outline-none focus:border-blue-500 focus:ring-blue-500/20" />
-                        @error('meal')<p class="mt-1 text-xs text-rose-400">{{ $message }}</p>@enderror
-                    </label>
-
-
-                    <label class="block">
-                        <span class="text-xs uppercase tracking-[0.24em] text-slate-500">Refundable</span>
-                        <div class="mt-2 flex items-center gap-3">
-                            <input type="hidden" name="refundable" value="0" />
-                            <input type="checkbox" name="refundable" value="1" {{ old('refundable') ? 'checked' : '' }} class="h-4 w-4 rounded border-slate-700 bg-slate-950 text-amber-500 focus:ring-amber-500" />
-                            <span class="text-slate-100">Enable refundable fares</span>
-                        </div>
-                        @error('refundable')<p class="mt-1 text-xs text-rose-400">{{ $message }}</p>@enderror
-                    </label>
-
-                    <label class="block">
-                        <span class="text-xs uppercase tracking-[0.24em] text-slate-500">Total Seats</span>
-                        <input type="number" name="total_seats" value="{{ old('total_seats') }}" min="1" class="mt-2 w-full rounded-[24px] border border-slate-800 bg-slate-950 px-4 py-3 text-slate-100 outline-none focus:border-blue-500 focus:ring-blue-500/20" />
-                        @error('total_seats')<p class="mt-1 text-xs text-rose-400">{{ $message }}</p>@enderror
-                    </label>
-
-                    <label class="block">
-                        <span class="text-xs uppercase tracking-[0.24em] text-slate-500">Available Seats</span>
-                        <input type="number" name="available_seats" value="{{ old('available_seats', old('total_seats')) }}" min="0" class="mt-2 w-full rounded-[24px] border border-slate-800 bg-slate-950 px-4 py-3 text-slate-100 outline-none focus:border-blue-500 focus:ring-blue-500/20" />
-                        @error('available_seats')<p class="mt-1 text-xs text-rose-400">{{ $message }}</p>@enderror
-                    </label>
-
-                    <label class="block">
-                        <span class="text-xs uppercase tracking-[0.24em] text-slate-500">Price</span>
-                        <input type="text" name="price" value="{{ old('price') }}" placeholder="SAR 24,400" class="mt-2 w-full rounded-[24px] border border-slate-800 bg-slate-950 px-4 py-3 text-slate-100 outline-none focus:border-blue-500 focus:ring-blue-500/20" />
-                        @error('price')<p class="mt-1 text-xs text-rose-400">{{ $message }}</p>@enderror
-                    </label>
-
-                    <label class="block">
-                        <span class="text-xs uppercase tracking-[0.24em] text-slate-500">Status</span>
-                        <select name="status" class="mt-2 w-full rounded-[24px] border border-slate-800 bg-slate-950 px-4 py-3 text-slate-100 outline-none focus:border-blue-500 focus:ring-blue-500/20">
-                            <option value="Pending"{{ old('status') === 'Pending' ? ' selected' : '' }}>Pending</option>
-                            <option value="Approved"{{ old('status') === 'Approved' ? ' selected' : '' }}>Approved</option>
-                            <option value="Processing"{{ old('status') === 'Processing' ? ' selected' : '' }}>Processing</option>
-                            <option value="Cancelled"{{ old('status') === 'Cancelled' ? ' selected' : '' }}>Cancelled</option>
-                        </select>
-                        @error('status')<p class="mt-1 text-xs text-rose-400">{{ $message }}</p>@enderror
-                    </label>
-
-                    <label class="block">
-                        <span class="text-xs uppercase tracking-[0.24em] text-slate-500">Adult Price</span>
-                        <input type="text" name="adult_price" value="{{ old('adult_price') }}" placeholder="SAR 24,400" class="mt-2 w-full rounded-[24px] border border-slate-800 bg-slate-950 px-4 py-3 text-slate-100 outline-none focus:border-blue-500 focus:ring-blue-500/20" />
-                        @error('adult_price')<p class="mt-1 text-xs text-rose-400">{{ $message }}</p>@enderror
-                    </label>
-
-                    <label class="block">
-                        <span class="text-xs uppercase tracking-[0.24em] text-slate-500">Child Price</span>
-                        <input type="text" name="child_price" value="{{ old('child_price') }}" placeholder="SAR 18,000" class="mt-2 w-full rounded-[24px] border border-slate-800 bg-slate-950 px-4 py-3 text-slate-100 outline-none focus:border-blue-500 focus:ring-blue-500/20" />
-                        @error('child_price')<p class="mt-1 text-xs text-rose-400">{{ $message }}</p>@enderror
-                    </label>
-
-                    <label class="block">
-                        <span class="text-xs uppercase tracking-[0.24em] text-slate-500">Infant Price</span>
-                        <input type="text" name="infant_price" value="{{ old('infant_price') }}" placeholder="SAR 5,000" class="mt-2 w-full rounded-[24px] border border-slate-800 bg-slate-950 px-4 py-3 text-slate-100 outline-none focus:border-blue-500 focus:ring-blue-500/20" />
-                        @error('infant_price')<p class="mt-1 text-xs text-rose-400">{{ $message }}</p>@enderror
-                    </label>
-
-                    <label class="block">
-                        <span class="text-xs uppercase tracking-[0.24em] text-slate-500">Economy Seats</span>
-                        <input type="number" name="economy_seats" value="{{ old('economy_seats') }}" min="0" class="mt-2 w-full rounded-[24px] border border-slate-800 bg-slate-950 px-4 py-3 text-slate-100 outline-none focus:border-blue-500 focus:ring-blue-500/20" />
-                        @error('economy_seats')<p class="mt-1 text-xs text-rose-400">{{ $message }}</p>@enderror
-                    </label>
-
-                    <label class="block">
-                        <span class="text-xs uppercase tracking-[0.24em] text-slate-500">Premium Economy Seats</span>
-                        <input type="number" name="premium_economy_seats" value="{{ old('premium_economy_seats') }}" min="0" class="mt-2 w-full rounded-[24px] border border-slate-800 bg-slate-950 px-4 py-3 text-slate-100 outline-none focus:border-blue-500 focus:ring-blue-500/20" />
-                        @error('premium_economy_seats')<p class="mt-1 text-xs text-rose-400">{{ $message }}</p>@enderror
-                    </label>
-
-                    <label class="block">
-                        <span class="text-xs uppercase tracking-[0.24em] text-slate-500">Business Seats</span>
-                        <input type="number" name="business_seats" value="{{ old('business_seats') }}" min="0" class="mt-2 w-full rounded-[24px] border border-slate-800 bg-slate-950 px-4 py-3 text-slate-100 outline-none focus:border-blue-500 focus:ring-blue-500/20" />
-                        @error('business_seats')<p class="mt-1 text-xs text-rose-400">{{ $message }}</p>@enderror
-                    </label>
-
-                    <label class="block">
-                        <span class="text-xs uppercase tracking-[0.24em] text-slate-500">First Class Seats</span>
-                        <input type="number" name="first_seats" value="{{ old('first_seats') }}" min="0" class="mt-2 w-full rounded-[24px] border border-slate-800 bg-slate-950 px-4 py-3 text-slate-100 outline-none focus:border-blue-500 focus:ring-blue-500/20" />
-                        @error('first_seats')<p class="mt-1 text-xs text-rose-400">{{ $message }}</p>@enderror
-                    </label>
-
-                    <label class="block">
-                        <span class="text-xs uppercase tracking-[0.24em] text-slate-500">Tax Rate</span>
-                        <input type="text" name="tax_rate" value="{{ old('tax_rate', '0.08') }}" placeholder="0.08" class="mt-2 w-full rounded-[24px] border border-slate-800 bg-slate-950 px-4 py-3 text-slate-100 outline-none focus:border-blue-500 focus:ring-blue-500/20" />
-                        @error('tax_rate')<p class="mt-1 text-xs text-rose-400">{{ $message }}</p>@enderror
-                    </label>
-
-                    <label class="block">
-                        <span class="text-xs uppercase tracking-[0.24em] text-slate-500">Service Charge Rate</span>
-                        <input type="text" name="service_charge_rate" value="{{ old('service_charge_rate', '0.015') }}" placeholder="0.015" class="mt-2 w-full rounded-[24px] border border-slate-800 bg-slate-950 px-4 py-3 text-slate-100 outline-none focus:border-blue-500 focus:ring-blue-500/20" />
-                        @error('service_charge_rate')<p class="mt-1 text-xs text-rose-400">{{ $message }}</p>@enderror
-                    </label>
-
-                    <div class="sm:col-span-2 text-right">
-                        <button type="submit" class="inline-flex items-center justify-center gap-2 w-full rounded-3xl bg-blue-600 px-6 py-3 text-sm font-semibold text-white transition hover:bg-blue-500 sm:w-auto">
-                            Upload Ticket
-                        </button>
-                    </div>
-                </form>
-            </section>
-
-            <section class="min-w-0 lg:col-span-7 rounded-[28px] border border-slate-800/90 bg-slate-900/90 p-6 shadow-2xl shadow-slate-950/20 ring-1 ring-white/5">
-                <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                    <div>
-                        <p class="text-xs uppercase tracking-[0.32em] text-slate-500">Recent Tickets</p>
-                        <h3 class="mt-2 text-2xl font-semibold text-white">Latest flight inventory</h3>
-                    </div>
-                    <div class="flex flex-wrap gap-2">
-                        <span class="rounded-3xl bg-slate-800 px-4 py-2 text-xs uppercase tracking-[0.28em] text-slate-400">{{ $tickets->total() }} flights</span>
-                        <span class="rounded-3xl bg-slate-800 px-4 py-2 text-xs uppercase tracking-[0.28em] text-slate-400">Page {{ $tickets->currentPage() }}</span>
-                    </div>
+                <div class="flex items-center gap-2">
+                    <span class="rounded-full bg-slate-100 px-3 py-1 text-xs font-bold text-slate-600">
+                        {{ $tickets->total() }} total flights
+                    </span>
                 </div>
+            </div>
 
-                <div class="mt-6 overflow-x-auto rounded-[28px] border border-slate-800 bg-slate-950/80">
-                    <table class="min-w-full divide-y divide-slate-800 text-left text-sm text-slate-300">
-                        <thead class="bg-slate-950/90 text-slate-400 text-xs uppercase tracking-[0.24em]">
-                            <tr>
-                                <th class="px-5 py-4">Airline</th>
-                                <th class="px-5 py-4">Flight No</th>
-                                <th class="px-5 py-4">Route</th>
-                                <th class="px-5 py-4">Departure</th>
-                                <th class="px-5 py-4">Arrival</th>
-                                <th class="px-5 py-4">Return</th>
-                                <th class="px-5 py-4">Seats</th>
-                                <th class="px-5 py-4">Available</th>
-                                <th class="px-5 py-4">Booked</th>
-                                <th class="px-5 py-4">Status</th>
-                                <th class="px-5 py-4">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-slate-800 bg-slate-950">
-                            @forelse($tickets as $ticket)
-                                <tr class="hover:bg-slate-900/80 transition">
-                                    <td class="px-5 py-4 font-semibold text-white">{{ $ticket->airlineMaster?->name ?? $ticket->airline }}{{ $ticket->airlineMaster?->code ? ' (' . $ticket->airlineMaster->code . ')' : '' }}</td>
-                                    <td class="px-5 py-4">{{ $ticket->flight_number }}</td>
-                                    <td class="px-5 py-4">{{ $ticket->departureAirport && $ticket->arrivalAirport ? $ticket->departureAirport->code . ' - ' . $ticket->arrivalAirport->code : $ticket->route }}</td>
-                                    <td class="px-5 py-4">{{ $ticket->departure_date?->format('d M') ?? '-' }} · {{ $ticket->departure_time }}</td>
-                                    <td class="px-5 py-4">{{ $ticket->arrivalAirport?->code ?? 'N/A' }} · {{ $ticket->arrival_time }}</td>
-                                    <td class="px-5 py-4">{{ $ticket->return_route ?? 'N/A' }} · {{ $ticket->return_date?->format('d M') ?? 'N/A' }}</td>
-                                    <td class="px-5 py-4">{{ $ticket->total_seats }}</td>
-                                    <td class="px-5 py-4">{{ $ticket->available_seats }}</td>
-                                    <td class="px-5 py-4">{{ $ticket->booked_seats }}</td>
-                                    <td class="px-5 py-4">
-                                        <span class="inline-flex rounded-full px-3 py-1 text-[11px] font-semibold {{ $ticket->status === 'Approved' ? 'bg-emerald-500/15 text-emerald-300' : ($ticket->status === 'Processing' ? 'bg-amber-500/15 text-amber-300' : ($ticket->status === 'Cancelled' ? 'bg-rose-500/15 text-rose-300' : 'bg-slate-700/15 text-slate-200')) }}">{{ $ticket->status }}</span>
-                                    </td>
-                                    <td class="px-5 py-4">
-                                        <div class="flex flex-wrap gap-2">
-                                            <a href="{{ route('admin.airline-flights.show', $ticket) }}" class="inline-flex items-center justify-center rounded-2xl bg-slate-800 px-3 py-2 text-xs font-semibold text-white transition hover:bg-slate-700" title="View">
-                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z"/></svg>
-                                            </a>
-                                            <a href="{{ route('admin.airline-flights.edit', $ticket) }}" class="inline-flex items-center justify-center rounded-2xl bg-blue-600 px-3 py-2 text-xs font-semibold text-white transition hover:bg-blue-500" title="Edit">
-                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path d="M17.414 2.586a2 2 0 010 2.828l-10 10A2 2 0 016 16H4a1 1 0 01-1-1v-2a2 2 0 01.586-1.414l10-10a2 2 0 012.828 0z"/></svg>
-                                            </a>
-                                            <a href="{{ route('admin.airline-flights.show', $ticket) }}#bookings" class="inline-flex items-center justify-center rounded-2xl bg-slate-700 px-3 py-2 text-xs font-semibold text-white transition hover:bg-slate-600" title="Bookings">
-                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M4 4a2 2 0 00-2 2v8a2 2 0 002 2h12a2 2 0 002-2V8a2 2 0 00-2-2H4zm3 7a1 1 0 112 0v2a1 1 0 11-2 0v-2zm3-4a1 1 0 10-2 0v1a1 1 0 102 0V7z" clip-rule="evenodd" /></svg>
-                                            </a>
-                                            <form action="{{ route('admin.airline-flights.destroy', $ticket) }}" method="POST" class="inline-flex" onsubmit="return confirm('Delete this flight?');">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" class="inline-flex items-center justify-center rounded-2xl bg-rose-500 px-3 py-2 text-xs font-semibold text-white transition hover:bg-rose-400" title="Delete">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H3.5a.5.5 0 000 1H4v10a2 2 0 002 2h8a2 2 0 002-2V5h.5a.5.5 0 000-1H15V3a1 1 0 00-1-1H6zm2 4a.5.5 0 011 0v8a.5.5 0 01-1 0V6zm4 0a.5.5 0 011 0v8a.5.5 0 01-1 0V6z" clip-rule="evenodd" /></svg>
-                                                </button>
-                                            </form>
+            <div class="overflow-x-auto rounded-2xl border border-slate-200/80 bg-white">
+                <table class="min-w-full divide-y divide-slate-100 text-left text-xs">
+                    <thead class="bg-slate-50 text-slate-500 font-bold uppercase tracking-wider">
+                        <tr>
+                            <th class="px-5 py-4">Airline & Flight</th>
+                            <th class="px-5 py-4">Route</th>
+                            <th class="px-5 py-4">Departure</th>
+                            <th class="px-5 py-4">Arrival / Return</th>
+                            <th class="px-5 py-4 text-center">Total Seats</th>
+                            <th class="px-5 py-4 text-center">Available</th>
+                            <th class="px-5 py-4 text-center">Booked</th>
+                            <th class="px-5 py-4">Status</th>
+                            <th class="px-5 py-4 text-right">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100 text-slate-700">
+                        @forelse($tickets as $ticket)
+                            <tr class="hover:bg-slate-50/80 transition">
+                                <td class="px-5 py-4">
+                                    <div class="font-bold text-slate-900">
+                                        {{ $ticket->airlineMaster?->name ?? $ticket->airline }}
+                                    </div>
+                                    <div class="flex items-center gap-1.5 mt-0.5">
+                                        <span class="font-mono text-[11px] font-bold text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded border border-blue-100">
+                                            {{ $ticket->flight_number }}
+                                        </span>
+                                        @if($ticket->ticket_type)
+                                            <span class="text-[10px] text-slate-400 font-semibold">({{ $ticket->ticket_type }})</span>
+                                        @endif
+                                    </div>
+                                </td>
+                                <td class="px-5 py-4">
+                                    <div class="font-semibold text-slate-800">
+                                        {{ $ticket->departureAirport && $ticket->arrivalAirport ? $ticket->departureAirport->code . ' ➔ ' . $ticket->arrivalAirport->code : $ticket->route }}
+                                    </div>
+                                    <div class="text-[11px] text-slate-400">
+                                        {{ $ticket->departureAirport?->city ?? '' }} to {{ $ticket->arrivalAirport?->city ?? '' }}
+                                    </div>
+                                </td>
+                                <td class="px-5 py-4">
+                                    <div class="font-semibold text-slate-800">
+                                        {{ $ticket->departure_date?->format('d M Y') ?? '-' }}
+                                    </div>
+                                    <div class="text-[11px] text-slate-500 font-mono">
+                                        <i class="bi bi-clock mr-0.5"></i> {{ $ticket->departure_time ?? 'N/A' }}
+                                    </div>
+                                </td>
+                                <td class="px-5 py-4">
+                                    <div class="font-semibold text-slate-800">
+                                        {{ $ticket->arrivalAirport?->code ?? 'N/A' }} · {{ $ticket->arrival_time ?? '-' }}
+                                    </div>
+                                    @if($ticket->return_date)
+                                        <div class="text-[11px] text-indigo-600 font-medium mt-0.5">
+                                            <i class="bi bi-arrow-repeat"></i> Return: {{ $ticket->return_date->format('d M') }}
                                         </div>
-                                    </td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="10" class="px-5 py-12 text-center text-sm text-slate-500">No tickets found yet.</td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                </div>
+                                    @endif
+                                </td>
+                                <td class="px-5 py-4 text-center font-bold text-slate-900">
+                                    {{ $ticket->total_seats }}
+                                </td>
+                                <td class="px-5 py-4 text-center">
+                                    <span class="inline-flex rounded-full bg-emerald-50 px-2.5 py-0.5 font-bold text-emerald-700 border border-emerald-200">
+                                        {{ $ticket->available_seats }}
+                                    </span>
+                                </td>
+                                <td class="px-5 py-4 text-center">
+                                    <span class="inline-flex rounded-full bg-slate-100 px-2.5 py-0.5 font-bold text-slate-700">
+                                        {{ $ticket->booked_seats }}
+                                    </span>
+                                </td>
+                                <td class="px-5 py-4">
+                                    <span class="inline-flex rounded-full px-2.5 py-1 text-[11px] font-bold {{ $ticket->status === 'Approved' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : ($ticket->status === 'Processing' ? 'bg-amber-50 text-amber-700 border border-amber-200' : ($ticket->status === 'Cancelled' ? 'bg-rose-50 text-rose-700 border border-rose-200' : 'bg-slate-100 text-slate-600')) }}">
+                                        {{ $ticket->status }}
+                                    </span>
+                                </td>
+                                <td class="px-5 py-4 text-right">
+                                    <div class="flex items-center justify-end gap-1.5">
+                                        <a href="{{ route('admin.airline-flights.show', $ticket) }}" class="inline-flex h-7 w-7 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-600 shadow-xs hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 transition" title="View Flight Details">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                        <a href="{{ route('admin.airline-flights.edit', $ticket) }}" class="inline-flex h-7 w-7 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-600 shadow-xs hover:bg-emerald-50 hover:text-emerald-600 hover:border-emerald-200 transition" title="Edit Ticket">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                        <a href="{{ route('admin.airline-flights.show', $ticket) }}#bookings" class="inline-flex h-7 w-7 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-600 shadow-xs hover:bg-indigo-50 hover:text-indigo-600 hover:border-indigo-200 transition" title="View Bookings">
+                                            <i class="bi bi-ticket-detailed"></i>
+                                        </a>
+                                        <form action="{{ route('admin.airline-flights.destroy', $ticket) }}" method="POST" class="inline-flex" onsubmit="return confirm('Are you sure you want to delete this flight ticket?');">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="inline-flex h-7 w-7 items-center justify-center rounded-lg border border-slate-200 bg-white text-rose-500 shadow-xs hover:bg-rose-50 hover:text-rose-700 hover:border-rose-200 transition" title="Delete">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="9" class="px-5 py-12 text-center text-slate-400 font-medium">
+                                    <i class="bi bi-airplane text-4xl text-slate-300 mb-2"></i>
+                                    <p class="text-sm font-semibold text-slate-700">No flight tickets found.</p>
+                                    <p class="text-xs text-slate-400 mt-0.5">Use the "Add Flight Ticket" tab above to create inventory entries.</p>
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
 
-                <div class="mt-6 rounded-[28px] border border-slate-800 bg-slate-950/90 p-4">
-                    {{ $tickets->links() }}
-                </div>
-            </section>
+            <div class="mt-5">
+                {{ $tickets->links() }}
+            </div>
         </div>
     </div>
 
-    <script>
-        (() => {
-            const departure = document.getElementById('departure_airport_id');
-            const returnDeparture = document.getElementById('return_departure_airport_id');
-            const returnArrival = document.getElementById('return_arrival_airport_id');
-            const copyButton = document.getElementById('copy-return-airport');
+    {{-- TAB 2: Add / Upload Flight Ticket Form --}}
+    <div id="tab-pane-upload-ticket" class="tab-pane hidden space-y-6">
+        <div class="rounded-3xl border border-slate-200/90 bg-white p-6 sm:p-8 shadow-sm">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-5 mb-6">
+                <div>
+                    <h3 class="text-xl font-bold text-slate-900">Upload New Flight Inventory</h3>
+                    <p class="text-xs text-slate-500 mt-1">Fill out outbound schedule, return legs, seat allocation, and fare pricing.</p>
+                </div>
+                <button type="button" onclick="switchTab('inventory')" class="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-1.5 text-xs font-bold text-slate-600 hover:bg-slate-100 transition">
+                    <i class="bi bi-arrow-left"></i> Back to Inventory
+                </button>
+            </div>
 
-            if (!departure || !returnDeparture || !returnArrival || !copyButton) {
-                return;
-            }
+            <form action="{{ route('admin.airline-ticket-management.store') }}" method="POST" class="space-y-8">
+                @csrf
 
+                {{-- 1. Flight Identity Section --}}
+                <div>
+                    <div class="flex items-center gap-2 mb-4">
+                        <span class="inline-flex h-6 w-6 items-center justify-center rounded-lg bg-blue-100 text-blue-700 text-xs font-bold">1</span>
+                        <h4 class="text-sm font-bold uppercase tracking-wider text-slate-800">Flight & Airline Identity</h4>
+                    </div>
+                    <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">Registered Airline</label>
+                            <select name="airline_id" class="w-full rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-xs font-semibold text-slate-800 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20">
+                                <option value="">Select master airline</option>
+                                @foreach($airlines as $airline)
+                                    <option value="{{ $airline->id }}" {{ old('airline_id') == $airline->id ? 'selected' : '' }}>{{ $airline->name }} ({{ $airline->code }})</option>
+                                @endforeach
+                            </select>
+                            <input type="text" name="airline" value="{{ old('airline') }}" placeholder="Or custom airline name" class="mt-2 w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-medium text-slate-700" />
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">Flight Number <span class="text-rose-500">*</span></label>
+                            <input type="text" name="flight_number" value="{{ old('flight_number') }}" placeholder="e.g. PK-741" required class="w-full rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-xs font-semibold text-slate-800 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20" />
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">Ticket Type <span class="text-rose-500">*</span></label>
+                            <select name="ticket_type" class="w-full rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-xs font-semibold text-slate-800 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20">
+                                <option value="One-way" {{ old('ticket_type') === 'One-way' ? 'selected' : '' }}>One-way</option>
+                                <option value="Round-trip" {{ old('ticket_type', 'Round-trip') === 'Round-trip' ? 'selected' : '' }}>Round-trip</option>
+                                <option value="Multi-city" {{ old('ticket_type') === 'Multi-city' ? 'selected' : '' }}>Multi-city</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">Outbound Route Name</label>
+                            <input type="text" name="route" value="{{ old('route') }}" placeholder="e.g. Islamabad - Jeddah" class="w-full rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-xs font-semibold text-slate-800 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20" />
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">Reference / PNR Code</label>
+                            <input type="text" name="reference" value="{{ old('reference') }}" placeholder="e.g. PNR-98124" class="w-full rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-xs font-semibold text-slate-800 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20" />
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">Visibility Access</label>
+                            <select name="visibility" class="w-full rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-xs font-semibold text-slate-800 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20">
+                                <option value="Both" {{ old('visibility', 'Both') === 'Both' ? 'selected' : '' }}>Both (Travel Agent + Direct Customer)</option>
+                                <option value="Agent Only" {{ old('visibility') === 'Agent Only' ? 'selected' : '' }}>Agent Portal Only</option>
+                                <option value="Customer Only" {{ old('visibility') === 'Customer Only' ? 'selected' : '' }}>Customer Portal Only</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- 2. Schedule & Airports Section --}}
+                <div class="border-t border-slate-100 pt-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="flex items-center gap-2">
+                            <span class="inline-flex h-6 w-6 items-center justify-center rounded-lg bg-emerald-100 text-emerald-700 text-xs font-bold">2</span>
+                            <h4 class="text-sm font-bold uppercase tracking-wider text-slate-800">Flight Routing & Timetable</h4>
+                        </div>
+                        <button type="button" id="copy-return-airport" class="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-slate-50 px-3 py-1 text-[11px] font-semibold text-slate-600 hover:bg-slate-100 transition">
+                            <i class="bi bi-arrow-left-right"></i> Copy Outbound to Return
+                        </button>
+                    </div>
+
+                    <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">Departure Airport <span class="text-rose-500">*</span></label>
+                            <select id="departure_airport_id" name="departure_airport_id" required class="w-full rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-xs font-semibold text-slate-800 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20">
+                                <option value="">Select origin airport</option>
+                                @foreach($airports as $airport)
+                                    <option value="{{ $airport->id }}" {{ old('departure_airport_id') == $airport->id ? 'selected' : '' }}>{{ $airport->code }} — {{ $airport->city }} ({{ $airport->name }})</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">Departure Date <span class="text-rose-500">*</span></label>
+                            <input type="date" name="departure_date" value="{{ old('departure_date') }}" required class="w-full rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-xs font-semibold text-slate-800 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20" />
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">Departure Time</label>
+                            <input type="text" name="departure_time" value="{{ old('departure_time') }}" placeholder="23:10" class="w-full rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-xs font-semibold text-slate-800 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20" />
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">Arrival Airport <span class="text-rose-500">*</span></label>
+                            <select id="arrival_airport_id" name="arrival_airport_id" required class="w-full rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-xs font-semibold text-slate-800 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20">
+                                <option value="">Select destination airport</option>
+                                @foreach($airports as $airport)
+                                    <option value="{{ $airport->id }}" {{ old('arrival_airport_id') == $airport->id ? 'selected' : '' }}>{{ $airport->code }} — {{ $airport->city }} ({{ $airport->name }})</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">Arrival Time</label>
+                            <input type="text" name="arrival_time" value="{{ old('arrival_time') }}" placeholder="04:25" class="w-full rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-xs font-semibold text-slate-800 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20" />
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">Return Departure Hub</label>
+                            <select id="return_departure_airport_id" name="return_departure_airport_id" class="w-full rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-xs font-semibold text-slate-800 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20">
+                                <option value="">Optional return origin</option>
+                                @foreach($airports as $airport)
+                                    <option value="{{ $airport->id }}" {{ old('return_departure_airport_id') == $airport->id ? 'selected' : '' }}>{{ $airport->code }} — {{ $airport->city }} ({{ $airport->name }})</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">Return Date</label>
+                            <input type="date" name="return_date" value="{{ old('return_date') }}" class="w-full rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-xs font-semibold text-slate-800 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20" />
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">Return Arrival Hub</label>
+                            <select id="return_arrival_airport_id" name="return_arrival_airport_id" class="w-full rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-xs font-semibold text-slate-800 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20">
+                                <option value="">Optional return destination</option>
+                                @foreach($airports as $airport)
+                                    <option value="{{ $airport->id }}" {{ old('return_arrival_airport_id') == $airport->id ? 'selected' : '' }}>{{ $airport->code }} — {{ $airport->city }} ({{ $airport->name }})</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- 3. Seats & Inventory Section --}}
+                <div class="border-t border-slate-100 pt-6">
+                    <div class="flex items-center gap-2 mb-4">
+                        <span class="inline-flex h-6 w-6 items-center justify-center rounded-lg bg-indigo-100 text-indigo-700 text-xs font-bold">3</span>
+                        <h4 class="text-sm font-bold uppercase tracking-wider text-slate-800">Seat Inventory Allocation</h4>
+                    </div>
+
+                    <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">Total Seats <span class="text-rose-500">*</span></label>
+                            <input type="number" name="total_seats" value="{{ old('total_seats') }}" min="1" required class="w-full rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-xs font-semibold text-slate-800 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20" />
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">Available Seats</label>
+                            <input type="number" name="available_seats" value="{{ old('available_seats') }}" min="0" class="w-full rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-xs font-semibold text-slate-800 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20" />
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">Economy Seats</label>
+                            <input type="number" name="economy_seats" value="{{ old('economy_seats') }}" min="0" class="w-full rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-xs font-semibold text-slate-800 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20" />
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">Business Seats</label>
+                            <input type="number" name="business_seats" value="{{ old('business_seats') }}" min="0" class="w-full rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-xs font-semibold text-slate-800 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20" />
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">Premium Economy</label>
+                            <input type="number" name="premium_economy_seats" value="{{ old('premium_economy_seats') }}" min="0" class="w-full rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-xs font-semibold text-slate-800 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20" />
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">First Class Seats</label>
+                            <input type="number" name="first_seats" value="{{ old('first_seats') }}" min="0" class="w-full rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-xs font-semibold text-slate-800 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20" />
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">Status</label>
+                            <select name="status" class="w-full rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-xs font-semibold text-slate-800 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20">
+                                <option value="Approved" {{ old('status', 'Approved') === 'Approved' ? 'selected' : '' }}>Approved</option>
+                                <option value="Pending" {{ old('status') === 'Pending' ? 'selected' : '' }}>Pending</option>
+                                <option value="Processing" {{ old('status') === 'Processing' ? 'selected' : '' }}>Processing</option>
+                                <option value="Cancelled" {{ old('status') === 'Cancelled' ? 'selected' : '' }}>Cancelled</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- 4. Pricing & Policies Section --}}
+                <div class="border-t border-slate-100 pt-6">
+                    <div class="flex items-center gap-2 mb-4">
+                        <span class="inline-flex h-6 w-6 items-center justify-center rounded-lg bg-teal-100 text-teal-700 text-xs font-bold">4</span>
+                        <h4 class="text-sm font-bold uppercase tracking-wider text-slate-800">Pricing, Baggage & Policies</h4>
+                    </div>
+
+                    <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">Base Price</label>
+                            <input type="text" name="price" value="{{ old('price') }}" placeholder="SAR 24,400" class="w-full rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-xs font-semibold text-slate-800 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20" />
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">Adult Fare</label>
+                            <input type="text" name="adult_price" value="{{ old('adult_price') }}" placeholder="SAR 24,400" class="w-full rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-xs font-semibold text-slate-800 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20" />
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">Child Fare</label>
+                            <input type="text" name="child_price" value="{{ old('child_price') }}" placeholder="SAR 18,000" class="w-full rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-xs font-semibold text-slate-800 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20" />
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">Infant Fare</label>
+                            <input type="text" name="infant_price" value="{{ old('infant_price') }}" placeholder="SAR 5,000" class="w-full rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-xs font-semibold text-slate-800 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20" />
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">Baggage Allowance</label>
+                            <input type="text" name="baggage" value="{{ old('baggage', '30KG') }}" placeholder="30KG" class="w-full rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-xs font-semibold text-slate-800 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20" />
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">Meal Service</label>
+                            <input type="text" name="meal" value="{{ old('meal', 'Meal Included') }}" placeholder="Meal Included" class="w-full rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-xs font-semibold text-slate-800 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20" />
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">Tax Rate</label>
+                            <input type="text" name="tax_rate" value="{{ old('tax_rate', '0.08') }}" placeholder="0.08" class="w-full rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-xs font-semibold text-slate-800 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20" />
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">Service Charge Rate</label>
+                            <input type="text" name="service_charge_rate" value="{{ old('service_charge_rate', '0.015') }}" placeholder="0.015" class="w-full rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-xs font-semibold text-slate-800 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20" />
+                        </div>
+
+                        <div class="sm:col-span-2">
+                            <label class="flex items-center gap-3 p-3 rounded-xl border border-slate-200 bg-slate-50 cursor-pointer hover:bg-slate-100 transition mt-2">
+                                <input type="hidden" name="refundable" value="0" />
+                                <input type="checkbox" name="refundable" value="1" {{ old('refundable', 1) ? 'checked' : '' }} class="h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500" />
+                                <div>
+                                    <div class="text-xs font-bold text-slate-800">Refundable Ticket Policy</div>
+                                    <div class="text-[11px] text-slate-500">Allow refunds according to standard cancellation fee guidelines.</div>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Form Actions --}}
+                <div class="flex items-center justify-end gap-3 border-t border-slate-100 pt-6">
+                    <button type="button" onclick="switchTab('inventory')" class="rounded-2xl border border-slate-200 bg-white px-5 py-3 text-xs font-bold text-slate-700 hover:bg-slate-50 transition">
+                        Cancel
+                    </button>
+                    <button type="submit" class="inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-blue-600 to-emerald-600 px-8 py-3 text-sm font-bold text-white shadow-lg shadow-blue-500/20 hover:from-blue-700 hover:to-emerald-700 transition">
+                        <i class="bi bi-cloud-arrow-up-fill"></i> Upload Flight Ticket
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    {{-- TAB 3: Airlines & Airports Master --}}
+    <div id="tab-pane-settings" class="tab-pane hidden space-y-6">
+        @include('admin.airline-ticket-management-settings', ['airlines' => $airlines, 'airports' => $airports])
+    </div>
+</div>
+
+<script>
+    function switchTab(tabId) {
+        // Update URL hash
+        window.location.hash = tabId;
+
+        // Hide all panes
+        document.querySelectorAll('.tab-pane').forEach(el => el.classList.add('hidden'));
+
+        // Reset button states
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.className = 'tab-btn inline-flex items-center gap-2 rounded-2xl px-5 py-2.5 text-xs sm:text-sm font-bold transition text-slate-600 hover:bg-slate-100';
+        });
+
+        // Show targeted pane
+        const targetPane = document.getElementById('tab-pane-' + tabId);
+        if (targetPane) {
+            targetPane.classList.remove('hidden');
+        }
+
+        // Active button state
+        const targetBtn = document.getElementById('tab-btn-' + tabId);
+        if (targetBtn) {
+            targetBtn.className = 'tab-btn inline-flex items-center gap-2 rounded-2xl px-5 py-2.5 text-xs sm:text-sm font-bold transition bg-blue-600 text-white shadow-sm shadow-blue-500/20';
+        }
+    }
+
+    // Handle hash on load
+    document.addEventListener('DOMContentLoaded', () => {
+        let hash = window.location.hash.replace('#', '');
+        if (hash && (hash === 'inventory' || hash === 'upload-ticket' || hash === 'settings')) {
+            switchTab(hash);
+        } else {
+            switchTab('inventory');
+        }
+
+        // Copy departure airport to return airport logic
+        const departure = document.getElementById('departure_airport_id');
+        const returnDeparture = document.getElementById('return_departure_airport_id');
+        const returnArrival = document.getElementById('return_arrival_airport_id');
+        const copyButton = document.getElementById('copy-return-airport');
+
+        if (departure && returnDeparture && returnArrival && copyButton) {
             copyButton.addEventListener('click', () => {
                 const selectedValue = departure.value;
                 returnDeparture.value = selectedValue;
                 returnArrival.value = selectedValue;
-
-                returnDeparture.dispatchEvent(new Event('change', { bubbles: true }));
-                returnArrival.dispatchEvent(new Event('change', { bubbles: true }));
             });
-        })();
-    </script>
+        }
+    });
+</script>
 @endsection

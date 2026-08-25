@@ -91,62 +91,7 @@
             </form>
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-6 items-start">
-            <aside class="bg-white rounded-3xl border border-slate-200/80 shadow-xs p-6 lg:sticky lg:top-6">
-                <div class="flex items-center justify-between pb-4 border-b border-slate-100 mb-6">
-                    <div>
-                        <h3 class="text-base font-bold text-slate-900">Refine Results</h3>
-                        <p class="text-xs text-slate-500 mt-0.5">Filter hotel options</p>
-                    </div>
-                    <button type="button" class="hotel-filter-clear-all text-xs font-bold text-blue-600 hover:text-blue-700 hover:underline">Clear All</button>
-                </div>
-
-                <div class="space-y-6">
-                    <div>
-                        <h6 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3">Property Rating</h6>
-                        <div class="space-y-3">
-                            <label class="flex items-center gap-2 text-sm text-slate-700 cursor-pointer font-medium hover:text-blue-600">
-                                <input type="checkbox" name="category[]" value="5 Star" {{ in_array('5 Star', request()->input('category', []), true) ? 'checked' : '' }} class="rounded text-blue-600 border-slate-300 w-4 h-4 focus:ring-blue-500">
-                                <span class="text-amber-400 font-bold">★★★★★</span>
-                                <span class="text-slate-400 text-xs">(5 Star)</span>
-                            </label>
-                            <label class="flex items-center gap-2 text-sm text-slate-700 cursor-pointer font-medium hover:text-blue-600">
-                                <input type="checkbox" name="category[]" value="4 Star" {{ in_array('4 Star', request()->input('category', []), true) ? 'checked' : '' }} class="rounded text-blue-600 border-slate-300 w-4 h-4 focus:ring-blue-500">
-                                <span class="text-amber-400 font-bold">★★★★☆</span>
-                                <span class="text-slate-400 text-xs">(4 Star)</span>
-                            </label>
-                            <label class="flex items-center gap-2 text-sm text-slate-700 cursor-pointer font-medium hover:text-blue-600">
-                                <input type="checkbox" name="category[]" value="3 Star" {{ in_array('3 Star', request()->input('category', []), true) ? 'checked' : '' }} class="rounded text-blue-600 border-slate-300 w-4 h-4 focus:ring-blue-500">
-                                <span class="text-amber-400 font-bold">★★★☆☆</span>
-                                <span class="text-slate-400 text-xs">(3 Star)</span>
-                            </label>
-                        </div>
-                    </div>
-
-                    <div>
-                        <h6 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3">Distance from Haram</h6>
-                        <div class="space-y-3">
-                            <label class="flex items-center gap-2 text-sm text-slate-700 cursor-pointer font-medium hover:text-blue-600">
-                                <input type="radio" name="distance" value="0-250" {{ request()->input('distance') === '0-250' ? 'checked' : '' }} class="text-blue-600 border-slate-300 w-4 h-4 focus:ring-blue-500">
-                                0–250 meters
-                            </label>
-                            <label class="flex items-center gap-2 text-sm text-slate-700 cursor-pointer font-medium hover:text-blue-600">
-                                <input type="radio" name="distance" value="250-500" {{ request()->input('distance') === '250-500' ? 'checked' : '' }} class="text-blue-600 border-slate-300 w-4 h-4 focus:ring-blue-500">
-                                250–500 meters
-                            </label>
-                            <label class="flex items-center gap-2 text-sm text-slate-700 cursor-pointer font-medium hover:text-blue-600">
-                                <input type="radio" name="distance" value="500-1000" {{ request()->input('distance') === '500-1000' ? 'checked' : '' }} class="text-blue-600 border-slate-300 w-4 h-4 focus:ring-blue-500">
-                                500m–1km
-                            </label>
-                            <label class="flex items-center gap-2 text-sm text-slate-700 cursor-pointer font-medium hover:text-blue-600">
-                                <input type="radio" name="distance" value="1000+" {{ request()->input('distance') === '1000+' ? 'checked' : '' }} class="text-blue-600 border-slate-300 w-4 h-4 focus:ring-blue-500">
-                                Above 1km
-                            </label>
-                        </div>
-                    </div>
-                </div>
-            </aside>
-
+        @if($hasTravelAgentUser)
             <section id="hotelResultsContainer" class="relative">
                 <div id="hotelLoadingIndicator" class="hidden absolute inset-0 z-30 flex items-center justify-center rounded-3xl bg-white/80 backdrop-blur-xs">
                     <div class="inline-flex items-center gap-2 rounded-full bg-white px-5 py-3 text-sm font-bold text-slate-700 shadow-xl border border-slate-100">
@@ -159,7 +104,77 @@
                     @include('hotels.partials.hotel-results', ['hotels' => $hotels])
                 </div>
             </section>
-        </div>
+        @else
+            <div class="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-6 items-start">
+                <aside class="bg-white rounded-3xl border border-slate-200/80 shadow-xs p-6 lg:sticky lg:top-6">
+                    <div class="flex items-center justify-between pb-4 border-b border-slate-100 mb-6">
+                        <div>
+                            <h3 class="text-base font-bold text-slate-900">Refine Results</h3>
+                            <p class="text-xs text-slate-500 mt-0.5">Filter hotel options</p>
+                        </div>
+                        <button type="button" class="hotel-filter-clear-all text-xs font-bold text-blue-600 hover:text-blue-700 hover:underline">Clear All</button>
+                    </div>
+
+                    <div class="space-y-6">
+                        <div>
+                            <h6 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3">Property Rating</h6>
+                            <div class="space-y-3">
+                                <label class="flex items-center gap-2 text-sm text-slate-700 cursor-pointer font-medium hover:text-blue-600">
+                                    <input type="checkbox" name="category[]" value="5 Star" {{ in_array('5 Star', request()->input('category', []), true) ? 'checked' : '' }} class="rounded text-blue-600 border-slate-300 w-4 h-4 focus:ring-blue-500">
+                                    <span class="text-amber-400 font-bold">★★★★★</span>
+                                    <span class="text-slate-400 text-xs">(5 Star)</span>
+                                </label>
+                                <label class="flex items-center gap-2 text-sm text-slate-700 cursor-pointer font-medium hover:text-blue-600">
+                                    <input type="checkbox" name="category[]" value="4 Star" {{ in_array('4 Star', request()->input('category', []), true) ? 'checked' : '' }} class="rounded text-blue-600 border-slate-300 w-4 h-4 focus:ring-blue-500">
+                                    <span class="text-amber-400 font-bold">★★★★☆</span>
+                                    <span class="text-slate-400 text-xs">(4 Star)</span>
+                                </label>
+                                <label class="flex items-center gap-2 text-sm text-slate-700 cursor-pointer font-medium hover:text-blue-600">
+                                    <input type="checkbox" name="category[]" value="3 Star" {{ in_array('3 Star', request()->input('category', []), true) ? 'checked' : '' }} class="rounded text-blue-600 border-slate-300 w-4 h-4 focus:ring-blue-500">
+                                    <span class="text-amber-400 font-bold">★★★☆☆</span>
+                                    <span class="text-slate-400 text-xs">(3 Star)</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div>
+                            <h6 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3">Distance from Haram</h6>
+                            <div class="space-y-3">
+                                <label class="flex items-center gap-2 text-sm text-slate-700 cursor-pointer font-medium hover:text-blue-600">
+                                    <input type="radio" name="distance" value="0-250" {{ request()->input('distance') === '0-250' ? 'checked' : '' }} class="text-blue-600 border-slate-300 w-4 h-4 focus:ring-blue-500">
+                                    0–250 meters
+                                </label>
+                                <label class="flex items-center gap-2 text-sm text-slate-700 cursor-pointer font-medium hover:text-blue-600">
+                                    <input type="radio" name="distance" value="250-500" {{ request()->input('distance') === '250-500' ? 'checked' : '' }} class="text-blue-600 border-slate-300 w-4 h-4 focus:ring-blue-500">
+                                    250–500 meters
+                                </label>
+                                <label class="flex items-center gap-2 text-sm text-slate-700 cursor-pointer font-medium hover:text-blue-600">
+                                    <input type="radio" name="distance" value="500-1000" {{ request()->input('distance') === '500-1000' ? 'checked' : '' }} class="text-blue-600 border-slate-300 w-4 h-4 focus:ring-blue-500">
+                                    500m–1km
+                                </label>
+                                <label class="flex items-center gap-2 text-sm text-slate-700 cursor-pointer font-medium hover:text-blue-600">
+                                    <input type="radio" name="distance" value="1000+" {{ request()->input('distance') === '1000+' ? 'checked' : '' }} class="text-blue-600 border-slate-300 w-4 h-4 focus:ring-blue-500">
+                                    Above 1km
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </aside>
+
+                <section id="hotelResultsContainer" class="relative">
+                    <div id="hotelLoadingIndicator" class="hidden absolute inset-0 z-30 flex items-center justify-center rounded-3xl bg-white/80 backdrop-blur-xs">
+                        <div class="inline-flex items-center gap-2 rounded-full bg-white px-5 py-3 text-sm font-bold text-slate-700 shadow-xl border border-slate-100">
+                            <span class="h-4 w-4 rounded-full border-2 border-blue-600 border-t-transparent animate-spin"></span>
+                            Updating hotel inventory...
+                        </div>
+                    </div>
+
+                    <div id="hotelResultsContent" class="space-y-6">
+                        @include('hotels.partials.hotel-results', ['hotels' => $hotels])
+                    </div>
+                </section>
+            </div>
+        @endif
     </div>
 
     <script>

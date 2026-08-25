@@ -20,6 +20,7 @@ class StoreFlightRequest extends FormRequest
 
             'route' => ['required', 'string', 'max:255'],
             'flight_number' => ['required', 'string', 'max:255'],
+            'pnr' => ['nullable', 'string', 'max:255'],
 
             'departure_time' => ['required', 'string', 'max:255'],
             'arrival_time' => ['required', 'string', 'max:255'],

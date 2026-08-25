@@ -15,6 +15,7 @@ class Ticket extends Model
         'airline_id',
         'route',
         'flight_number',
+        'pnr',
 
         // Outbound timing
         'departure_time',

@@ -47,7 +47,7 @@
     <option value="">Select Package</option>
 
     @foreach($packages as $package)
-        <option value="{{ $package->id }}">
+        <option value="{{ $package->id }}" {{ old('voucher_package_id', $packages->first()?->id) == $package->id ? 'selected' : '' }}>
             {{ $package->name }}
         </option>
     @endforeach
@@ -70,7 +70,7 @@
         <option value="">Select Visa Company</option>
 
         @foreach($visaCompanies as $company)
-            <option value="{{ $company->id }}">
+            <option value="{{ $company->id }}" {{ old('visa_company_id', $visaCompanies->first()?->id) == $company->id ? 'selected' : '' }}>
                 {{ $company->name }}
             </option>
         @endforeach
@@ -95,7 +95,7 @@
         <option value="">Select Agent Company</option>
 
         @foreach($agentCompanies as $company)
-            <option value="{{ $company->id }}">
+            <option value="{{ $company->id }}" {{ old('agent_company_id', $agentCompanies->first()?->id) == $company->id ? 'selected' : '' }}>
                 {{ $company->name }}
             </option>
         @endforeach
@@ -139,11 +139,13 @@
                         <option
                             value="{{ $ticket->id }}"
                             data-arrival-flight-no="{{ $ticket->flight_number }}"
+                            data-arrival-pnr="{{ $ticket->pnr }}"
                             data-arrival-departure-time="{{ $ticketDateTime($ticket->departure_date, $ticket->departure_time) }}"
                             data-arrival-arrival-time="{{ $ticketDateTime($ticket->departure_date, $ticket->arrival_time) }}"
                             data-arrival-from="{{ $ticket->departureAirport?->name ?? $ticket->departureAirport?->code }}"
                             data-arrival-to="{{ $ticket->arrivalAirport?->name ?? $ticket->arrivalAirport?->code }}"
                             data-departure-flight-no="{{ $ticket->flight_number }}"
+                            data-departure-pnr="{{ $ticket->pnr }}"
                             data-departure-departure-time="{{ $ticketDateTime($ticket->return_date, $ticket->return_departure_time) }}"
                             data-departure-arrival-time="{{ $ticketDateTime($ticket->return_date, $ticket->return_arrival_time) }}"
                             data-departure-from="{{ $ticket->returnDepartureAirport?->name ?? $ticket->returnDepartureAirport?->code }}"
@@ -721,7 +723,7 @@
     <option value="">Select Type</option>
 
     @foreach($transportationOptions->pluck('type')->unique() as $type)
-        <option value="{{ $type }}">
+        <option value="{{ $type }}" {{ old('transportation_type', 'Bus') === $type ? 'selected' : '' }}>
             {{ $type }}
         </option>
     @endforeach
@@ -745,7 +747,7 @@
     <option value="">Select Sector</option>
 
     @foreach($transportationOptions->pluck('sector')->unique() as $sector)
-        <option value="{{ $sector }}">
+        <option value="{{ $sector }}" {{ old('transportation_sector', 'Jeddah - Makkah - Medina - Makkah - Jeddah') === $sector ? 'selected' : '' }}>
             {{ $sector }}
         </option>
     @endforeach
@@ -769,7 +771,7 @@
     <option value="">Select Vehicle Type</option>
 
     @foreach($transportationOptions->pluck('vehicle_type')->unique() as $vehicleType)
-        <option value="{{ $vehicleType }}">
+        <option value="{{ $vehicleType }}" {{ old('vehicle_type', 'Sharing') === $vehicleType ? 'selected' : '' }}>
             {{ $vehicleType }}
         </option>
     @endforeach
@@ -852,6 +854,7 @@
                         <input
                             type="text"
                             name="arrival_flight_pnr"
+                            id="arrival_flight_pnr"
                             placeholder="Enter PNR"
                             class="w-full rounded-lg border border-gray-300 px-4 py-3"
                         >
@@ -920,7 +923,7 @@
                 </div>
 
                 {{-- PDF --}}
-                <div class="mt-6">
+                <!-- <div class="mt-6">
                     <label class="block text-sm font-semibold text-gray-700 mb-2">
                         Upload Arrival Flight PDF
                     </label>
@@ -935,7 +938,7 @@
                         file:bg-gray-100 file:text-gray-700
                         hover:file:bg-gray-200"
                     >
-                </div>
+                </div> -->
 
             </div>
         </div>
@@ -988,6 +991,7 @@
                         <input
                             type="text"
                             name="departure_flight_pnr"
+                            id="departure_flight_pnr"
                             placeholder="Enter PNR"
                             class="w-full rounded-lg border border-gray-300 px-4 py-3"
                         >
@@ -1122,9 +1126,7 @@
                                 <th class="px-3 py-3 text-left">Check Out</th>
                                 <th class="px-3 py-3 text-left">Nights</th>
                                 <th class="px-3 py-3 text-left">Type</th>
-                                <th class="px-3 py-3 text-left">Rooms</th>
                                 <th class="px-3 py-3 text-left">Pax</th>
-                                <th class="px-3 py-3 text-left">Total</th>
                                 <th class="px-3 py-3 text-left">Action</th>
                             </tr>
                         </thead>
@@ -1143,9 +1145,10 @@
                                         @foreach($hotels as $hotel)
                                             <option
                                                 value="{{ $hotel->hotel_name }}"
+                                                data-city="{{ $hotel->city }}"
                                                 data-availability="{{ $hotel->inventories->map(fn ($inventory) => [$inventory->inventory_date->format('Y-m-d'), ($inventory->inventory_date_to ?? $inventory->inventory_date)->format('Y-m-d')])->toJson() }}"
                                             >
-                                                {{ $hotel->city ? $hotel->city . ' - ' : '' }}{{ $hotel->hotel_name }}
+                                                {{ $hotel->city ? $hotel->city . ' - ' : '' }}{{ $hotel->hotel_name }}{{ $hotel->category ? ' | ' . $hotel->category : '' }}{{ $hotel->distance_from_haram ? ' | ' . (float) $hotel->distance_from_haram . ' KM' : '' }}
                                             </option>
                                         @endforeach
                                     </select>
@@ -1156,7 +1159,7 @@
                                         type="date"
                                         name="hotels[0][check_in]"
                                         readonly
-                                        class="rounded-lg border border-gray-300 px-3 py-2"
+                                        class="rounded-lg border border-gray-300 px-3 py-2 bg-gray-50 text-gray-700"
                                     >
                                 </td>
 
@@ -1165,7 +1168,7 @@
                                         type="date"
                                         name="hotels[0][check_out]"
                                         readonly
-                                        class="rounded-lg border border-gray-300 px-3 py-2"
+                                        class="rounded-lg border border-gray-300 px-3 py-2 bg-gray-50 text-gray-700"
                                     >
                                 </td>
 
@@ -1184,24 +1187,11 @@
                                         name="hotels[0][type]"
                                         class="w-full rounded-lg border border-gray-300 px-3 py-2"
                                     >
-                                        <option value="">Select</option>
-                                        <option>Sharing</option>
-                                        <option>1 Bed Private</option>
-                                        <option>2 Bed Private</option>
-                                        <option>3 Bed Private</option>
-                                        <option>4 Bed Private</option>
-                                        <option>5 Bed Private</option>
+                                        <option value="">Select Room Type</option>
+                                        @foreach($roomTypes as $roomType)
+                                            <option value="{{ $roomType->name }}" {{ old('hotels.0.type', 'Sharing') === $roomType->name ? 'selected' : '' }}>{{ $roomType->name }}</option>
+                                        @endforeach
                                     </select>
-                                </td>
-
-                                <td class="px-2 py-3">
-                                    <input
-                                        type="number"
-                                        name="hotels[0][rooms]"
-                                        min="1"
-                                        value="1"
-                                        class="w-20 rounded-lg border border-gray-300 px-3 py-2"
-                                    >
                                 </td>
 
                                 <td class="px-2 py-3">
@@ -1211,16 +1201,6 @@
                                         min="1"
                                         value="1"
                                         class="w-20 rounded-lg border border-gray-300 px-3 py-2"
-                                    >
-                                </td>
-
-                                <td class="px-2 py-3">
-                                    <input
-                                        type="number"
-                                        name="hotels[0][total]"
-                                        min="0"
-                                        step="0.01"
-                                        class="w-32 rounded-lg border border-gray-300 px-3 py-2"
                                     >
                                 </td>
 
@@ -1379,80 +1359,40 @@
 ========================== --}}
 <script>
 
-    const ticketFieldMap = {
-        arrival: ['flight_no', 'departure_time', 'arrival_time', 'from', 'to'],
-        departure: ['flight_no', 'departure_time', 'arrival_time', 'from', 'to']
-    };
-
-    function syncHotelCheckInWithArrival() {
-        const arrivalTime = document.getElementById('arrival_arrival_time').value;
-        const arrivalDate = arrivalTime ? arrivalTime.slice(0, 10) : '';
-
-        document.querySelectorAll('.hotel-row').forEach(row => {
-            const checkIn = row.querySelector('input[type="date"]');
-
-            checkIn.value = arrivalDate;
-            filterHotelOptions(row);
-        });
-
-        syncHotelCheckOutDates();
-    }
-
-    function addDays(dateString, days) {
-        const date = new Date(`${dateString}T00:00:00`);
-        date.setDate(date.getDate() + days);
-        return date.toISOString().slice(0, 10);
-    }
-
-    function syncHotelCheckOutDates() {
-        const checkOutLimit = document.getElementById('departure_departure_time').value.slice(0, 10);
-
-        document.querySelectorAll('.hotel-row').forEach(row => {
-            const checkIn = row.querySelector('input[type="date"]');
-            const checkOut = row.querySelectorAll('input[type="date"]')[1];
-            const nights = row.querySelector('input[type="number"]');
-
-            checkOut.min = checkIn.value || '';
-            checkOut.max = checkOutLimit || '';
-
-            if (!checkIn.value) {
-                checkOut.value = '';
-                return;
-            }
-
-            if (checkOutLimit) {
-                const maximumNights = Math.max(0, Math.round(
-                    (new Date(`${checkOutLimit}T00:00:00`) - new Date(`${checkIn.value}T00:00:00`)) / 86400000
-                ));
-
-                nights.max = String(maximumNights);
-                nights.value = Math.min(Math.max(1, Number(nights.value) || 1), maximumNights);
-            }
-
-            const calculatedCheckOut = addDays(checkIn.value, Number(nights.value) || 1);
-            checkOut.value = checkOutLimit && calculatedCheckOut > checkOutLimit
-                ? checkOutLimit
-                : calculatedCheckOut;
-        });
-    }
-
     function populateFlightFields() {
         const option = document.getElementById('ticket_id').selectedOptions[0];
 
-        ['arrival', 'departure'].forEach(section => {
-            ticketFieldMap[section].forEach(field => {
-                const input = document.getElementById(`${section}_${field === 'from' ? 'departure_from' : field === 'to' ? 'arrival_to' : field}`);
-                const value = option?.dataset[`${section}${field.replace(/(^|_)(\w)/g, (_, prefix, letter) => letter.toUpperCase())}`] ?? '';
+        // Arrival fields
+        const arrivalFlightNo = document.getElementById('arrival_flight_no');
+        const arrivalFlightPnr = document.getElementById('arrival_flight_pnr');
+        const arrivalDepTime = document.getElementById('arrival_departure_time');
+        const arrivalArrTime = document.getElementById('arrival_arrival_time');
+        const arrivalFrom = document.getElementById('arrival_departure_from');
+        const arrivalTo = document.getElementById('arrival_to');
 
-                if (input) {
-                    input.value = value;
-                }
-            });
-        });
+        if (arrivalFlightNo) arrivalFlightNo.value = option?.dataset.arrivalFlightNo ?? '';
+        if (arrivalFlightPnr) arrivalFlightPnr.value = option?.dataset.arrivalPnr ?? '';
+        if (arrivalDepTime) arrivalDepTime.value = option?.dataset.arrivalDepartureTime ?? '';
+        if (arrivalArrTime) arrivalArrTime.value = option?.dataset.arrivalArrivalTime ?? '';
+        if (arrivalFrom) arrivalFrom.value = option?.dataset.arrivalFrom ?? '';
+        if (arrivalTo) arrivalTo.value = option?.dataset.arrivalTo ?? '';
 
-        document.getElementById('departure_from').value = option?.dataset.departureFrom ?? '';
-        document.getElementById('departure_to').value = option?.dataset.departureTo ?? '';
-        syncHotelCheckInWithArrival();
+        // Departure fields
+        const depFlightNo = document.getElementById('departure_flight_no');
+        const depFlightPnr = document.getElementById('departure_flight_pnr');
+        const depDepTime = document.getElementById('departure_departure_time');
+        const depArrTime = document.getElementById('departure_arrival_time');
+        const depFrom = document.getElementById('departure_from');
+        const depTo = document.getElementById('departure_to');
+
+        if (depFlightNo) depFlightNo.value = option?.dataset.departureFlightNo ?? '';
+        if (depFlightPnr) depFlightPnr.value = option?.dataset.departurePnr ?? '';
+        if (depDepTime) depDepTime.value = option?.dataset.departureDepartureTime ?? '';
+        if (depArrTime) depArrTime.value = option?.dataset.departureArrivalTime ?? '';
+        if (depFrom) depFrom.value = option?.dataset.departureFrom ?? '';
+        if (depTo) depTo.value = option?.dataset.departureTo ?? '';
+
+        refreshAllHotelRows();
     }
 
     document.getElementById('ticket_id').addEventListener('change', populateFlightFields);
@@ -1963,12 +1903,17 @@ function filterCustomers() {
             children510 +
             children25 +
             infants;
-const transportPersons =
-    document.getElementById('transport_persons');
+        const transportPersons =
+            document.getElementById('transport_persons');
 
-if (transportPersons) {
-    transportPersons.value = total;
-}
+        if (transportPersons) {
+            transportPersons.value = total;
+        }
+
+        // Automatically set hotel pax to total number of passengers
+        document.querySelectorAll('input[name^="hotels"][name$="[pax]"]').forEach(input => {
+            input.value = total;
+        });
 
         document.getElementById('totalPassengers').textContent =
             total;
@@ -2041,50 +1986,189 @@ if (transportPersons) {
 
 
     // -----------------------------------------
-    // Add Hotel Row
+    // Hotel Accommodation Logic
     // -----------------------------------------
     let hotelIndex = 1;
 
-    function hotelIsAvailableOnDate(option, date) {
-        if (!date || !option.value) {
-            return true;
-        }
-
-        return JSON.parse(option.dataset.availability || '[]')
-            .some(([from, to]) => date >= from && date <= to);
+    function normalizeCity(city) {
+        if (!city) return '';
+        const c = city.toString().trim().toLowerCase();
+        if (c.includes('makk') || c.includes('mecc')) return 'Makkah';
+        if (c.includes('madin') || c.includes('medin')) return 'Madinah';
+        return city.toString().trim();
     }
 
-    function filterHotelOptions(row) {
-        const select = row.querySelector('[data-hotel-select]');
-        const checkIn = row.querySelector('input[type="date"]');
-        const selectedValue = select.value;
+    function getOppositeCity(city) {
+        const norm = normalizeCity(city);
+        if (norm === 'Makkah') return 'Madinah';
+        if (norm === 'Madinah') return 'Makkah';
+        return null;
+    }
 
-        Array.from(select.options).forEach(option => {
-            option.hidden = !hotelIsAvailableOnDate(option, checkIn.value);
-        });
+    function addDays(dateString, days) {
+        if (!dateString) return '';
+        const parts = dateString.split('-');
+        if (parts.length !== 3) return '';
+        const date = new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10));
+        date.setDate(date.getDate() + parseInt(days, 10));
+        const y = date.getFullYear();
+        const m = String(date.getMonth() + 1).padStart(2, '0');
+        const d = String(date.getDate()).padStart(2, '0');
+        return `${y}-${m}-${d}`;
+    }
 
-        if (selectedValue && select.selectedOptions[0]?.hidden) {
-            select.value = '';
+    function refreshAllHotelRows() {
+        const rows = Array.from(document.querySelectorAll('.hotel-row'));
+        if (rows.length === 0) return;
+
+        const arrivalTime = document.getElementById('arrival_arrival_time')?.value || document.getElementById('arrival_departure_time')?.value || '';
+        let arrivalDate = arrivalTime ? arrivalTime.slice(0, 10) : '';
+        if (!arrivalDate) {
+            const now = new Date();
+            arrivalDate = now.toISOString().slice(0, 10);
         }
+
+        const departureTime = document.getElementById('departure_departure_time')?.value || document.getElementById('departure_arrival_time')?.value || '';
+        const departureLimit = departureTime ? departureTime.slice(0, 10) : '';
+
+        let currentCheckIn = arrivalDate;
+        let prevCity = null;
+
+        rows.forEach((row, index) => {
+            const hotelSelect = row.querySelector('[data-hotel-select]');
+            const checkInInput = row.querySelector('input[name*="[check_in]"]');
+            const checkOutInput = row.querySelector('input[name*="[check_out]"]');
+            const nightsInput = row.querySelector('input[name*="[nights]"]');
+
+            // 1. Set Check-In Date for this row
+            if (checkInInput) {
+                checkInInput.value = currentCheckIn;
+            }
+
+            // 2. Calculate remaining available nights up to departure date
+            let maxNights = 365;
+            if (departureLimit && currentCheckIn) {
+                const partsIn = currentCheckIn.split('-').map(Number);
+                const partsLimit = departureLimit.split('-').map(Number);
+                const dIn = new Date(partsIn[0], partsIn[1] - 1, partsIn[2]);
+                const dLimit = new Date(partsLimit[0], partsLimit[1] - 1, partsLimit[2]);
+                const diffDays = Math.round((dLimit - dIn) / (1000 * 60 * 60 * 24));
+                maxNights = Math.max(1, diffDays);
+            }
+
+            if (nightsInput) {
+                nightsInput.min = '1';
+                if (departureLimit) {
+                    nightsInput.max = String(maxNights);
+                } else {
+                    nightsInput.removeAttribute('max');
+                }
+            }
+
+            // 3. Set Nights and Calculate Check-Out Date (Check-in + Nights)
+            let nightsVal = parseInt(nightsInput?.value, 10);
+            if (isNaN(nightsVal) || nightsVal < 1) {
+                nightsVal = 1;
+            }
+            if (departureLimit && nightsVal > maxNights) {
+                nightsVal = maxNights;
+            }
+            if (nightsInput && parseInt(nightsInput.value, 10) !== nightsVal) {
+                nightsInput.value = nightsVal;
+            }
+
+            const calculatedCheckOut = addDays(currentCheckIn, nightsVal);
+            if (checkOutInput) {
+                checkOutInput.value = calculatedCheckOut;
+            }
+
+            // 4. Determine required City for this row (alternating Makkah <-> Madinah)
+            let targetCity = null;
+            if (index === 0) {
+                targetCity = null; // First hotel can be Makkah or Madinah
+            } else if (prevCity) {
+                targetCity = getOppositeCity(prevCity);
+            }
+
+            // 5. Filter hotel options in this row's dropdown
+            if (hotelSelect) {
+                const currentSelectedValue = hotelSelect.value;
+
+                Array.from(hotelSelect.options).forEach(option => {
+                    if (!option.value) {
+                        option.hidden = false;
+                        return;
+                    }
+
+                    const optionCity = normalizeCity(option.dataset.city);
+                    const isCityAllowed = !targetCity || (optionCity === targetCity);
+                    option.hidden = !isCityAllowed;
+                });
+
+                if (currentSelectedValue && hotelSelect.selectedOptions[0]?.hidden) {
+                    hotelSelect.value = '';
+                }
+
+                if (hotelSelect.value) {
+                    const selectedOpt = hotelSelect.selectedOptions[0];
+                    prevCity = normalizeCity(selectedOpt?.dataset?.city) || targetCity;
+                } else if (targetCity) {
+                    prevCity = targetCity;
+                }
+            }
+
+            // 6. Next row's check-in starts at THIS row's check-out date!
+            currentCheckIn = calculatedCheckOut;
+        });
     }
 
     function bindHotelRow(row) {
-        row.querySelector('input[type="date"]')
-            .addEventListener('change', () => filterHotelOptions(row));
-        row.querySelector('input[type="number"]')
-            .addEventListener('input', syncHotelCheckOutDates);
-        filterHotelOptions(row);
-        syncHotelCheckOutDates();
+        const hotelSelect = row.querySelector('[data-hotel-select]');
+        const nightsInput = row.querySelector('input[name*="[nights]"]');
+
+        if (hotelSelect) {
+            hotelSelect.addEventListener('change', () => {
+                refreshAllHotelRows();
+            });
+        }
+
+        if (nightsInput) {
+            nightsInput.addEventListener('input', () => {
+                refreshAllHotelRows();
+            });
+            nightsInput.addEventListener('change', () => {
+                refreshAllHotelRows();
+            });
+        }
     }
 
     document.querySelectorAll('.hotel-row').forEach(bindHotelRow);
 
     function addHotelRow() {
+        const rows = document.querySelectorAll('.hotel-row');
+        if (rows.length > 0) {
+            const lastRow = rows[rows.length - 1];
+            const lastHotelSelect = lastRow.querySelector('[data-hotel-select]');
+            if (!lastHotelSelect || !lastHotelSelect.value) {
+                alert('Please select a hotel for the current row before adding the next hotel.');
+                if (lastHotelSelect) {
+                    lastHotelSelect.focus();
+                }
+                return;
+            }
+
+            const lastCheckOut = lastRow.querySelector('input[name*="[check_out]"]')?.value;
+            const departureTime = document.getElementById('departure_departure_time')?.value || document.getElementById('departure_arrival_time')?.value || '';
+            const departureLimit = departureTime ? departureTime.slice(0, 10) : '';
+
+            if (departureLimit && lastCheckOut && lastCheckOut >= departureLimit) {
+                alert('All available nights up to the departure flight date (' + departureLimit + ') are already covered by selected hotels.');
+                return;
+            }
+        }
 
         const tbody = document.getElementById('hotelRows');
-
         const row = document.createElement('tr');
-
         row.className = 'border-b hotel-row';
 
         row.innerHTML = `
@@ -2098,9 +2182,10 @@ if (transportPersons) {
                     @foreach($hotels as $hotel)
                         <option
                             value="{{ $hotel->hotel_name }}"
+                            data-city="{{ $hotel->city }}"
                             data-availability="{{ $hotel->inventories->map(fn ($inventory) => [$inventory->inventory_date->format('Y-m-d'), ($inventory->inventory_date_to ?? $inventory->inventory_date)->format('Y-m-d')])->toJson() }}"
                         >
-                            {{ $hotel->city ? $hotel->city . ' - ' : '' }}{{ $hotel->hotel_name }}
+                            {{ $hotel->city ? $hotel->city . ' - ' : '' }}{{ $hotel->hotel_name }}{{ $hotel->category ? ' | ' . $hotel->category : '' }}{{ $hotel->distance_from_haram ? ' | ' . (float) $hotel->distance_from_haram . ' KM' : '' }}
                         </option>
                     @endforeach
                 </select>
@@ -2111,7 +2196,7 @@ if (transportPersons) {
                     type="date"
                     name="hotels[${hotelIndex}][check_in]"
                     readonly
-                    class="rounded-lg border border-gray-300 px-3 py-2"
+                    class="rounded-lg border border-gray-300 px-3 py-2 bg-gray-50 text-gray-700"
                 >
             </td>
 
@@ -2120,7 +2205,7 @@ if (transportPersons) {
                     type="date"
                     name="hotels[${hotelIndex}][check_out]"
                     readonly
-                    class="rounded-lg border border-gray-300 px-3 py-2"
+                    class="rounded-lg border border-gray-300 px-3 py-2 bg-gray-50 text-gray-700"
                 >
             </td>
 
@@ -2139,24 +2224,11 @@ if (transportPersons) {
                     name="hotels[${hotelIndex}][type]"
                     class="w-full rounded-lg border border-gray-300 px-3 py-2"
                 >
-                    <option value="">Select</option>
-                    <option>Sharing</option>
-                    <option>1 Bed Private</option>
-                    <option>2 Bed Private</option>
-                    <option>3 Bed Private</option>
-                    <option>4 Bed Private</option>
-                    <option>5 Bed Private</option>
+                    <option value="">Select Room Type</option>
+                    @foreach($roomTypes as $roomType)
+                        <option value="{{ $roomType->name }}" {{ $roomType->name === 'Sharing' ? 'selected' : '' }}>{{ $roomType->name }}</option>
+                    @endforeach
                 </select>
-            </td>
-
-            <td class="px-2 py-3">
-                <input
-                    type="number"
-                    name="hotels[${hotelIndex}][rooms]"
-                    min="1"
-                    value="1"
-                    class="w-20 rounded-lg border border-gray-300 px-3 py-2"
-                >
             </td>
 
             <td class="px-2 py-3">
@@ -2164,18 +2236,8 @@ if (transportPersons) {
                     type="number"
                     name="hotels[${hotelIndex}][pax]"
                     min="1"
-                    value="1"
+                    value="${document.getElementById('transport_persons')?.value || 1}"
                     class="w-20 rounded-lg border border-gray-300 px-3 py-2"
-                >
-            </td>
-
-            <td class="px-2 py-3">
-                <input
-                    type="number"
-                    name="hotels[${hotelIndex}][total]"
-                    min="0"
-                    step="0.01"
-                    class="w-32 rounded-lg border border-gray-300 px-3 py-2"
                 >
             </td>
 
@@ -2194,22 +2256,26 @@ if (transportPersons) {
         bindHotelRow(row);
 
         hotelIndex++;
+        refreshAllHotelRows();
     }
 
-
-    // -----------------------------------------
-    // Remove Hotel Row
-    // -----------------------------------------
     function removeHotelRow(button) {
-
         const rows = document.querySelectorAll('.hotel-row');
-
         if (rows.length <= 1) {
             return;
         }
 
         button.closest('tr').remove();
+        refreshAllHotelRows();
     }
+
+    // Run initial refresh on DOM ready
+    document.addEventListener('DOMContentLoaded', () => {
+        if (typeof updatePassengerTotals === 'function') {
+            updatePassengerTotals();
+        }
+        refreshAllHotelRows();
+    });
 
 </script>
 

@@ -13,6 +13,7 @@ use App\Models\VoucherCustomer;
 use App\Models\TransportationOption;
 use App\Models\Ticket;
 use App\Models\Hotel;
+use App\Models\VoucherRoomType;
 
 class VoucherController extends Controller
 {
@@ -67,6 +68,11 @@ class VoucherController extends Controller
         ->orderBy('hotel_name')
         ->get();
 
+    $roomTypes = VoucherRoomType::where('status', true)
+        ->orderBy('sort_order')
+        ->orderBy('name')
+        ->get();
+
     return view(
         'travel_agents.vouchers.create',
         compact(
@@ -76,7 +82,8 @@ class VoucherController extends Controller
             'customers',
             'transportationOptions',
             'tickets',
-            'hotels'
+            'hotels',
+            'roomTypes'
         )
     );
 }

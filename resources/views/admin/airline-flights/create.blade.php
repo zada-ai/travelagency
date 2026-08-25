@@ -1,4 +1,4 @@
-@extends('admin.layouts.airline')
+@extends('admin.layouts.app')
 
 @section('title', 'Create Flight')
 @section('page-heading', 'Create Flight')
@@ -33,6 +33,11 @@
                     <span class="text-xs uppercase tracking-[0.24em] text-slate-500">Flight Number</span>
                     <input type="text" name="flight_number" value="{{ old('flight_number') }}" class="mt-2 w-full rounded-2xl border border-slate-300 px-4 py-3 focus:border-amber-500 focus:outline-none" />
                     @error('flight_number')<p class="mt-1 text-xs text-rose-600">{{ $message }}</p>@enderror
+                </label>
+                <label class="block text-sm text-slate-700">
+                    <span class="text-xs uppercase tracking-[0.24em] text-slate-500">Flight PNR</span>
+                    <input type="text" name="pnr" value="{{ old('pnr') }}" placeholder="e.g. ABC123" class="mt-2 w-full rounded-2xl border border-slate-300 px-4 py-3 focus:border-amber-500 focus:outline-none" />
+                    @error('pnr')<p class="mt-1 text-xs text-rose-600">{{ $message }}</p>@enderror
                 </label>
                 <label class="block text-sm text-slate-700">
                     <span class="text-xs uppercase tracking-[0.24em] text-slate-500">Ticket Type</span>

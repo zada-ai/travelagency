@@ -176,8 +176,10 @@ Route::middleware('auth:travel_agent')->group(function () {
     Route::get('/travel-agent/visa-applications/{id}/document/{field}', [TravelAgentVisaApplicationController::class, 'downloadDocument'])->name('travel-agents.visa-applications.document.download');
     Route::get('/travel-agent/visa-applications/{id}/print', [TravelAgentVisaApplicationController::class, 'print'])->name('travel-agents.visa-applications.print');
 
-    // Customer Visa History
+    // Customer Management
     Route::get('/travel-agent/customer-visa', [TravelAgentCustomerVisaController::class, 'index'])->name('travel-agents.customer-visa.index');
+    Route::post('/travel-agent/customer-visa', [TravelAgentCustomerVisaController::class, 'store'])->name('travel-agents.customer-visa.store');
+    Route::delete('/travel-agent/customer-visa/{id}', [TravelAgentCustomerVisaController::class, 'destroy'])->name('travel-agents.customer-visa.destroy');
     Route::get('/travel-agent/customer-visa/{id}', [TravelAgentCustomerVisaController::class, 'show'])->name('travel-agents.customer-visa.show');
     Route::get('/travel-agent/customer-visa/{id}/download-visa', [TravelAgentCustomerVisaController::class, 'downloadVisaCopy'])->name('travel-agents.customer-visa.download-visa');
     Route::get('/travel-agent/customer-visa/{id}/download-document/{field}', [TravelAgentCustomerVisaController::class, 'downloadDocument'])->name('travel-agents.customer-visa.download-document');
